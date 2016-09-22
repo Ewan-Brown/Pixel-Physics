@@ -23,7 +23,7 @@ public class MainClass {
 		dialog.setVisible(true);
 		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		JPanel outer = new JPanel();
-		JFrame frame = new JFrame();
+		JFrame frame = new JFrame("Pixel Physics v1.0");
 		outer.setSize(width, height);
 		GamePanel gamePanel = new GamePanel(width,height,slider.getValue());
 

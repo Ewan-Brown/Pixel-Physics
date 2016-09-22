@@ -44,7 +44,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double frictionStrength = 0.01;
 	public double[] frictions = {0.0001,00.1,0.1};
 	public double pushStrength = 1;
-	public double[] pushes = {0,1,10};
+	public double[] pushes = {-5,1,5};
 	public double timeSpeed = 1;
 	public long updateDelay = 7;
 	public ArrayList<Point2D> queue = new ArrayList<Point2D>();
@@ -75,7 +75,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(lowPerformance + " " + frictionStrength + " " + pushStrength + " " + fastMath1 + " " + fastMath2, getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " " + pushStrength, getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		this.updateParticles();
@@ -115,46 +115,36 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void push(double x, double y){
-		if(!lowPerformance){
-			flag = true;
-		}
-		if(flag){
+//		if(!lowPerformance){
+//			flag = true;
+//		}
+//		if(flag){
 			double speed;
 			double angle = 1;
 			double deltaX;
 			double deltaY;
-			//			long t1 = System.nanoTime();
+			//long t1 = System.nanoTime();
 			for(int i = 0; i < particleArray.size();i++){
 				Particle p = particleArray.get(i);
 				speed = pushStrength ;						 
-				if(fastMath1){
-					angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-				}
-				else{
-					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
-
-				}
-				if(fastMath2){
-					deltaX = net.jafama.FastMath.cos(angle);
-					deltaY = net.jafama.FastMath.sin(angle);
-				}
-				else{
-					deltaX = Math.cos(angle);	    
-					deltaY = Math.sin(angle);	 
-				}
-
+				angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
+				//					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
+				deltaX = net.jafama.FastMath.cos(angle);
+				deltaY = net.jafama.FastMath.sin(angle);
+				//					deltaX = Math.cos(angle);	    
+				//					deltaY = Math.sin(angle);	 
 				p.speedX -= deltaX * speed * timeSpeed;							
 				p.speedY -= deltaY * speed * timeSpeed;      					 
-				if(lowPerformance){
-					p.tempSpeedX = deltaX;
-					p.tempSpeedY = deltaY;
-				}
+//				if(lowPerformance){
+//					p.tempSpeedX = deltaX;
+//					p.tempSpeedY = deltaY;d
+//				}
 			}
 			//			long t2 = System.nanoTime();
 			//			System.out.println((double)(t2 - t1) / 10D);
 
-		}
-		flag = !flag;
+//		}
+//		flag = !flag;
 	}
 	public void spawnify(int x, int y, double vx, double vy){
 		Particle p = new Particle(x,y,vx,vy);
@@ -178,10 +168,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public void moveify(Particle p){
 		p.x += p.speedX * timeSpeed;
 		p.y += p.speedY * timeSpeed;
-		p.x += p.tempSpeedX * timeSpeed;
-		p.y += p.tempSpeedY * timeSpeed;
-		p.tempSpeedY = 0;
-		p.tempSpeedX = 0;
+//		p.x += p.tempSpeedX * timeSpeed;
+//		p.y += p.tempSpeedY * timeSpeed;
+//		p.tempSpeedY = 0;
+//		p.tempSpeedX = 0;
 	}
 	public boolean areCollidifying(Particle p1, Particle p2){
 		double diffX = Math.abs(p1.x - p2.x);
@@ -203,39 +193,40 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 		if(keySet.get(KeyEvent.VK_DOWN)){
 			timeSpeed -= 0.01;
+			if(timeSpeed < 0.01){
+				timeSpeed = 0.01;
+			}
 		}
-		if(keySet.get(KeyEvent.VK_SPACE)){
+		if(keySet.get(KeyEvent.VK_RIGHT)){
 			timeSpeed = 0.5;
 		}
-		if(timeSpeed < 0.01){
-			timeSpeed = 0.01;
+		if(keySet.get(KeyEvent.VK_LEFT)){
+			timeSpeed = 0;
 		}
-		if(keySet.get(KeyEvent.VK_T)){
-			if(cooldowns[0] == 0){
-				lowPerformance = !lowPerformance;
-				cooldowns[0] = maxTimer;
-			}
-		}
-		if(keySet.get(KeyEvent.VK_1)){
-			if(cooldowns[1] == 0){
-				fastMath1 = !fastMath1;
-				cooldowns[1] = maxTimer;
-			}
-		}
-		if(keySet.get(KeyEvent.VK_2)){
-			if(cooldowns[2] == 0){
-				fastMath2 = !fastMath2;
-				cooldowns[2] = maxTimer;
-			}
-		}
+//		if(keySet.get(KeyEvent.VK_T)){
+//			if(cooldowns[0] == 0){
+//				lowPerformance = !lowPerformance;
+//				cooldowns[0] = maxTimer;
+//			}
+//		}
 		if(keySet.get(KeyEvent.VK_W)){
-			pushStrength += pushStrength / 100D;
+			if(Math.abs(pushStrength) - 1 <= 0){
+				pushStrength += 0.03;
+			}
+			else{
+				pushStrength += Math.abs(pushStrength) / 100D;
+			}
 			if(pushStrength > pushes[2]){
 				pushStrength = pushes[2];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_S)){
-			pushStrength -= pushStrength / 100D;
+			if(Math.abs(pushStrength) - 1 <= 0){
+				pushStrength -= 0.03;
+			}
+			else{
+				pushStrength -= Math.abs(pushStrength) / 100D;
+			}
 			if(pushStrength < pushes[0]){
 				pushStrength = pushes[0];
 			}
