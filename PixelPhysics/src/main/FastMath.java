@@ -23,11 +23,21 @@ public class FastMath {
 //	            for (double x = min; x < max; x += step)
 //	               sumB += Math.atan2(y, x);
 //	         long t1B = System.nanoTime() / 1000000L;
+//	         
+//	         long t0C = System.nanoTime() / 1000000L;
+//	         double sumC = 0.0f;
+//	         for (double y = min; y < max; y += step)
+//	            for (double x = min; x < max; x += step)
+//	               sumC += net.jafama.FastMath.atan2(y, x);
+//	         long t1C = System.nanoTime() / 1000000L;
 //
 //	         System.out.println();
 //	         System.out.println("FastMath: " + (t1A - t0A) + "ms, sum=" + sumA);
 //	         System.out.println("JavaMath: " + (t1B - t0B) + "ms, sum=" + sumB);
+//	         System.out.println("Jafama: " + (t1C - t0C) + "ms, sum=" + sumC);
 //	         System.out.println("factor: " + ((double) (t1B - t0B) / (t1A - t0A)));
+//	         System.out.println("factor: " + ((double) (t1A - t0A) / (t1C - t0C)));
+//
 //	      }
 	}
 	  private static final int ATAN2_BITS = 7;

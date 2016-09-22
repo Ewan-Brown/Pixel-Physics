@@ -33,9 +33,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	int width;
 	int height;
 	boolean flag = false;
-	public boolean pushBuffer = false;
+	public boolean lowPerformance = false;
 	public boolean fastMath1 = true;
 	public boolean fastMath2 = true;
+	public final int maxTimer = 30;
+	public int[] cooldowns = new int[3];
+	public int maxPixels = 200000;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
 	public double frictionStrength = 0.01;
@@ -48,8 +51,9 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	//	private OptionPanel option;
-	public GamePanel(int w,int h,OptionPanel p){
-		//		option = p;
+	public GamePanel(int w,int h,int m){
+		//		option = p
+		maxPixels = m;
 		width = w;
 		height = h;
 		Dimension d = new Dimension(w,h);
@@ -59,7 +63,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public void init(){
 		addMouseListener(this);
-		int a = 200000;
+		int a = maxPixels;
 		addKeyListener(this);
 		setBackground(Color.BLACK);
 		for(int i = 0; i < a;i++){
@@ -71,7 +75,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(pushBuffer + " " + frictionStrength + " " + pushStrength + " " + fastMath1 + " " + fastMath2, getWidth() / 2, getHeight() / 2);
+		g.drawString(lowPerformance + " " + frictionStrength + " " + pushStrength + " " + fastMath1 + " " + fastMath2, getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		this.updateParticles();
@@ -111,7 +115,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void push(double x, double y){
-		if(!pushBuffer){
+		if(!lowPerformance){
 			flag = true;
 		}
 		if(flag){
@@ -119,35 +123,35 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			double angle = 1;
 			double deltaX;
 			double deltaY;
-//			long t1 = System.nanoTime();
-				for(int i = 0; i < particleArray.size();i++){
-					Particle p = particleArray.get(i);
-					speed = pushStrength ;						 
-					if(fastMath1){
-						angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-					}
-					else{
-						angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
+			//			long t1 = System.nanoTime();
+			for(int i = 0; i < particleArray.size();i++){
+				Particle p = particleArray.get(i);
+				speed = pushStrength ;						 
+				if(fastMath1){
+					angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
+				}
+				else{
+					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
 
-					}
-					if(fastMath2){
-						deltaX = net.jafama.FastMath.cos(angle);
-						deltaY = net.jafama.FastMath.sin(angle);
-					}
-					else{
+				}
+				if(fastMath2){
+					deltaX = net.jafama.FastMath.cos(angle);
+					deltaY = net.jafama.FastMath.sin(angle);
+				}
+				else{
 					deltaX = Math.cos(angle);	    
 					deltaY = Math.sin(angle);	 
-					}
-
-					p.speedX -= deltaX * speed * timeSpeed;							
-					p.speedY -= deltaY * speed * timeSpeed;      					 
-					if(pushBuffer){
-						p.tempSpeedX = deltaX;
-						p.tempSpeedY = deltaY;
-					}
 				}
-//			long t2 = System.nanoTime();
-//			System.out.println((double)(t2 - t1) / 10D);
+
+				p.speedX -= deltaX * speed * timeSpeed;							
+				p.speedY -= deltaY * speed * timeSpeed;      					 
+				if(lowPerformance){
+					p.tempSpeedX = deltaX;
+					p.tempSpeedY = deltaY;
+				}
+			}
+			//			long t2 = System.nanoTime();
+			//			System.out.println((double)(t2 - t1) / 10D);
 
 		}
 		flag = !flag;
@@ -188,6 +192,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		return false;
 	}
 	public void updateThemkeys(){
+		for(int i = 0 ; i < cooldowns.length; i++){
+			cooldowns[i]--;
+			if(cooldowns[i] < 0){
+				cooldowns[i] = 0;
+			}
+		}
 		if(keySet.get(KeyEvent.VK_UP)){
 			timeSpeed += 0.01;
 		}
@@ -201,13 +211,22 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			timeSpeed = 0.01;
 		}
 		if(keySet.get(KeyEvent.VK_T)){
-			pushBuffer = !pushBuffer;
+			if(cooldowns[0] == 0){
+				lowPerformance = !lowPerformance;
+				cooldowns[0] = maxTimer;
+			}
 		}
 		if(keySet.get(KeyEvent.VK_1)){
-			fastMath1 = !fastMath1;
+			if(cooldowns[1] == 0){
+				fastMath1 = !fastMath1;
+				cooldowns[1] = maxTimer;
+			}
 		}
 		if(keySet.get(KeyEvent.VK_2)){
-			fastMath2 = !fastMath2;
+			if(cooldowns[2] == 0){
+				fastMath2 = !fastMath2;
+				cooldowns[2] = maxTimer;
+			}
 		}
 		if(keySet.get(KeyEvent.VK_W)){
 			pushStrength += pushStrength / 100D;
@@ -223,13 +242,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 		}
 		if(keySet.get(KeyEvent.VK_A)){
-			frictionStrength -= frictionStrength / 100D;
+			frictionStrength -= frictionStrength / 50D;
 			if(frictionStrength < frictions[0]){
 				frictionStrength = frictions[0];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_D)){
-			frictionStrength += frictionStrength / 100D;
+			frictionStrength += frictionStrength / 50D;
 			if(frictionStrength > frictions[2]){
 				frictionStrength = frictions[2];
 			}
@@ -261,7 +280,24 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public static Color randomColor(){
 		Random rand = new Random();
-		return new Color(rand.nextInt(255),rand.nextInt(255),rand.nextInt(255));
+		int[] rgb = new int[3];
+		rgb[0] = rand.nextInt(255);
+		rgb[1] = rand.nextInt(255);
+		rgb[2] = rand.nextInt(255);
+		int f = rgb[0] + rgb[1] + rgb[2];
+		//		if(f < 1750){
+		//			int c = rand.nextInt(3);
+		//			System.out.println(c);
+		//			for(int i = 0 ; i < 2;i++){
+		//				if(i != c){
+		//					rgb[i] -= 50;
+		//					if(rgb[i] < 0){
+		//						rgb[i] = 0;
+		//					}
+		//				}
+		//			}
+		//		}
+		return new Color(rgb[0],rgb[1],rgb[2]);
 	}
 	public static double getDistance(double x1, double y1, double x2, double y2){
 		return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
