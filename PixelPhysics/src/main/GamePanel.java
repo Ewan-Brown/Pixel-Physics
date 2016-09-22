@@ -225,13 +225,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 		}
 		if(keySet.get(KeyEvent.VK_A)){
-			frictionStrength -= frictionStrength / 100D;
+			frictionStrength -= frictionStrength / 50D;
 			if(frictionStrength < frictions[0]){
 				frictionStrength = frictions[0];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_D)){
-			frictionStrength += frictionStrength / 100D;
+			frictionStrength += frictionStrength / 50D;
 			if(frictionStrength > frictions[2]){
 				frictionStrength = frictions[2];
 			}
@@ -263,7 +263,24 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public static Color randomColor(){
 		Random rand = new Random();
-		return new Color(rand.nextInt(255),rand.nextInt(255),rand.nextInt(255));
+		int[] rgb = new int[3];
+		rgb[0] = rand.nextInt(255);
+		rgb[1] = rand.nextInt(255);
+		rgb[2] = rand.nextInt(255);
+		int f = rgb[0] + rgb[1] + rgb[2];
+//		if(f < 1750){
+//			int c = rand.nextInt(3);
+//			System.out.println(c);
+//			for(int i = 0 ; i < 2;i++){
+//				if(i != c){
+//					rgb[i] -= 50;
+//					if(rgb[i] < 0){
+//						rgb[i] = 0;
+//					}
+//				}
+//			}
+//		}
+		return new Color(rgb[0],rgb[1],rgb[2]);
 	}
 	public static double getDistance(double x1, double y1, double x2, double y2){
 		return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
