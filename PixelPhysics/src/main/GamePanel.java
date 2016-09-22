@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public boolean pushBuffer = false;
 	public boolean fastMath1 = true;
 	public boolean fastMath2 = true;
+	public int maxPixels = 200000;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
 	public double frictionStrength = 0.01;
@@ -48,8 +49,9 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	//	private OptionPanel option;
-	public GamePanel(int w,int h,OptionPanel p){
-		//		option = p;
+	public GamePanel(int w,int h,int m){
+		//		option = p
+		maxPixels = m;
 		width = w;
 		height = h;
 		Dimension d = new Dimension(w,h);
@@ -59,7 +61,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public void init(){
 		addMouseListener(this);
-		int a = 200000;
+		int a = maxPixels;
 		addKeyListener(this);
 		setBackground(Color.BLACK);
 		for(int i = 0; i < a;i++){
