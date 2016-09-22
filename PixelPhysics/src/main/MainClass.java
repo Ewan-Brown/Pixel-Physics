@@ -50,7 +50,7 @@ public class MainClass {
 
 	}
 	static JSlider getSlider(final JOptionPane optionPane) {
-		JSlider slider = new JSlider(0,300000);
+		JSlider slider = new JSlider(0,300000,50000);
 		slider.setMajorTickSpacing((int)(300000D / 3D));
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
