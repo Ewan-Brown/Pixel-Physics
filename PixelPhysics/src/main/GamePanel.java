@@ -37,7 +37,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public boolean fastMath1 = true;
 	public boolean fastMath2 = true;
 	public final int maxTimer = 30;
-	public int[] cooldowns = new int[3];
+	public int[] cooldowns = new int[2];
 	public int maxPixels = 200000;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
@@ -50,10 +50,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public ArrayList<Point2D> queue = new ArrayList<Point2D>();
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
+	int size = 1;
+	int maxSize = 10;
 	//	private OptionPanel option;
-	public GamePanel(int w,int h,int m){
-		//		option = p
+	public GamePanel(int w,int h,int m,int s){
 		maxPixels = m;
+		size = s;
 		width = w;
 		height = h;
 		Dimension d = new Dimension(w,h);
@@ -75,21 +77,19 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " " + pushStrength, getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " " + pushStrength + " " + size, getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		this.updateParticles();
 		this.updateThemkeys();
 		this.doMouse();
 		this.repaint();
-
-
 	}
 	public void drawParticles(Graphics2D g){
 		for(int i = 0; i < particleArray.size(); i++){
 			Particle p = particleArray.get(i);
 			g.setColor(p.color);
-			g.fillRect((int)p.x  - ((p.width - 1) / 2) ,(height - (int)p.y) - ((p.height - 1) / 2), p.width,p.height);
+			g.fillRect((int)p.x  - ((size - 1) / 2) ,(height - (int)p.y) - ((size - 1) / 2), size,size);
 		}
 	}
 	public ArrayList<Particle> getParticles(){
@@ -115,39 +115,39 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void push(double x, double y){
-//		if(!lowPerformance){
-//			flag = true;
-//		}
-//		if(flag){
-			double speed;
-			double angle = 1;
-			double deltaX;
-			double deltaY;
-			//long t1 = System.nanoTime();
-			for(int i = 0; i < particleArray.size();i++){
-				Particle p = particleArray.get(i);
-				speed = pushStrength ;						 
-				angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-				//					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
-				deltaX = net.jafama.FastMath.cos(angle);
-				deltaY = net.jafama.FastMath.sin(angle);
-				//					deltaX = Math.cos(angle);	    
-				//					deltaY = Math.sin(angle);	 
-				p.speedX -= deltaX * speed * timeSpeed;							
-				p.speedY -= deltaY * speed * timeSpeed;      					 
-//				if(lowPerformance){
-//					p.tempSpeedX = deltaX;
-//					p.tempSpeedY = deltaY;d
-//				}
-			}
-			//			long t2 = System.nanoTime();
-			//			System.out.println((double)(t2 - t1) / 10D);
+		//		if(!lowPerformance){
+		//			flag = true;
+		//		}
+		//		if(flag){
+		double speed;
+		double angle = 1;
+		double deltaX;
+		double deltaY;
+		//long t1 = System.nanoTime();
+		for(int i = 0; i < particleArray.size();i++){
+			Particle p = particleArray.get(i);
+			speed = pushStrength ;						 
+			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
+			//					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
+			deltaX = net.jafama.FastMath.cos(angle);
+			deltaY = net.jafama.FastMath.sin(angle);
+			//					deltaX = Math.cos(angle);	    
+			//					deltaY = Math.sin(angle);	 
+			p.speedX -= deltaX * speed * timeSpeed;							
+			p.speedY -= deltaY * speed * timeSpeed;      					 
+			//				if(lowPerformance){
+			//					p.tempSpeedX = deltaX;
+			//					p.tempSpeedY = deltaY;d
+			//				}
+		}
+		//			long t2 = System.nanoTime();
+		//			System.out.println((double)(t2 - t1) / 10D);
 
-//		}
-//		flag = !flag;
+		//		}
+		//		flag = !flag;
 	}
 	public void spawnify(int x, int y, double vx, double vy){
-		Particle p = new Particle(x,y,vx,vy);
+		Particle p = new Particle(x,y,vx,vy,size);
 		p.color = this.randomColor();
 		particleArray.add(p);
 	}
@@ -168,15 +168,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public void moveify(Particle p){
 		p.x += p.speedX * timeSpeed;
 		p.y += p.speedY * timeSpeed;
-//		p.x += p.tempSpeedX * timeSpeed;
-//		p.y += p.tempSpeedY * timeSpeed;
-//		p.tempSpeedY = 0;
-//		p.tempSpeedX = 0;
+		//		p.x += p.tempSpeedX * timeSpeed;
+		//		p.y += p.tempSpeedY * timeSpeed;
+		//		p.tempSpeedY = 0;
+		//		p.tempSpeedX = 0;
 	}
 	public boolean areCollidifying(Particle p1, Particle p2){
 		double diffX = Math.abs(p1.x - p2.x);
 		double diffY = Math.abs(p1.y - p2.y);
-		if(diffX < (p1.width + p2.width) / 2 && diffY < (p1.height + p2.height) / 2){
+		if(diffX < (size + size) / 2 && diffY < (size + size) / 2){
 			return true;
 		}
 		return false;
@@ -203,12 +203,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		if(keySet.get(KeyEvent.VK_LEFT)){
 			timeSpeed = 0;
 		}
-//		if(keySet.get(KeyEvent.VK_T)){
-//			if(cooldowns[0] == 0){
-//				lowPerformance = !lowPerformance;
-//				cooldowns[0] = maxTimer;
-//			}
-//		}
+		//		if(keySet.get(KeyEvent.VK_T)){
+		//			if(cooldowns[0] == 0){
+		//				lowPerformance = !lowPerformance;
+		//			cooldowns[0] = maxTimer;
+		//			}
+		//		}
+
 		if(keySet.get(KeyEvent.VK_W)){
 			if(Math.abs(pushStrength) - 1 <= 0){
 				pushStrength += 0.03;
@@ -242,6 +243,24 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			frictionStrength += frictionStrength / 50D;
 			if(frictionStrength > frictions[2]){
 				frictionStrength = frictions[2];
+			}
+		}
+		if(keySet.get(KeyEvent.VK_COMMA)){
+			if(cooldowns[0] == 0){
+				cooldowns[0] = maxTimer;
+				size--;
+				if(size < 1){
+					size = 1;
+				}
+			}
+		}
+		if(keySet.get(KeyEvent.VK_PERIOD)){
+			if(cooldowns[1] == 0){
+				cooldowns[1] = maxTimer;
+				size++;
+				if(size > maxSize){
+				size = maxSize;
+				}
 			}
 		}
 	}
