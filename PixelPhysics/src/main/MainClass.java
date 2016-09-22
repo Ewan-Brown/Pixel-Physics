@@ -4,7 +4,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Main {
+public class MainClass {
 	static int width = 1000;
 	static int height = 1000;
 	public static void main(String[] args){
