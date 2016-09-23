@@ -29,7 +29,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	boolean mouseHeld = false;
+	boolean lmbHeld = false;
+	boolean rmbHeld = false;
 	int width;
 	int height;
 	boolean flag = false;
@@ -43,11 +44,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double gravityStrength = 0.007;
 	public double frictionStrength = 0.01;
 	public double[] frictions = {0.0001,00.1,0.1};
-	public double pushStrength = 1;
-	public double[] pushes = {-5,1,5};
+	public double pullStrength = 1;
+	public double[] pulls = {.01,1,5};
 	public double timeSpeed = 1;
 	public long updateDelay = 7;
-	public ArrayList<Point2D> queue = new ArrayList<Point2D>();
+	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
+	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	int size = 1;
@@ -77,7 +79,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " " + pushStrength + " " + size, getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " - " + pullStrength + " - " + size, getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		this.updateParticles();
@@ -97,24 +99,31 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public void updateParticles(){
 
-		for(int i = 0; i < queue.size();i++){
-			Point2D p = queue.get(i);
+		for(int i = 0; i < pullQueue.size();i++){
+			Point2D p = pullQueue.get(i);
 
-			push(p.getX(),p.getY());
+			pull(p.getX(),p.getY(),1);
 
-			queue.remove(i);
+			pullQueue.remove(i);
+		}
+		for(int i = 0; i < pushQueue.size();i++){
+			Point2D p = pushQueue.get(i);
+			
+			pull(p.getX(),p.getY(),-1);
+
+			pushQueue.remove(i);
 		}
 
 
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
 			moveify(p);
-			//gravitify(p);
+//			gravitify(p);
 			frictionify(p);
 		}
 
 	}
-	public void push(double x, double y){
+	public void pull(double x, double y, int mult){
 		//		if(!lowPerformance){
 		//			flag = true;
 		//		}
@@ -126,15 +135,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		//long t1 = System.nanoTime();
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
-			speed = pushStrength ;						 
+			speed = pullStrength ;						 
 			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
 			//					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
 			deltaX = net.jafama.FastMath.cos(angle);
 			deltaY = net.jafama.FastMath.sin(angle);
 			//					deltaX = Math.cos(angle);	    
 			//					deltaY = Math.sin(angle);	 
-			p.speedX -= deltaX * speed * timeSpeed;							
-			p.speedY -= deltaY * speed * timeSpeed;      					 
+			p.speedX -= deltaX * speed * timeSpeed * mult;							
+			p.speedY -= deltaY * speed * timeSpeed * mult;      					 
 			//				if(lowPerformance){
 			//					p.tempSpeedX = deltaX;
 			//					p.tempSpeedY = deltaY;d
@@ -211,25 +220,25 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		//		}
 
 		if(keySet.get(KeyEvent.VK_W)){
-			if(Math.abs(pushStrength) - 1 <= 0){
-				pushStrength += 0.03;
+			if(Math.abs(pullStrength) - 1 <= 0){
+				pullStrength += 0.03;
 			}
 			else{
-				pushStrength += Math.abs(pushStrength) / 100D;
+				pullStrength += Math.abs(pullStrength) / 100D;
 			}
-			if(pushStrength > pushes[2]){
-				pushStrength = pushes[2];
+			if(pullStrength > pulls[2]){
+				pullStrength = pulls[2];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_S)){
-			if(Math.abs(pushStrength) - 1 <= 0){
-				pushStrength -= 0.03;
+			if(Math.abs(pullStrength) - 1 <= 0){
+				pullStrength -= 0.03;
 			}
 			else{
-				pushStrength -= Math.abs(pushStrength) / 100D;
+				pullStrength -= Math.abs(pullStrength) / 100D;
 			}
-			if(pushStrength < pushes[0]){
-				pushStrength = pushes[0];
+			if(pullStrength < pulls[0]){
+				pullStrength = pulls[0];
 			}
 
 		}
@@ -265,15 +274,26 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 	}
 	public void doMouse(){
-		if(mouseHeld){
+		if(lmbHeld){
 			Point p = MouseInfo.getPointerInfo().getLocation() ;
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
 			int y = (int) (height - p.getY() + this.getLocationOnScreen().getY());
-			queue.add(new Point(x,y));
+			pullQueue.add(new Point(x,y));
+		}
+		else if(rmbHeld){
+			Point p = MouseInfo.getPointerInfo().getLocation() ;
+			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
+			int y = (int) (height - p.getY() + this.getLocationOnScreen().getY());
+			pushQueue.add(new Point(x,y));
 		}
 	}
 	public void mousePressed(MouseEvent e) {
-		mouseHeld = true;
+		if(e.getButton() == MouseEvent.BUTTON1){
+			lmbHeld = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON3){
+			rmbHeld = true;
+		}
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -283,10 +303,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		keySet.set(e.getKeyCode(),false);
 	}
 	public void mouseReleased(MouseEvent e) {
-		mouseHeld = false;
+		lmbHeld = false;
+		rmbHeld = false;
 	}
 	public void mouseExited(MouseEvent e) {
-		mouseHeld = false;
+		lmbHeld = false;
+		rmbHeld = false;
 	}
 	public static Color randomColor(){
 		Random rand = new Random();
