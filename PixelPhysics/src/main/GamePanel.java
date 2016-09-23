@@ -42,10 +42,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public int maxPixels = 200000;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
-	public double frictionStrength = 0.01;
-	public double[] frictions = {0.0001,00.1,0.1};
-	public double pullStrength = 1;
+	public double[] frictions = {0.0001,0.01,0.1};
 	public double[] pulls = {.01,1,5};
+	public double frictionStrength = frictions[1];
+	public double pullStrength = pulls[1];
 	public double timeSpeed = 1;
 	public long updateDelay = 7;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
@@ -79,7 +79,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " - " + pullStrength + " - " + size, getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed, getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		this.updateParticles();
@@ -230,6 +230,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				pullStrength = pulls[2];
 			}
 		}
+		if(keySet.get(KeyEvent.VK_R)){
+			pullStrength = pulls[1];
+		}
+		if(keySet.get(KeyEvent.VK_F)){
+			frictionStrength = frictions[1];
+		}
+		
 		if(keySet.get(KeyEvent.VK_S)){
 			if(Math.abs(pullStrength) - 1 <= 0){
 				pullStrength -= 0.03;
