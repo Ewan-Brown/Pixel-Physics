@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Random;
@@ -48,12 +49,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double pullStrength = pulls[1];
 	public double timeSpeed = 1;
 	public long updateDelay = 7;
+	public double lastLag1 = 0;
+	public double lastLag2 = 0;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	int size = 1;
 	int maxSize = 10;
+	DecimalFormat df = new DecimalFormat("#.#");
 	//	private OptionPanel option;
 	public GamePanel(int w,int h,int m,int s){
 		maxPixels = m;
@@ -74,25 +78,32 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			spawnify();
 		}
 	}
-	public void paint(Graphics graphics){
-		Graphics2D g = (Graphics2D) graphics;
+	public void paint(Graphics g){
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed, getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2), getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
+		long t0 = System.nanoTime();
 		this.updateParticles();
 		this.updateThemkeys();
 		this.doMouse();
 		this.repaint();
+		long t1 = System.nanoTime();
+		lastLag1 = (double)(t1 - t0) / 1000000D;
 	}
-	public void drawParticles(Graphics2D g){
-		for(int i = 0; i < particleArray.size(); i++){
-			Particle p = particleArray.get(i);
+	public void drawParticles(Graphics g){
+		Particle[] pa = particleArray.toArray(new Particle[particleArray.size()]);
+		long t0 = System.nanoTime();
+		for(int i = 0; i < pa.length; i++){
+			Particle p = pa[i];
 			g.setColor(p.color);
-			g.fillRect((int)p.x  - ((size - 1) / 2) ,(height - (int)p.y) - ((size - 1) / 2), size,size);
+			g.fillRect((int)p.x ,(height - (int)p.y), size,size);
 		}
+		long t1 = System.nanoTime();
+		lastLag2 = (double)(t1 - t0) / 1000000D;
+
 	}
 	public ArrayList<Particle> getParticles(){
 		return particleArray;
@@ -124,37 +135,23 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void pull(double x, double y, int mult){
-		//		if(!lowPerformance){
-		//			flag = true;
-		//		}
-		//		if(flag){
-		double speed;
 		double angle = 1;
 		double deltaX;
 		double deltaY;
-		//long t1 = System.nanoTime();
+		double dist = 1;
+		mult *= timeSpeed * pullStrength;
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
-			speed = pullStrength ;						 
+//			dist = 1 / getDistance(x, y, p.x, p.y);
 			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-			//					angle = Math.atan2(p.y - y, p.x - x); //XXX SLOWER THAN FASTMATH, SHOULDN'T USE!
-			deltaX = net.jafama.FastMath.cos(angle);
-			deltaY = net.jafama.FastMath.sin(angle);
-			//					deltaX = Math.cos(angle);	    
-			//					deltaY = Math.sin(angle);	 
-			p.speedX -= deltaX * speed * timeSpeed * mult;							
-			p.speedY -= deltaY * speed * timeSpeed * mult;      					 
-			//				if(lowPerformance){
-			//					p.tempSpeedX = deltaX;
-			//					p.tempSpeedY = deltaY;d
-			//				}
+			deltaX = net.jafama.FastMath.cosQuick(angle);
+			deltaY = net.jafama.FastMath.sinQuick(angle);
+			p.speedX -= deltaX * mult * dist;							
+			p.speedY -= deltaY * mult * dist;      					 
 		}
-		//			long t2 = System.nanoTime();
-		//			System.out.println((double)(t2 - t1) / 10D);
-
-		//		}
-		//		flag = !flag;
+		Particle[] pA = particleArray.toArray(new Particle[particleArray.size()]);
 	}
+	
 	public void spawnify(int x, int y, double vx, double vy){
 		Particle p = new Particle(x,y,vx,vy,size);
 		p.color = this.randomColor();
