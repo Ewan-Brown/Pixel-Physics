@@ -1,8 +1,9 @@
-package stuff;
+package workers;
 
 import main.FastMath;
+import stuff.Particle;
 
-public class PullWorkerThread implements Runnable{
+public class PullPhysicsWorker implements Runnable{
 
 	double baseX;
 	double baseY;
@@ -21,7 +22,7 @@ public class PullWorkerThread implements Runnable{
 
 	}
 
-	public PullWorkerThread(double x, double y,Particle[] p,double mult){
+	public PullPhysicsWorker(double x, double y,Particle[] p,double mult){
 		baseX = x;
 		baseY = y;
 		array = p;

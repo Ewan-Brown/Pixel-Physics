@@ -16,15 +16,18 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import stuff.Particle;
-import stuff.PullWorkerThread;
+import workers.PackingWorker;
+import workers.PullPhysicsWorker;
 
 public class GamePanel extends JPanel implements MouseListener,KeyListener,ActionListener,ChangeListener{
 
@@ -90,20 +93,24 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		this.doMouse();
 		this.repaint();
 		long t1 = System.nanoTime();
-		lastLag1 = (double)(t1 - t0) / 1000000D;
+//		lastLag1 = (double)(t1 - t0) / 1000000D;
 	}
 	public void drawParticles(Graphics g){
 		long t0 = System.nanoTime();
-		ArrayList<Particle> pa = packify(particleArray);
-		for(int i = 0; i < pa.size(); i++){
-			Particle p = pa.get(i);
-			g.setColor(p.color);
-			g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
-		}
+//		ArrayList<Particle> pa = packify(particleArray);
+		ArrayList<Particle> pa = packifyWithWorker(particleArray);
 		long t1 = System.nanoTime();
-		lastLag2 = (double)(t1 - t0) / 1000000D;
+		for(int i = 0; i < pa.size(); i++){
+//			Particle p = pa.get(i);
+//			g.setColor(p.color);
+//			g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
+		}
+		long t2 = System.nanoTime();
+		lastLag1 = (double)(t1 - t0) / 1000000D;
+		lastLag2 = (double)(t2 - t1) / 1000000D;
 
 	}
+	//Cuts down drawing lag by 
 	public ArrayList<Particle> packify(ArrayList<Particle> pA){
 		boolean[][] occupiedArray = new boolean[1920][1080];
 		ArrayList<Particle> newP = new ArrayList<Particle>();
@@ -119,6 +126,20 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			}
 		}
 		return newP;
+	}
+	public ArrayList<Particle> packifyWithWorker(ArrayList<Particle> pA){
+		Future<ArrayList<Particle>> pw =  exec.submit(new PackingWorker(pA,getWidth(),getHeight()));
+		do{
+			
+		}while(!pw.isDone());
+		ArrayList<Particle> p2 = null;
+		try {
+			p2 = pw.get();
+		} catch (InterruptedException | ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return p2;
 	}
 	public ArrayList<Particle> getParticles(){
 		return particleArray;
@@ -166,7 +187,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		Particle[] p = particleArray.toArray(new Particle[particleArray.size()]);
-		exec.submit(new PullWorkerThread(x,y,p,mult * timeSpeed * pullStrength));
+		exec.submit(new PullPhysicsWorker(x,y,p,mult * timeSpeed * pullStrength));
 	}
 
 	public void spawnify(int x, int y, double vx, double vy){
