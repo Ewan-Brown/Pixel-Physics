@@ -48,7 +48,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double frictionStrength = frictions[1];
 	public double pullStrength = pulls[1];
 	public double timeSpeed = 1;
-	public long updateDelay = 7;
+	public long updateDelay = 5;
 	public double lastLag1 = 0;
 	public double lastLag2 = 0;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
@@ -85,25 +85,44 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2), getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
+		flag = !flag;
 		long t0 = System.nanoTime();
 		this.updateParticles();
 		this.updateThemkeys();
 		this.doMouse();
-		this.repaint();
+//		if(flag){
+			this.repaint();
+//		}
 		long t1 = System.nanoTime();
 		lastLag1 = (double)(t1 - t0) / 1000000D;
 	}
 	public void drawParticles(Graphics g){
-		Particle[] pa = particleArray.toArray(new Particle[particleArray.size()]);
+		ArrayList<Particle> pa = packify(particleArray.toArray(new Particle[particleArray.size()]));
 		long t0 = System.nanoTime();
-		for(int i = 0; i < pa.length; i++){
-			Particle p = pa[i];
+		for(int i = 0; i < pa.size(); i++){
+			Particle p = pa.get(i);
 			g.setColor(p.color);
 			g.fillRect((int)p.x ,(height - (int)p.y), size,size);
 		}
 		long t1 = System.nanoTime();
 		lastLag2 = (double)(t1 - t0) / 1000000D;
 
+	}
+	public ArrayList<Particle> packify(Particle[] pA){
+		boolean[][] occupiedArray = new boolean[1920][1080];
+		ArrayList<Particle> newP = new ArrayList<Particle>();
+		for(int i = 0; i < pA.length;i++){
+			Particle p = pA[i];
+			int x = (int)p.x;
+			int y = (height - (int)p.y);
+			if(x > 0 && x < getWidth() && y > 0 && y < getHeight()){
+				if(!occupiedArray[x][y]){
+					occupiedArray[x][y] = true;
+					newP.add(pA[i]);
+				}
+			}
+		}
+		return newP;
 	}
 	public ArrayList<Particle> getParticles(){
 		return particleArray;
@@ -119,7 +138,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 		for(int i = 0; i < pushQueue.size();i++){
 			Point2D p = pushQueue.get(i);
-			
+
 			pull(p.getX(),p.getY(),-1);
 
 			pushQueue.remove(i);
@@ -129,29 +148,27 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
 			moveify(p);
-//			gravitify(p);
+			//			gravitify(p);
 			frictionify(p);
 		}
 
 	}
-	public void pull(double x, double y, int mult){
+	public void pull(double x, double y, double mult){
 		double angle = 1;
 		double deltaX;
 		double deltaY;
-		double dist = 1;
 		mult *= timeSpeed * pullStrength;
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
-//			dist = 1 / getDistance(x, y, p.x, p.y);
 			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
 			deltaX = net.jafama.FastMath.cosQuick(angle);
 			deltaY = net.jafama.FastMath.sinQuick(angle);
-			p.speedX -= deltaX * mult * dist;							
-			p.speedY -= deltaY * mult * dist;      					 
+			p.speedX -= deltaX * mult;							
+			p.speedY -= deltaY * mult;      					 
 		}
 		Particle[] pA = particleArray.toArray(new Particle[particleArray.size()]);
 	}
-	
+
 	public void spawnify(int x, int y, double vx, double vy){
 		Particle p = new Particle(x,y,vx,vy,size);
 		p.color = this.randomColor();
@@ -233,7 +250,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		if(keySet.get(KeyEvent.VK_F)){
 			frictionStrength = frictions[1];
 		}
-		
+
 		if(keySet.get(KeyEvent.VK_S)){
 			if(Math.abs(pullStrength) - 1 <= 0){
 				pullStrength -= 0.03;
@@ -272,7 +289,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				cooldowns[1] = maxTimer;
 				size++;
 				if(size > maxSize){
-				size = maxSize;
+					size = maxSize;
 				}
 			}
 		}
