@@ -221,7 +221,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < pushQueue.size();i++){
 			Point2D p = pushQueue.get(i);
 
-			pull(p.getX(),p.getY(),-1);
+			pullWithWorkers(p.getX(),p.getY(),-1);
 
 			pushQueue.remove(i);
 		}
