@@ -1,11 +1,14 @@
 package main;
 
+import java.awt.Frame;
+
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -21,7 +24,7 @@ public class MainClass {
 		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 		JDialog dialog = optionPane.createDialog(new JFrame(), "My Slider");
 		dialog.setVisible(true);
-		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		JPanel outer = new JPanel();
 		JFrame frame = new JFrame("Pixel Physics v1.0");
 		outer.setSize(width, height);
@@ -36,14 +39,16 @@ public class MainClass {
 		frame.setVisible(true);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH); 
 		while(true){
 			try {
 				Thread.sleep(gamePanel.updateDelay);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			long t0 = System.nanoTime();
 			gamePanel.update();
+			long t1 = System.nanoTime();
 		}
 
 
@@ -54,6 +59,7 @@ public class MainClass {
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
 		ChangeListener changeListener = new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent changeEvent) {
 				JSlider theSlider = (JSlider) changeEvent.getSource();
 				if (!theSlider.getValueIsAdjusting()) {

@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -22,19 +23,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import stuff.Particle;
+import workers.GraphicsWorker;
 import workers.PackingWorker;
 import workers.PullPhysicsWorker;
 
-public class GamePanel extends JPanel implements MouseListener,KeyListener,ActionListener,ChangeListener{
+public class GamePanel extends JPanel implements MouseListener,KeyListener,ActionListener{
 
 	/**
 	 * 
 	 */
-	private ExecutorService exec = Executors.newCachedThreadPool();
+	private ExecutorService executorPhysics = Executors.newCachedThreadPool();
+	private ExecutorService executorGraphics = Executors.newCachedThreadPool();
 	private static final long serialVersionUID = 1L;
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
@@ -52,9 +53,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double frictionStrength = frictions[1];
 	public double pullStrength = pulls[1];
 	public double timeSpeed = 1;
-	public long updateDelay = 5;
+	public long updateDelay = 10;
 	public double lastLag1 = 0;
 	public double lastLag2 = 0;
+	public double lastLag3 = 0;
+	public Graphics bufferG;
+	public BufferedImage buffer;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
 	public static final Random rand = new Random();
@@ -64,12 +68,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	DecimalFormat df = new DecimalFormat("#.#");
 	//	private OptionPanel option;
 	public GamePanel(int w,int h,int m,int s){
+		buffer = new BufferedImage(1920,1080,BufferedImage.TYPE_INT_RGB);
+		bufferG = buffer.getGraphics();
 		maxPixels = m;
 		size = s;
 		Dimension d = new Dimension(w,h);
 		setPreferredSize(d);
 		this.setFocusable(true);
-
 	}
 	public void init(){
 		addMouseListener(this);
@@ -80,11 +85,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			spawnify();
 		}
 	}
+	@Override
 	public void paint(Graphics g){
 		super.paint(g);
 		drawParticles(g);
 		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2), getWidth() / 2, getHeight() / 2);
+		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		long t0 = System.nanoTime();
@@ -93,21 +99,57 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		this.doMouse();
 		this.repaint();
 		long t1 = System.nanoTime();
-//		lastLag1 = (double)(t1 - t0) / 1000000D;
+//		lastLag3 = (double)(t1 - t0) / 1000000D;
 	}
 	public void drawParticles(Graphics g){
-		long t0 = System.nanoTime();
-//		ArrayList<Particle> pa = packify(particleArray);
-		ArrayList<Particle> pa = packifyWithWorker(particleArray);
-		long t1 = System.nanoTime();
-		for(int i = 0; i < pa.size(); i++){
-//			Particle p = pa.get(i);
-//			g.setColor(p.color);
-//			g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
+		ArrayList<Particle> pA = packifyWithWorker(particleArray);
+
+//		BufferedImage[] buffImages = getImageWithWorker(pA);
+//		long t1 = System.nanoTime();
+//		for(int i = 0; i < buffImages.length;i++){
+//			bufferG.drawImage(buffImages[i], 0, 0, this);
+//		}
+//		g.drawImage(buffer, 0, 0, this);
+		for(int i = 0; i < pA.size();i++){
+			Particle p = pA.get(i);
+			g.setColor(p.color);
+			g.drawRect((int)p.x, getHeight() - (int)p.y, size, size);
 		}
-		long t2 = System.nanoTime();
-		lastLag1 = (double)(t1 - t0) / 1000000D;
-		lastLag2 = (double)(t2 - t1) / 1000000D;
+//		BufferedImage buffImage = getImage(pA);
+//		bufferG.drawImage(buffImage, 0, 0, this);
+
+	}
+	public BufferedImage getImage(ArrayList<Particle> pA){
+		BufferedImage buffImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
+		Graphics gg = buffImage.getGraphics();
+		for(int i = 0; i < pA.size();i++){
+			Particle p  = pA.get(i);
+			gg.setColor(p.color);
+			gg.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
+		}
+		return buffImage;
+
+	}
+	public BufferedImage[] getImageWithWorker(ArrayList<Particle> pA){
+		BufferedImage[] buffImages = new BufferedImage[2];
+		int q = pA.size() / 4;
+		int h = pA.size() / 2;
+		int f = pA.size();
+		int width = getWidth();
+		int height = getHeight();
+		Future<BufferedImage> w1 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
+		Future<BufferedImage> w2 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(h, f))),width,height,size));
+
+		do{
+		}while(!w1.isDone() && !w2.isDone());
+
+		try {
+			buffImages[0] = w1.get();
+			buffImages[1] = w2.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		return buffImages;
 
 	}
 	//Cuts down drawing lag by 
@@ -128,18 +170,40 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		return newP;
 	}
 	public ArrayList<Particle> packifyWithWorker(ArrayList<Particle> pA){
-		Future<ArrayList<Particle>> pw =  exec.submit(new PackingWorker(pA,getWidth(),getHeight()));
+		//XXX Strange casts and could be loops stuff here. Please fix!
+		//TODO find out if 4 threads is really faster than just 2
+		int q = pA.size() / 4;
+		int h = pA.size() / 2;
+		int f = pA.size();
+		boolean[][] occupiedArray = new boolean[1920][1080];
+		//All threads access the same array concurrently! Yay!
+		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),occupiedArray));
+		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),occupiedArray));
+		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),occupiedArray));
+		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),occupiedArray));
+
 		do{
-			
-		}while(!pw.isDone());
+
+		}while(!w1.isDone() && !w2.isDone());
+
+		ArrayList<Particle> p1 = null;
 		ArrayList<Particle> p2 = null;
+		ArrayList<Particle> p3 = null;
+		ArrayList<Particle> p4 = null;
+
 		try {
-			p2 = pw.get();
-		} catch (InterruptedException | ExecutionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			p1 = w1.get();
+			p2 = w2.get();
+			p3 = w3.get();
+			p4 = w4.get();
+
+			p1.addAll(p2);
+			p1.addAll(p3);
+			p1.addAll(p4);
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
-		return p2;
+		return p1;
 	}
 	public ArrayList<Particle> getParticles(){
 		return particleArray;
@@ -149,7 +213,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < pullQueue.size();i++){
 			Point2D p = pullQueue.get(i);
 
-//			pull(p.getX(),p.getY(),1);
+			//			pull(p.getX(),p.getY(),1);
 			pullWithWorkers(p.getX(),p.getY(),1);
 
 			pullQueue.remove(i);
@@ -187,12 +251,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		Particle[] p = particleArray.toArray(new Particle[particleArray.size()]);
-		exec.submit(new PullPhysicsWorker(x,y,p,mult * timeSpeed * pullStrength));
+		executorPhysics.submit(new PullPhysicsWorker(x,y,p,mult * timeSpeed * pullStrength));
 	}
 
 	public void spawnify(int x, int y, double vx, double vy){
 		Particle p = new Particle(x,y,vx,vy,size);
-		p.color = this.randomColor();
+		p.color = GamePanel.randomColor();
 		particleArray.add(p);
 	}
 	public void spawnify(int x, int y){
@@ -329,6 +393,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			pushQueue.add(new Point(x,y));
 		}
 	}
+	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
 			lmbHeld = true;
@@ -338,16 +403,20 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		keySet.set(e.getKeyCode(),true);
 	}
+	@Override
 	public void keyReleased(KeyEvent e) {
 		keySet.set(e.getKeyCode(),false);
 	}
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		lmbHeld = false;
 		rmbHeld = false;
 	}
+	@Override
 	public void mouseExited(MouseEvent e) {
 		lmbHeld = false;
 		rmbHeld = false;
@@ -376,19 +445,14 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public static double getDistance(double x1, double y1, double x2, double y2){
 		return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 	}
+	@Override
 	public void mouseEntered(MouseEvent e) {}
+	@Override
 	public void mouseClicked(MouseEvent e) {}
+	@Override
 	public void keyTyped(KeyEvent e) {}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
-
-	}
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		//		if(e.getSource() == option.slider_friction){
-		//			frictionStrength = (int)option.slider_friction.getValue() / 700D;
-		//		}
 	}
 
 }

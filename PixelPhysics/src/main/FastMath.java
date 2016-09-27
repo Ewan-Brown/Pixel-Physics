@@ -48,7 +48,7 @@ public class FastMath {
 	   private static final int ATAN2_DIM = (int) Math.sqrt(ATAN2_COUNT);
 
 	   private static final double INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
-	   private static final double DEG = 180.0f / (double) Math.PI;
+	   private static final double DEG = 180.0f / Math.PI;
 
 	   private static final double[] atan2 = new double[ATAN2_COUNT];
 
@@ -63,7 +63,7 @@ public class FastMath {
 	            double x0 = (double) i / ATAN2_DIM;
 	            double y0 = (double) j / ATAN2_DIM;
 
-	            atan2[j * ATAN2_DIM + i] = (double) Math.atan2(y0, x0);
+	            atan2[j * ATAN2_DIM + i] = Math.atan2(y0, x0);
 	         }
 	      }
 	   }
@@ -80,7 +80,7 @@ public class FastMath {
 
 	   public static final double atan2DegStrict(double y, double x)
 	   {
-	      return (double) Math.atan2(y, x) * DEG;
+	      return Math.atan2(y, x) * DEG;
 	   }
 
 	   public static final double atan2(double y, double x)
