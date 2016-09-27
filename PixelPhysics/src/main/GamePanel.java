@@ -3,7 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -17,23 +16,25 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import stuff.Particle;
+import stuff.PullWorkerThread;
 
 public class GamePanel extends JPanel implements MouseListener,KeyListener,ActionListener,ChangeListener{
 
 	/**
 	 * 
 	 */
+	private ExecutorService exec = Executors.newCachedThreadPool();
 	private static final long serialVersionUID = 1L;
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
-	int width;
-	int height;
 	boolean flag = false;
 	public boolean lowPerformance = false;
 	public boolean fastMath1 = true;
@@ -62,8 +63,6 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public GamePanel(int w,int h,int m,int s){
 		maxPixels = m;
 		size = s;
-		width = w;
-		height = h;
 		Dimension d = new Dimension(w,h);
 		setPreferredSize(d);
 		this.setFocusable(true);
@@ -85,40 +84,37 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2), getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
-		flag = !flag;
 		long t0 = System.nanoTime();
 		this.updateParticles();
 		this.updateThemkeys();
 		this.doMouse();
-//		if(flag){
-			this.repaint();
-//		}
+		this.repaint();
 		long t1 = System.nanoTime();
 		lastLag1 = (double)(t1 - t0) / 1000000D;
 	}
 	public void drawParticles(Graphics g){
-		ArrayList<Particle> pa = packify(particleArray.toArray(new Particle[particleArray.size()]));
 		long t0 = System.nanoTime();
+		ArrayList<Particle> pa = packify(particleArray);
 		for(int i = 0; i < pa.size(); i++){
 			Particle p = pa.get(i);
 			g.setColor(p.color);
-			g.fillRect((int)p.x ,(height - (int)p.y), size,size);
+			g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
 		}
 		long t1 = System.nanoTime();
 		lastLag2 = (double)(t1 - t0) / 1000000D;
 
 	}
-	public ArrayList<Particle> packify(Particle[] pA){
+	public ArrayList<Particle> packify(ArrayList<Particle> pA){
 		boolean[][] occupiedArray = new boolean[1920][1080];
 		ArrayList<Particle> newP = new ArrayList<Particle>();
-		for(int i = 0; i < pA.length;i++){
-			Particle p = pA[i];
+		for(int i = 0; i < pA.size();i++){
+			Particle p = pA.get(i);
 			int x = (int)p.x;
-			int y = (height - (int)p.y);
+			int y = (getHeight() - (int)p.y);
 			if(x > 0 && x < getWidth() && y > 0 && y < getHeight()){
 				if(!occupiedArray[x][y]){
 					occupiedArray[x][y] = true;
-					newP.add(pA[i]);
+					newP.add(p);
 				}
 			}
 		}
@@ -132,7 +128,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < pullQueue.size();i++){
 			Point2D p = pullQueue.get(i);
 
-			pull(p.getX(),p.getY(),1);
+//			pull(p.getX(),p.getY(),1);
+			pullWithWorkers(p.getX(),p.getY(),1);
 
 			pullQueue.remove(i);
 		}
@@ -154,7 +151,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void pull(double x, double y, double mult){
-		double angle = 1;
+		double angle = 1;	
 		double deltaX;
 		double deltaY;
 		mult *= timeSpeed * pullStrength;
@@ -166,7 +163,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			p.speedX -= deltaX * mult;							
 			p.speedY -= deltaY * mult;      					 
 		}
-		Particle[] pA = particleArray.toArray(new Particle[particleArray.size()]);
+	}
+	public void pullWithWorkers(double x, double y, double mult){
+		Particle[] p = particleArray.toArray(new Particle[particleArray.size()]);
+		exec.submit(new PullWorkerThread(x,y,p,mult * timeSpeed * pullStrength));
 	}
 
 	public void spawnify(int x, int y, double vx, double vy){
@@ -178,7 +178,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		spawnify(x,y,(rand.nextFloat() - 0.5) * 10,(rand.nextFloat() - 0.5) * 10);
 	}
 	public void spawnify(){
-		spawnify(rand.nextInt(width),rand.nextInt(height));
+		spawnify(rand.nextInt(getWidth()),rand.nextInt(getHeight()));
 	}
 	public void gravitify(Particle p){
 		p.speedY -= gravityStrength;
@@ -298,13 +298,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		if(lmbHeld){
 			Point p = MouseInfo.getPointerInfo().getLocation() ;
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
-			int y = (int) (height - p.getY() + this.getLocationOnScreen().getY());
+			int y = (int) (getHeight() - p.getY() + this.getLocationOnScreen().getY());
 			pullQueue.add(new Point(x,y));
 		}
 		else if(rmbHeld){
 			Point p = MouseInfo.getPointerInfo().getLocation() ;
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
-			int y = (int) (height - p.getY() + this.getLocationOnScreen().getY());
+			int y = (int) (getHeight() - p.getY() + this.getLocationOnScreen().getY());
 			pushQueue.add(new Point(x,y));
 		}
 	}

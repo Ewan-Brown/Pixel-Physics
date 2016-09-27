@@ -44,7 +44,6 @@ public class MainClass {
 				e.printStackTrace();
 			}
 			gamePanel.update();
-
 		}
 
 
