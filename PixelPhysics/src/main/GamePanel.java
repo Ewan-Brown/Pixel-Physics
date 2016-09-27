@@ -113,7 +113,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
 			g.setColor(p.color);
-			g.drawRect((int)p.x, getHeight() - (int)p.y, size, size);
+			g.fillRect((int)p.x, getHeight() - (int)p.y, size, size);
 		}
 //		BufferedImage buffImage = getImage(pA);
 //		bufferG.drawImage(buffImage, 0, 0, this);
