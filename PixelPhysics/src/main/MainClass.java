@@ -46,9 +46,7 @@ public class MainClass {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			long t0 = System.nanoTime();
 			gamePanel.update();
-			long t1 = System.nanoTime();
 		}
 
 

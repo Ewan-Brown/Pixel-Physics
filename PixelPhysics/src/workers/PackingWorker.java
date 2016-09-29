@@ -3,6 +3,7 @@ package workers;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import stuff.OccupiedArray;
 import stuff.Particle;
 
 public class PackingWorker implements Callable<ArrayList<Particle>>{
@@ -20,8 +21,8 @@ public class PackingWorker implements Callable<ArrayList<Particle>>{
 		return newP;
 		
 	}
-	public PackingWorker(ArrayList<Particle> pA,int w,int h,boolean[][] oc){
-		occupiedArray = oc;
+	public PackingWorker(ArrayList<Particle> pA,int w,int h,boolean[][] oa){
+		occupiedArray = oa;
 		this.pA = pA;
 		this.w = w;
 		this.h = h;

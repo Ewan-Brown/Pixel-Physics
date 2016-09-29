@@ -1,5 +1,6 @@
 package workers;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -23,9 +24,9 @@ public class GraphicsWorker implements Callable<BufferedImage>{
 	public BufferedImage call() throws Exception {
 		BufferedImage buffImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
 		Graphics gg = buffImage.getGraphics();
+		gg.setColor(Color.BLUE);
 		for(int i = 0; i < array.size();i++){
 			Particle p = array.get(i);
-			gg.setColor(p.color);
 			gg.fillRect((int)p.x, h - (int)p.y,size,size);
 		}
 		return buffImage;

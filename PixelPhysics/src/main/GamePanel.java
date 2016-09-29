@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.JPanel;
 
+import stuff.OccupiedArray;
 import stuff.Particle;
 import workers.GraphicsWorker;
 import workers.PackingWorker;
@@ -65,7 +66,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public BitSet keySet = new BitSet(256);
 	int size = 1;
 	int maxSize = 10;
-	DecimalFormat df = new DecimalFormat("#.#");
+	DecimalFormat df = new DecimalFormat("0.00");
 	//	private OptionPanel option;
 	public GamePanel(int w,int h,int m,int s){
 		buffer = new BufferedImage(1920,1080,BufferedImage.TYPE_INT_RGB);
@@ -99,39 +100,42 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		this.doMouse();
 		this.repaint();
 		long t1 = System.nanoTime();
-//		lastLag3 = (double)(t1 - t0) / 1000000D;
+//		lastLag1 = (t1 - t0) / 1000000D;
 	}
 	public void drawParticles(Graphics g){
-		ArrayList<Particle> pA = packifyWithWorker(particleArray);
-
-//		BufferedImage[] buffImages = getImageWithWorker(pA);
-//		long t1 = System.nanoTime();
-//		for(int i = 0; i < buffImages.length;i++){
-//			bufferG.drawImage(buffImages[i], 0, 0, this);
-//		}
-//		g.drawImage(buffer, 0, 0, this);
-		for(int i = 0; i < pA.size();i++){
-			Particle p = pA.get(i);
-			g.setColor(p.color);
-			g.fillRect((int)p.x, getHeight() - (int)p.y, size, size);
+		ArrayList<Particle> pA = packify(particleArray);
+		g.setColor(Color.BLUE);
+		long t0 = System.nanoTime();
+		BufferedImage[] buffImages = getImageWithWorker(pA);
+		for(int i = 0; i < buffImages.length;i++){
+			g.drawImage(buffImages[i], 0, 0, this);
 		}
-//		BufferedImage buffImage = getImage(pA);
-//		bufferG.drawImage(buffImage, 0, 0, this);
+		long t1 = System.nanoTime();
+		//			BufferedImage buffImage = getImage(pA);
+		//			g.drawImage(buffImage, 0, 0, this);
+		long t2 = System.nanoTime();
+					for(int i = 0; i < pA.size();i++){
+						Particle p = pA.get(i);
+						g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
+					}
+		long t3 = System.nanoTime();
+		lastLag2 = (double)(t1 - t0) / (double)(t3 - t2);
 
 	}
 	public BufferedImage getImage(ArrayList<Particle> pA){
 		BufferedImage buffImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
-		Graphics gg = buffImage.getGraphics();
+		Graphics gg = buffImage.getGraphics();		
+		gg.setColor(Color.BLUE);
 		for(int i = 0; i < pA.size();i++){
 			Particle p  = pA.get(i);
-			gg.setColor(p.color);
+			//			gg.setColor(p.color);
 			gg.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
 		}
 		return buffImage;
 
 	}
 	public BufferedImage[] getImageWithWorker(ArrayList<Particle> pA){
-		BufferedImage[] buffImages = new BufferedImage[2];
+		BufferedImage[] buffImages = new BufferedImage[4];
 		int q = pA.size() / 4;
 		int h = pA.size() / 2;
 		int f = pA.size();
@@ -139,20 +143,27 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int height = getHeight();
 		Future<BufferedImage> w1 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
 		Future<BufferedImage> w2 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(h, f))),width,height,size));
+		Future<BufferedImage> w3 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
+		Future<BufferedImage> w4 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
+
 
 		do{
-		}while(!w1.isDone() && !w2.isDone());
+
+		}while(!w1.isDone() && !w2.isDone() && !w3.isDone() && !w4.isDone());
 
 		try {
 			buffImages[0] = w1.get();
 			buffImages[1] = w2.get();
+			buffImages[2] = w3.get();
+			buffImages[3] = w4.get();
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 		return buffImages;
 
 	}
-	//Cuts down drawing lag by 
+	//Cuts down drawing lag by a bunch
+	//TODO When multiple particle are in the same spot it swaps between which one it draws, and when different colors = flickering :(
 	public ArrayList<Particle> packify(ArrayList<Particle> pA){
 		boolean[][] occupiedArray = new boolean[1920][1080];
 		ArrayList<Particle> newP = new ArrayList<Particle>();
@@ -175,16 +186,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int q = pA.size() / 4;
 		int h = pA.size() / 2;
 		int f = pA.size();
-		boolean[][] occupiedArray = new boolean[1920][1080];
-		//All threads access the same array concurrently! Yay!
-		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),occupiedArray));
-		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),occupiedArray));
-		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),occupiedArray));
-		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),occupiedArray));
+		boolean[][] oA = new boolean[1920][1080];
+		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),oA));
+		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),oA));
+		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),oA));
+		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),oA));
 
 		do{
 
-		}while(!w1.isDone() && !w2.isDone());
+		}while(!w1.isDone() && !w2.isDone() && !w3.isDone() && !w4.isDone());
 
 		ArrayList<Particle> p1 = null;
 		ArrayList<Particle> p2 = null;
@@ -243,8 +253,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
 			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-			deltaX = net.jafama.FastMath.cosQuick(angle);
-			deltaY = net.jafama.FastMath.sinQuick(angle);
+			deltaX = net.jafama.FastMath.cos(angle);
+			deltaY = net.jafama.FastMath.sin(angle);
 			p.speedX -= deltaX * mult;							
 			p.speedY -= deltaY * mult;      					 
 		}
