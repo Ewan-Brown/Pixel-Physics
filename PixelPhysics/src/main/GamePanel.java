@@ -140,7 +140,6 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		long t1 = System.nanoTime();
 		lastLag3 = (t1 - t0) / 1000000D;
 	}
-
 	//			BufferedImage buffImage = getImage(pA);
 	//			g.drawImage(buffImage, 0, 0, this);
 	//	BufferedImage[] buffImages = getImageWithWorker(pA);
@@ -203,8 +202,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		return buffImages;
 
 	}
-	//Cuts down drawing lag by a bunch
 	//TODO When multiple particle are in the same spot it swaps between which one it draws, and when different colors = flickering :(
+	//TODO With packing, particles are non-existant? wut
 	public ArrayList<Particle> packify(ArrayList<Particle> pA){
 		boolean[][] occupiedArray = new boolean[1920][1080];
 		ArrayList<Particle> newP = new ArrayList<Particle>();
@@ -286,23 +285,34 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 
 	}
-	public void pull(double x, double y, double mult){
-		double angle = 1;	
-		double deltaX;
-		double deltaY;
-		mult *= timeSpeed * pullStrength;
-		for(int i = 0; i < particleArray.size();i++){
-			Particle p = particleArray.get(i);
-			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
-			deltaX = net.jafama.FastMath.cos(angle);
-			deltaY = net.jafama.FastMath.sin(angle);
-			p.speedX -= deltaX * mult;							
-			p.speedY -= deltaY * mult;      					 
-		}
-	}
+//	public void pull(double x, double y, double mult){
+//		double angle = 1;	
+//		double deltaX;
+//		double deltaY;
+//		mult *= timeSpeed * pullStrength;
+//		for(int i = 0; i < particleArray.size();i++){
+//			Particle p = particleArray.get(i);
+//			angle = FastMath.atan2((float)(p.y - y), (float)(p.x - x));
+//			deltaX = net.jafama.FastMath.cos(angle);
+//			deltaY = net.jafama.FastMath.sin(angle);
+//			p.speedX -= deltaX * mult;							
+//			p.speedY -= deltaY * mult;      					 
+//		}
+//	}
 	public void pullWithWorkers(double x, double y, double mult){
-		Particle[] p = particleArray.toArray(new Particle[particleArray.size()]);
-		executorPhysics.submit(new PullPhysicsWorker(x,y,p,mult * timeSpeed * pullStrength));
+		int q = particleArray.size() / 4;
+		int h = particleArray.size() / 2;
+		int f = particleArray.size();
+		Particle[] p1 = particleArray.subList(0, q).toArray(new Particle[particleArray.size()]);
+		Particle[] p2 = particleArray.subList(q, h).toArray(new Particle[particleArray.size()]);
+		Particle[] p3 = particleArray.subList(h, h+q).toArray(new Particle[particleArray.size()]);
+		Particle[] p4 = particleArray.subList(h+q, f).toArray(new Particle[particleArray.size()]);
+
+		executorPhysics.submit(new PullPhysicsWorker(x,y,p1,mult * timeSpeed * pullStrength));
+		executorPhysics.submit(new PullPhysicsWorker(x,y,p2,mult * timeSpeed * pullStrength));
+		executorPhysics.submit(new PullPhysicsWorker(x,y,p3,mult * timeSpeed * pullStrength));
+		executorPhysics.submit(new PullPhysicsWorker(x,y,p4,mult * timeSpeed * pullStrength));
+
 	}
 
 	public void spawnify(int x, int y, double vx, double vy){

@@ -29,17 +29,16 @@ public class MainClass {
 		JFrame frame = new JFrame("Pixel Physics v1.0");
 		outer.setSize(width, height);
 		GamePanel gamePanel = new GamePanel(width,height,slider.getValue(),slider2.getValue());
-
 		gamePanel.setSize(width, height);
 		outer.setLayout(new BoxLayout(outer, BoxLayout.Y_AXIS));
 		outer.add(gamePanel);
-		gamePanel.init();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(outer);
 		frame.setVisible(true);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); 
+		gamePanel.init();
 		while(true){
 			try {
 				Thread.sleep(gamePanel.updateDelay);
