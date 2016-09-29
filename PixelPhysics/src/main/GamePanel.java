@@ -58,8 +58,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double lastLag1 = 0;
 	public double lastLag2 = 0;
 	public double lastLag3 = 0;
-	public Graphics bufferG;
-	public BufferedImage buffer;
+	//	public Graphics bufferG;
+	//	public BufferedImage buffer;
+	int r = 0;
+	int g = 0;
+	int b = 0;
+	Shift shifter = Shift.RED;
+	int shiftAmount = 1;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
 	public static final Random rand = new Random();
@@ -69,13 +74,37 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	DecimalFormat df = new DecimalFormat("0.00");
 	//	private OptionPanel option;
 	public GamePanel(int w,int h,int m,int s){
-		buffer = new BufferedImage(1920,1080,BufferedImage.TYPE_INT_RGB);
-		bufferG = buffer.getGraphics();
+		//		buffer = new BufferedImage(1920,1080,BufferedImage.TYPE_INT_RGB);
+		//		bufferG = buffer.getGraphics();
 		maxPixels = m;
 		size = s;
 		Dimension d = new Dimension(w,h);
 		setPreferredSize(d);
 		this.setFocusable(true);
+	}
+	public enum Shift{
+		RED,GREEN,BLUE;
+	}
+	public void switchShift(){
+		shifter = randomEnum(Shift.class);
+
+	}
+	public void shiftColor(){
+		if(shifter == Shift.RED){
+			r += shiftAmount;
+		}
+		else if(shifter == Shift.GREEN){
+			g += shiftAmount;
+		}
+		else if(shifter == Shift.BLUE){
+			b += shiftAmount;
+		}
+		if(r > 254 || g > 254 || b > 254){
+			
+		}
+		else if(r < 0 || g < 0 || b < 0){
+			
+		}
 	}
 	public void init(){
 		addMouseListener(this);
@@ -87,11 +116,11 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 	}
 	@Override
-	public void paint(Graphics g){
-		super.paint(g);
-		drawParticles(g);
-		g.setColor(Color.WHITE);
-		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, getHeight() / 2);
+	public void paint(Graphics gg){
+		super.paint(gg);
+		drawParticles(gg);
+		gg.setColor(Color.WHITE);
+		gg.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, getHeight() / 2);
 	}
 	public void update(){
 		long t0 = System.nanoTime();
@@ -100,26 +129,29 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		this.doMouse();
 		this.repaint();
 		long t1 = System.nanoTime();
-//		lastLag1 = (t1 - t0) / 1000000D;
+		lastLag3 = (t1 - t0) / 1000000D;
 	}
-	public void drawParticles(Graphics g){
-		ArrayList<Particle> pA = packify(particleArray);
-		g.setColor(Color.BLUE);
+
+	//			BufferedImage buffImage = getImage(pA);
+	//			g.drawImage(buffImage, 0, 0, this);
+	//	BufferedImage[] buffImages = getImageWithWorker(pA);
+	//	for(int i = 0; i < buffImages.length;i++){
+	//		g.drawImage(buffImages[i], 0, 0, this);
+	//	}
+	public void drawParticles(Graphics gg){
+		gg.setColor(new Color(r,g,b));
 		long t0 = System.nanoTime();
-		BufferedImage[] buffImages = getImageWithWorker(pA);
-		for(int i = 0; i < buffImages.length;i++){
-			g.drawImage(buffImages[i], 0, 0, this);
-		}
+
+		ArrayList<Particle> pA = packify(particleArray);
+
 		long t1 = System.nanoTime();
-		//			BufferedImage buffImage = getImage(pA);
-		//			g.drawImage(buffImage, 0, 0, this);
+		for(int i = 0; i < pA.size();i++){
+			Particle p = pA.get(i);
+			gg.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
+		}
 		long t2 = System.nanoTime();
-					for(int i = 0; i < pA.size();i++){
-						Particle p = pA.get(i);
-						g.fillRect((int)p.x ,(getHeight() - (int)p.y), size,size);
-					}
-		long t3 = System.nanoTime();
-		lastLag2 = (double)(t1 - t0) / (double)(t3 - t2);
+		lastLag1 = (double)(t1 - t0) / 1000000D;
+		lastLag2 = (double)(t2 - t1) / 1000000D;
 
 	}
 	public BufferedImage getImage(ArrayList<Particle> pA){
@@ -463,6 +495,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public void keyTyped(KeyEvent e) {}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	}
+	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+		int x = rand.nextInt(clazz.getEnumConstants().length);
+		return clazz.getEnumConstants()[x];
 	}
 
 }
