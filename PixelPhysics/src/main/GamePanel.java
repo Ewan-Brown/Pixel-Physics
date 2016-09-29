@@ -40,7 +40,6 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	private static final long serialVersionUID = 1L;
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
-	boolean flag = false;
 	public boolean lowPerformance = false;
 	public boolean fastMath1 = true;
 	public boolean fastMath2 = true;
@@ -58,12 +57,11 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double lastLag1 = 0;
 	public double lastLag2 = 0;
 	public double lastLag3 = 0;
+	public int[] RGB = new int[3];
+	public int RGB_switch = 1;
+	public boolean flag = false;
 	//	public Graphics bufferG;
 	//	public BufferedImage buffer;
-	int r = 0;
-	int g = 0;
-	int b = 0;
-	Shift shifter = Shift.RED;
 	int shiftAmount = 1;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
@@ -78,32 +76,38 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		//		bufferG = buffer.getGraphics();
 		maxPixels = m;
 		size = s;
+		for(int i = 0; i < RGB.length;i++){
+			RGB[i] = rand.nextInt(255);
+		}
 		Dimension d = new Dimension(w,h);
 		setPreferredSize(d);
 		this.setFocusable(true);
 	}
-	public enum Shift{
-		RED,GREEN,BLUE;
-	}
 	public void switchShift(){
-		shifter = randomEnum(Shift.class);
-
+		RGB_switch = rand.nextInt(3);
+		shiftAmount = -1;
+		if(getPositive(RGB_switch)){
+			shiftAmount = 1;
+		}
+	}
+	public boolean getPositive(int index){
+		if(RGB[index] < 127){
+			return true;
+		}
+		return false;
 	}
 	public void shiftColor(){
-		if(shifter == Shift.RED){
-			r += shiftAmount;
+		RGB[RGB_switch] += shiftAmount;
+		if(RGB[RGB_switch] > 255){
+			RGB[RGB_switch] = 255;
+			switchShift();
 		}
-		else if(shifter == Shift.GREEN){
-			g += shiftAmount;
+		else if(RGB[RGB_switch] < 1){
+			RGB[RGB_switch] = 1;
+			switchShift();
 		}
-		else if(shifter == Shift.BLUE){
-			b += shiftAmount;
-		}
-		if(r > 254 || g > 254 || b > 254){
-			
-		}
-		else if(r < 0 || g < 0 || b < 0){
-			
+		else if(rand.nextInt(100) < 1){
+			switchShift();
 		}
 	}
 	public void init(){
@@ -120,7 +124,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(gg);
 		drawParticles(gg);
 		gg.setColor(Color.WHITE);
-		gg.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, getHeight() / 2);
+		gg.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, getHeight() / 2);
+		//		gg.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), );	}
 	}
 	public void update(){
 		long t0 = System.nanoTime();
@@ -128,6 +133,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		this.updateThemkeys();
 		this.doMouse();
 		this.repaint();
+		flag = !flag;
+		if(flag){
+			shiftColor();
+		}
 		long t1 = System.nanoTime();
 		lastLag3 = (t1 - t0) / 1000000D;
 	}
@@ -139,7 +148,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	//		g.drawImage(buffImages[i], 0, 0, this);
 	//	}
 	public void drawParticles(Graphics gg){
-		gg.setColor(new Color(r,g,b));
+		gg.setColor(new Color(RGB[0],RGB[1],RGB[2]));
 		long t0 = System.nanoTime();
 
 		ArrayList<Particle> pA = packify(particleArray);
