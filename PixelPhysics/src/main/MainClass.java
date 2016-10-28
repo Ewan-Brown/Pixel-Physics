@@ -17,7 +17,7 @@ public class MainClass {
 	static int height = 1000;
 	public static void main(String[] args){
 		JOptionPane optionPane = new JOptionPane();
-		JSlider slider = getSlider(optionPane,0,3000000,50000);
+		JSlider slider = getSlider(optionPane,0,3000000,5000);
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
