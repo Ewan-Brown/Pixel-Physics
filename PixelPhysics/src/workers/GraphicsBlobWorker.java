@@ -1,6 +1,5 @@
 package workers;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Callable;
@@ -27,34 +26,40 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	}
 	public BufferedImage call() throws Exception {
 		BufferedImage image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-		Graphics g = image.getGraphics();
+		Graphics gg = image.getGraphics();
 		for(int x = this.x; x < w;x++){
 			for(int y = this.y; y < h;y++){
-				if(reds[x][y] > 255){
-					reds[x][y] = 255;
+				int r = reds[x][y];
+				int g = greens[x][y];
+				int b = blues[x][y];
+				if(r > 255){
+					r = 255;
 				}
-				if(blues[x][y] > 255){
-					blues[x][y] = 255;
+				if(b > 255){
+					b = 255;
 				}
-				if(greens[x][y] > 255){
-					greens[x][y] = 255;
+				if(g > 255){
+					g = 255;
 				}
-				if(reds[x][y] < 0){
-					reds[x][y] = 0;
+				if(r < 0){
+					r = 0;
 				}
-				if(blues[x][y] < 0){
-					blues[x][y] = 0;
+				if(b < 0){
+					b = 0;
 				}
-				if(greens[x][y] < 0){
-					greens[x][y] = 0;
+				if(g < 0){
+					g = 0;
 				}
-				if(reds[x][y] > 5 || greens[x][y] > 5 || blues[x][y] > 5){
-					g.setColor(new Color(reds[x][y],greens[x][y],blues[x][y]));
-					g.fillRect(x - this.x, y - this.y, 1, 1);
+				if(r > 5 || g > 5 || b > 5){
+					int rgb = r;
+					rgb = (rgb << 8) + g;
+					rgb = (rgb << 8) + b;
+					image.setRGB(x - this.x, y - this.y, rgb);
 				}
 			}
 		}
 		return image;
+
 	}
 
 }
