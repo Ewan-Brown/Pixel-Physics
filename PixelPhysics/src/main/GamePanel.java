@@ -128,8 +128,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		super.paint(g);
 		long t0 = System.nanoTime();
 		if(glow){
-//			drawBlobsWithWorkers(g);
-			drawBlobs(g);
+			drawBlobsWithWorkers(g);
+//			drawBlobs(g);
 		}
 		else{
 			drawParticles(g);
@@ -317,7 +317,6 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		long t2 = System.nanoTime();
 		lastLag1 = (double)(t1 - t0) / 1000000D;
 		lastLag2 = (double)(t2 - t1) / 1000000D;
-
 	}
 	public BufferedImage getImage(ArrayList<Particle> pA){
 		BufferedImage buffImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
@@ -338,10 +337,13 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int f = pA.size();
 		int width = getWidth();
 		int height = getHeight();
-		Future<BufferedImage> w1 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
-		Future<BufferedImage> w2 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(h, f))),width,height,size));
-		Future<BufferedImage> w3 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
-		Future<BufferedImage> w4 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size));
+		int r =RGB[0];
+		int g = RGB[1];
+		int b = RGB[2];
+		Future<BufferedImage> w1 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size,r,g,b));
+		Future<BufferedImage> w2 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(h, f))),width,height,size,r,g,b));
+		Future<BufferedImage> w3 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size,r,g,b));
+		Future<BufferedImage> w4 = executorGraphics.submit(new GraphicsWorker((new ArrayList<Particle>(pA.subList(0, h))),width,height,size,r,g,b));
 
 
 		do{
@@ -601,6 +603,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				cooldowns[2] = maxTimer;
 				glow = !glow;
 			}
+		}
+		if(keySet.get(KeyEvent.VK_H)){
+			RGB[0] = 255;
+			RGB[1] = 70;
+			RGB[2] = 0;
+
 		}
 	}
 	public void doMouse(){

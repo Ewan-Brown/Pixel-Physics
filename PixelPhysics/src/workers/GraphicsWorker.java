@@ -14,20 +14,27 @@ public class GraphicsWorker implements Callable<BufferedImage>{
 	int w;
 	int h;
 	int size;
-	public GraphicsWorker(ArrayList<Particle> array,int w,int h,int size){
+	int r;
+	int g;
+	int b;
+	public GraphicsWorker(ArrayList<Particle> array,int w,int h,int size,int r, int g, int b){
 		this.array = array;
 		this.w = w;
 		this.h = h;
 		this.size = size;
+		this.r = r;
+		this.g = g;
+		this.b = b;
 	}
 	@Override
 	public BufferedImage call() throws Exception {
 		BufferedImage buffImage = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-		Graphics gg = buffImage.getGraphics();
-		gg.setColor(Color.BLUE);
 		for(int i = 0; i < array.size();i++){
 			Particle p = array.get(i);
-			gg.fillRect((int)p.x, h - (int)p.y,size,size);
+			int rgb = r;
+			rgb = (rgb << 8) + g;
+			rgb = (rgb << 8) + b;
+			buffImage.setRGB((int)p.x, (int)p.y, rgb);
 		}
 		return buffImage;
 	}

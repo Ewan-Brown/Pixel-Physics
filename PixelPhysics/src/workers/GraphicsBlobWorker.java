@@ -32,6 +32,9 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 				int r = reds[x][y];
 				int g = greens[x][y];
 				int b = blues[x][y];
+				reds[x][y] = 0;
+				greens[x][y] = 0;
+				blues[x][y] = 0;
 				if(r > 255){
 					r = 255;
 				}
