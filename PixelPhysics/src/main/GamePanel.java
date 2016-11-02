@@ -42,11 +42,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	private static final long serialVersionUID = 1L;
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
-	public boolean lowPerformance = false;
-	public boolean fastMath1 = true;
-	public boolean fastMath2 = true;
 	public final int maxTimer = 30;
-	public int[] cooldowns = new int[3];
+	public int[] cooldowns = new int[4];
 	public int maxPixels;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
@@ -62,6 +59,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public int[] RGB = new int[3];
 	public int RGB_switch = 1;
 	public boolean flag = false;
+	public boolean compound = true;
 	int shiftAmount = 1;
 	double glowStrength = 10;
 	boolean glow = false;
@@ -138,9 +136,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		lastLag1 = (t1 - t0) / 1000000D;
 		double fps = (16D / (double)lastLag1) * 60;
 		g.setColor(Color.WHITE);
-		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
-		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, (getHeight() / 2));
-		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
+		g.drawString(compound + " ", getWidth() / 2, getHeight() / 2);
+//		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
+//		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, (getHeight() / 2));
+//		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
 	}
 	public void update(){
 		glowStrength = (size * 2);
@@ -157,50 +156,50 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public void drawBlobs(Graphics gg){
 		int w = getWidth();
 		int h = getHeight();
-//		double bounds = glowStrength / 2;
-//		long t0 = System.nanoTime();
-//		for(int i = 0; i < particleArray.size();i++){
-//			Particle p = particleArray.get(i);
-//			if(p.x < 0 - bounds|| p.x > w + bounds || p.y < 0 - bounds || p.y > h + bounds){
-//				continue;
-//			}
-//			int minX = (int) (p.x - glowStrength);
-//			int minY = (int) (p.y - glowStrength);
-//			int maxX = (int) (p.x + glowStrength);
-//			int maxY = (int) (p.y + glowStrength);
-//			if(minX < 0){
-//				minX = 0;
-//			}
-//			if(minY < 0){
-//				minY = 0;
-//			}
-//			if(maxX > w){
-//				maxX = w;
-//			}
-//			if(maxY > h){
-//				maxY = h;
-//			}
-//			for(int x = minX; x < maxX;x++){
-//				for(int y = minY; y < maxY;y++){
-//					double dist = getDistance(x, y, p.x, p.y);
-//					if(dist > glowStrength){
-//						continue;
-//					}
-//					double a = Math.floor(100 - (100 * (dist / glowStrength)));
-//					if(a < 0){
-//						a = 0;
-//					}
-//					double r = (int)(a * RGB[0]) / 100;					
-//					double g = (int)(a * RGB[1]) / 100;
-//					double b = (int)(a * RGB[2]) / 100;
-//
-//					reds[x][y] = (int) r;
-//					greens[x][y] = (int) g;
-//					blues[x][y] = (int) b;
-//				}
-//			}
-//		}
-//		long t1 = System.nanoTime();
+		double bounds = glowStrength / 2;
+		long t0 = System.nanoTime();
+		for(int i = 0; i < particleArray.size();i++){
+			Particle p = particleArray.get(i);
+			if(p.x < 0 - bounds|| p.x > w + bounds || p.y < 0 - bounds || p.y > h + bounds){
+				continue;
+			}
+			int minX = (int) (p.x - glowStrength);
+			int minY = (int) (p.y - glowStrength);
+			int maxX = (int) (p.x + glowStrength);
+			int maxY = (int) (p.y + glowStrength);
+			if(minX < 0){
+				minX = 0;
+			}
+			if(minY < 0){
+				minY = 0;
+			}
+			if(maxX > w){
+				maxX = w;
+			}
+			if(maxY > h){
+				maxY = h;
+			}
+			for(int x = minX; x < maxX;x++){
+				for(int y = minY; y < maxY;y++){
+					double dist = getDistance(x, y, p.x, p.y);
+					if(dist > glowStrength){
+						continue;
+					}
+					double a = Math.floor(100 - (100 * (dist / glowStrength)));
+					if(a < 0){
+						a = 0;
+					}
+					double r = (int)(a * RGB[0]) / 100;					
+					double g = (int)(a * RGB[1]) / 100;
+					double b = (int)(a * RGB[2]) / 100;
+
+					reds[x][y] = (int) r;
+					greens[x][y] = (int) g;
+					blues[x][y] = (int) b;
+				}
+			}
+		}
+		long t1 = System.nanoTime();
 		int r;
 		int g;
 		int b;
@@ -209,22 +208,22 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				r = reds[x][y];
 				g = greens[x][y];
 				b = blues[x][y];
-//				int r = 1;
-//				int g = 1;
-//				int b = 1;
-//				if(r > 255){
-//					r = 255;
-//				}
-//				if(b > 255){
-//					b = 255;
-//				}
-//				if(g > 255){
-//					g = 255;
-//				}
-//				if(r > 2 || g > 2 || b > 2){
-//					gg.setColor(new Color(r,g,b));
-//					gg.fillRect(x, h - y, 1, 1);
-//				}
+				reds[x][y] = 0;
+				greens[x][y] = 0;
+				blues[x][y] = 0;
+				if(r > 255){
+					r = 255;
+				}
+				if(b > 255){
+					b = 255;
+				}
+				if(g > 255){
+					g = 255;
+				}
+				if(r > 2 || g > 2 || b > 2){
+					gg.setColor(new Color(r,g,b));
+					gg.fillRect(x, y, 1, 1);
+				}
 			}
 		}
 //		long t2 = System.nanoTime();
@@ -238,10 +237,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int w = getWidth();
 		int h = getHeight();
 		long t0 = System.nanoTime();
-		Future<?> w1 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(0, qr)),reds,greens,blues,w,h,glowStrength,RGB));
-		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB));
-		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB));
-		Future<?> w4 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf+qr, fl)),reds,greens,blues,w,h,glowStrength,RGB));
+		Future<?> w1 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(0, qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+		Future<?> w4 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf+qr, fl)),reds,greens,blues,w,h,glowStrength,RGB,compound));
 
 		do{
 
@@ -604,11 +603,16 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				glow = !glow;
 			}
 		}
+		if(keySet.get(KeyEvent.VK_J)){
+			if(cooldowns[3] == 0){
+				cooldowns[3] = maxTimer;
+				compound = !compound;
+			}
+		}
 		if(keySet.get(KeyEvent.VK_H)){
 			RGB[0] = 255;
 			RGB[1] = 70;
 			RGB[2] = 0;
-
 		}
 	}
 	public void doMouse(){

@@ -15,8 +15,8 @@ public class BlobWorker implements Runnable{
 	int[][] reds;
 	int[][] greens;
 	int[][] blues;
-	
-	public BlobWorker(ArrayList<Particle> p, int[][] r, int[][] g, int[][] b,int w, int h, double gs, int[] RGB){
+	boolean compound;
+	public BlobWorker(ArrayList<Particle> p, int[][] r, int[][] g, int[][] b,int w, int h, double gs, int[] RGB,boolean type){
 		particleArray = p;
 		glowStrength = gs;
 		this.w = w;
@@ -27,6 +27,7 @@ public class BlobWorker implements Runnable{
 		reds = r;
 		greens = g;
 		blues = b;
+		compound = type;
 	}
 	public void run(){
 		double bounds = glowStrength / 2;
@@ -64,13 +65,19 @@ public class BlobWorker implements Runnable{
 					double r = (int)(a * RGB[0]) / 100;					
 					double g = (int)(a * RGB[1]) / 100;
 					double b = (int)(a * RGB[2]) / 100;
-
-					reds[x][y] += r;
-					greens[x][y] += g;
-					blues[x][y] += b;
+					if(compound){
+						reds[x][y] += r;
+						greens[x][y] += g;
+						blues[x][y] += b;
+					}
+					else{
+						reds[x][y] = (int)r;
+						greens[x][y] = (int)g;
+						blues[x][y] = (int)b;
+					}
 				}
 			}
 		}
 	}
-	
+
 }
