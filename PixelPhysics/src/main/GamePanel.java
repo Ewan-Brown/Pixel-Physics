@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public double[] pulls = {.01,1,5};
 	public double frictionStrength = frictions[1];
 	public double pullStrength = pulls[1];
+	public int cores = 1;
 	public double timeSpeed = 1;
 	public long updateDelay = 10;
 	public double lastLag1 = 0;
@@ -75,6 +76,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	DecimalFormat df = new DecimalFormat("0.00");
 	//	private OptionPanel option;
 	public GamePanel(int w,int h,int m,int s){
+		cores = Runtime.getRuntime().availableProcessors();
 		maxPixels = m;
 		//		maxPixels = 100;
 		size = s;
@@ -241,10 +243,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB,compound));
 		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
 		Future<?> w4 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf+qr, fl)),reds,greens,blues,w,h,glowStrength,RGB,compound));
-
+//		Future<?>[] blobWorkers = new Future<?>[cores];
+//		int splitSize = particleArray.size() / cores;
+//		for(int i = 0; i < cores;i++){
+//			int k = i * splitSize;
+//			blobWorkers[i] = 
+//		}
 		do{
 
-		}while(!w1.isDone() && !w2.isDone() && !w3.isDone()&& !w4.isDone());
+		}while(! (w1.isDone() && w2.isDone() && w3.isDone() && w4.isDone()));
 		long t1 = System.nanoTime();
 		Future<BufferedImage> g1 = executorGraphics.submit(new GraphicsBlobWorker(0,0,w / 2,h / 2,reds,greens,blues));
 		Future<BufferedImage> g2 = executorGraphics.submit(new GraphicsBlobWorker(w/2,0,w,h/2,reds,greens,blues));
@@ -252,7 +259,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		Future<BufferedImage> g4 = executorGraphics.submit(new GraphicsBlobWorker(w/2,h/2,w,h,reds,greens,blues));
 		do{
 
-		}while(!g1.isDone() && !g2.isDone() && !g3.isDone() && !g4.isDone());
+		}while(! (g1.isDone() && g2.isDone() && g3.isDone() && g4.isDone()));
 		BufferedImage b1 = null;
 		BufferedImage b2 = null;
 		BufferedImage b3 = null;

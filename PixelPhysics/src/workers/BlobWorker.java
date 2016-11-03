@@ -58,7 +58,7 @@ public class BlobWorker implements Runnable{
 					if(dist > glowStrength){
 						continue;
 					}
-					double a = Math.floor(100 - (100 * (dist / glowStrength)));
+					double a = 100 - (100 * (dist / glowStrength));
 					if(a < 0){
 						a = 0;
 					}

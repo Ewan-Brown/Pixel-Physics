@@ -14,9 +14,6 @@ public class PullPhysicsWorker implements Runnable{
 	public void run() {
 		for(int i = 0; i < array.length;i++){
 			Particle p = array[i];
-//			double angle = FastMath.atan2((float)(p.y - baseY), (float)(p.x - baseX));
-//			double deltaX = net.jafama.FastMath.cosQuick(angle);
-//			double deltaY = net.jafama.FastMath.sinQuick(angle);
 			double dist = GamePanel.getDistance(p.x, p.y, baseX, baseY);
 			double deltaX = (p.x - baseX) / dist;
 			double deltaY = (p.y - baseY) / dist;
