@@ -138,10 +138,9 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		lastLag1 = (t1 - t0) / 1000000D;
 		double fps = (16D / (double)lastLag1) * 60;
 		g.setColor(Color.WHITE);
-		g.drawString(compound + " ", getWidth() / 2, getHeight() / 2);
-//		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
-//		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, (getHeight() / 2));
-//		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
+		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
+		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, (getHeight() / 2));
+		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
 	}
 	public void update(){
 		glowStrength = (size * 2);
@@ -239,19 +238,25 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int w = getWidth();
 		int h = getHeight();
 		long t0 = System.nanoTime();
-		Future<?> w1 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(0, qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
-		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB,compound));
-		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
-		Future<?> w4 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf+qr, fl)),reds,greens,blues,w,h,glowStrength,RGB,compound));
-//		Future<?>[] blobWorkers = new Future<?>[cores];
-//		int splitSize = particleArray.size() / cores;
-//		for(int i = 0; i < cores;i++){
-//			int k = i * splitSize;
-//			blobWorkers[i] = 
-//		}
+//		Future<?> w1 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(0, qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+//		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+//		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+//		Future<?> w4 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf+qr, fl)),reds,greens,blues,w,h,glowStrength,RGB,compound));
+		Future<?>[] blobWorkers = new Future<?>[cores];
+		int splitSize = particleArray.size() / cores;
+		for(int i = 0; i < cores;i++){
+			int k = i * splitSize;
+			blobWorkers[i] = executorBlobs.submit((new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)),reds,greens,blues,w,h,glowStrength,RGB,compound)));
+		}
+		boolean finished = false;
 		do{
-
-		}while(! (w1.isDone() && w2.isDone() && w3.isDone() && w4.isDone()));
+			finished = true;
+			for(int i = 0; i < blobWorkers.length;i++){
+				if(!blobWorkers[i].isDone()){
+					finished = false;
+				}
+			}
+		}while(!finished);
 		long t1 = System.nanoTime();
 		Future<BufferedImage> g1 = executorGraphics.submit(new GraphicsBlobWorker(0,0,w / 2,h / 2,reds,greens,blues));
 		Future<BufferedImage> g2 = executorGraphics.submit(new GraphicsBlobWorker(w/2,0,w,h/2,reds,greens,blues));
