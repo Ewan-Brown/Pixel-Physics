@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.JPanel;
 
+import stuff.Bounds;
 import stuff.Particle;
 import workers.BlobWorker;
 import workers.GraphicsBlobWorker;
@@ -43,7 +44,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
 	public final int maxTimer = 30;
-	public int[] cooldowns = new int[4];
+	public int[] cooldowns = new int[6];
 	public int maxPixels;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double gravityStrength = 0.007;
@@ -62,7 +63,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public boolean flag = false;
 	public boolean compound = true;
 	int shiftAmount = 1;
-	double glowStrength = 10;
+	double glowRadius = 10;
+	double glowStrength = 100;
 	boolean glow = false;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
@@ -139,11 +141,11 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		double fps = (16D / (double)lastLag1) * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
-		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2], getWidth() / 2, (getHeight() / 2));
+		g.drawString(RGB[0] + " " + RGB[1] + " " + RGB[2] + " " + glowStrength, getWidth() / 2, (getHeight() / 2));
 		g.drawString(frictionStrength + " - " + pullStrength + " - " + size + " - " + timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
 	}
 	public void update(){
-		glowStrength = (size * 2);
+		glowRadius = (size * 2);
 		this.updateParticles();
 		this.updateThemkeys();
 		this.doMouse();
@@ -157,17 +159,17 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public void drawBlobs(Graphics gg){
 		int w = getWidth();
 		int h = getHeight();
-		double bounds = glowStrength / 2;
+		double bounds = glowRadius / 2;
 		long t0 = System.nanoTime();
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
 			if(p.x < 0 - bounds|| p.x > w + bounds || p.y < 0 - bounds || p.y > h + bounds){
 				continue;
 			}
-			int minX = (int) (p.x - glowStrength);
-			int minY = (int) (p.y - glowStrength);
-			int maxX = (int) (p.x + glowStrength);
-			int maxY = (int) (p.y + glowStrength);
+			int minX = (int) (p.x - glowRadius);
+			int minY = (int) (p.y - glowRadius);
+			int maxX = (int) (p.x + glowRadius);
+			int maxY = (int) (p.y + glowRadius);
 			if(minX < 0){
 				minX = 0;
 			}
@@ -183,10 +185,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			for(int x = minX; x < maxX;x++){
 				for(int y = minY; y < maxY;y++){
 					double dist = getDistance(x, y, p.x, p.y);
-					if(dist > glowStrength){
+					if(dist > glowRadius){
 						continue;
 					}
-					double a = Math.floor(100 - (100 * (dist / glowStrength)));
+					double a = Math.floor(100 - (100 * (dist / glowRadius)));
 					if(a < 0){
 						a = 0;
 					}
@@ -238,6 +240,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int w = getWidth();
 		int h = getHeight();
 		long t0 = System.nanoTime();
+		Bounds bounds = new Bounds(particleArray);
 //		Future<?> w1 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(0, qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
 //		Future<?> w2 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(qr, hf)),reds,greens,blues,w,h,glowStrength,RGB,compound));
 //		Future<?> w3 = executorBlobs.submit(new BlobWorker(new ArrayList<Particle>(particleArray.subList(hf, hf+qr)),reds,greens,blues,w,h,glowStrength,RGB,compound));
@@ -246,7 +249,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		int splitSize = particleArray.size() / cores;
 		for(int i = 0; i < cores;i++){
 			int k = i * splitSize;
-			blobWorkers[i] = executorBlobs.submit((new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)),reds,greens,blues,w,h,glowStrength,RGB,compound)));
+			blobWorkers[i] = executorBlobs.submit((new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)),reds,greens,blues,w,h,glowRadius,RGB,compound,glowStrength)));
 		}
 		boolean finished = false;
 		do{
@@ -258,10 +261,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			}
 		}while(!finished);
 		long t1 = System.nanoTime();
-		Future<BufferedImage> g1 = executorGraphics.submit(new GraphicsBlobWorker(0,0,w / 2,h / 2,reds,greens,blues));
-		Future<BufferedImage> g2 = executorGraphics.submit(new GraphicsBlobWorker(w/2,0,w,h/2,reds,greens,blues));
-		Future<BufferedImage> g3 = executorGraphics.submit(new GraphicsBlobWorker(0,h/2,w/2,h,reds,greens,blues));
-		Future<BufferedImage> g4 = executorGraphics.submit(new GraphicsBlobWorker(w/2,h/2,w,h,reds,greens,blues));
+		Future<BufferedImage> g1 = executorGraphics.submit(new GraphicsBlobWorker(0,0,w / 2,h / 2,reds,greens,blues,bounds));
+		Future<BufferedImage> g2 = executorGraphics.submit(new GraphicsBlobWorker(w/2,0,w,h/2,reds,greens,blues,bounds));
+		Future<BufferedImage> g3 = executorGraphics.submit(new GraphicsBlobWorker(0,h/2,w/2,h,reds,greens,blues,bounds));
+		Future<BufferedImage> g4 = executorGraphics.submit(new GraphicsBlobWorker(w/2,h/2,w,h,reds,greens,blues,bounds));
 		do{
 
 		}while(! (g1.isDone() && g2.isDone() && g3.isDone() && g4.isDone()));
@@ -619,6 +622,24 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			if(cooldowns[3] == 0){
 				cooldowns[3] = maxTimer;
 				compound = !compound;
+			}
+		}
+		if(keySet.get(KeyEvent.VK_L)){
+			if(cooldowns[4] == 0){
+				cooldowns[4] = maxTimer / 8;
+				glowStrength -= 2;
+				if(glowStrength < 2){
+					glowStrength = 2;
+				}
+			}
+		}
+		if(keySet.get(KeyEvent.VK_O)){
+			if(cooldowns[5] == 0){
+				cooldowns[5] = maxTimer / 8;
+				glowStrength += 2;
+				if(glowStrength > 255){
+					glowStrength = 255;
+				}
 			}
 		}
 		if(keySet.get(KeyEvent.VK_H)){

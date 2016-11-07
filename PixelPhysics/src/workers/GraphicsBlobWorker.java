@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Callable;
 
+import stuff.Bounds;
+
 public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	int w;
 	int h;
@@ -12,7 +14,8 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	int[][] reds;
 	int[][] blues;
 	int[][] greens;
-	public GraphicsBlobWorker(int x, int y,int w, int h, int[][] reds,int[][] greens,int[][] blues){
+	Bounds bounds;
+	public GraphicsBlobWorker(int x, int y,int w, int h, int[][] reds,int[][] greens,int[][] blues,Bounds b){
 		this.w = w;
 		this.h = h;
 		this.reds = new int[w][h];
@@ -23,12 +26,16 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 		this.greens = greens;
 		this.x = x;
 		this.y = y;
+		bounds = b;
 	}
 	public BufferedImage call() throws Exception {
 		BufferedImage image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
 		Graphics gg = image.getGraphics();
 		for(int x = this.x; x < w;x++){
 			for(int y = this.y; y < h;y++){
+				if(x < bounds.minX && x > bounds.maxX && y < bounds.minY && y > bounds.maxY){
+					continue;
+				}
 				int r = reds[x][y];
 				int g = greens[x][y];
 				int b = blues[x][y];
