@@ -2,6 +2,7 @@ package workers;
 
 import main.FastMath;
 import main.GamePanel;
+import main.Properties;
 import stuff.Particle;
 
 public class PullPhysicsWorker implements Runnable{
@@ -27,7 +28,7 @@ public class PullPhysicsWorker implements Runnable{
 		baseX = x;
 		baseY = y;
 		array = p;
-		this.mult = mult;
+		this.mult = mult * Properties.timeSpeed * Properties.pullStrength;
 	}
 
 }
