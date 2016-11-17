@@ -22,5 +22,7 @@ public class Properties {
 	public static int maxSize = 10;
 	public static int maxPixels = 0;
 	public static boolean paint = false;
+	
+	
 
 }

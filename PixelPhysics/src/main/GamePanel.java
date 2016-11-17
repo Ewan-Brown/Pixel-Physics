@@ -553,6 +553,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 		if(keySet.get(KeyEvent.VK_E)){
 			shiftColor();
+
 		}
 		if(keySet.get(KeyEvent.VK_H)){
 			Properties.RGB[0] = 255;
