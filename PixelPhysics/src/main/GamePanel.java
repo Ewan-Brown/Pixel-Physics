@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -45,7 +44,7 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	boolean lmbHeld = false;
 	boolean rmbHeld = false;
 	public final int maxTimer = 30;
-	public int[] cooldowns = new int[8];
+	public int[] cooldowns = new int[10];
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public double lastLag1 = 0;
 	public double lastLag2 = 0;
@@ -55,20 +54,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public Point lastClick = null;
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
+	public ArrayList<Wall> wallArray = new ArrayList<Wall>();
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	int[][] RGBs = new int[1920][1080];
 	DecimalFormat df = new DecimalFormat("0.00");
-	//	private OptionPanel option;
-	//	VolatileImage backBuffer = null;
-
-	//	void createBackBuffer() {
-	//		if (backBuffer != null) {
-	//			backBuffer.flush();
-	//			backBuffer = null;
-	//		}
-	//		backBuffer = createVolatileImage(1920, 1080);
-	//	}
+	BufferedImage paintBuffer;
 	public GamePanel(int w,int h,int m,int s){
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
@@ -124,8 +115,16 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			drawBlobsWithWorkers(g);
 			//			drawBlobs(g);
 		}
+		else if(Properties.paint){
+			drawParticlesPaint(g);
+		}
 		else{
 			drawParticles(g);
+		}
+		for(int i = 0; i < wallArray.size();i++){
+			Wall w = wallArray.get(i);
+			g.setColor(w.c);
+			g.fillPolygon(w.p);
 		}
 		long t1 = System.nanoTime();
 		lastLag1 = (t1 - t0) / 1000000D;
@@ -134,6 +133,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
 		g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " " + Properties.glowStrength, getWidth() / 2, (getHeight() / 2));
 		g.drawString(Properties.frictionStrength + " - " + Properties.pullStrength + " - " + Properties.size + " - " + Properties.timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
+	}
+	public void addWall(int x1,int y1, int x2, int y2){
+		Wall w = new Wall(x1,y1,x2,y2);
+		wallArray.add(w);
 	}
 	public void update(){
 		Properties.glowRadius = (Properties.size * 2);
@@ -196,41 +199,28 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 
 	}
 	public void drawParticles(Graphics g){
-		//		if (backBuffer == null) {
-		//			createBackBuffer();
-		//		}
+		if(paintBuffer != null){
+			paintBuffer = null;
+		}
 		ArrayList<Particle> pA = packify(particleArray);
-		//		do {
-		//			// First, we validate the back buffer
-		//			int valCode = backBuffer.validate(getGraphicsConfiguration());
-		//			if (valCode == VolatileImage.IMAGE_RESTORED) {
-		//				// This case is just here for illustration
-		//				// purposes.  Since we are
-		//				// recreating the contents of the back buffer
-		//				// every time through this loop, we actually
-		//				// do not need to do anything here to recreate
-		//				// the contents.  If our VImage was an image that
-		//				// we were going to be copying _from_, then we
-		//				// would need to restore the contents at this point
-		//			} else if (valCode == VolatileImage.IMAGE_INCOMPATIBLE) {
-		//				createBackBuffer();
-		//			}
-		//			// Now we've handled validation, get on with the rendering
-		//
-		//			//
-		//			// rendering to the back buffer:
-		//			Graphics gBB = backBuffer.getGraphics();
-		//			gBB.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		g.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
 			g.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
-		//			// copy from the back buffer to the screen
-		//			g.drawImage(backBuffer, 0, 0, this);
-		//			gBB.clearRect(0, 0, 1920, 1080);
-		//			// Now we are done; or are we?  Check contentsLost() and loop as necessary
-		//		} while (backBuffer.contentsLost());
+	}
+	public void drawParticlesPaint(Graphics g){
+		ArrayList<Particle> pA = packify(particleArray);
+		if(paintBuffer == null){
+			paintBuffer = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+		}
+		Graphics gg = paintBuffer.getGraphics();
+		for(int i = 0; i < pA.size();i++){
+			Particle p = pA.get(i);
+			gg.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
+			gg.fillRect((int)p.x, (int)p.y, Properties.size, Properties.size);
+		}	
+		g.drawImage(paintBuffer, 0, 0, null);
 	}
 	public BufferedImage getImage(ArrayList<Particle> pA){
 		BufferedImage buffImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
@@ -555,6 +545,15 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 				Properties.LSD = !Properties.LSD;
 			}
 		}
+		if(keySet.get(KeyEvent.VK_P)){
+			if(cooldowns[8] == 0){
+				cooldowns[8] = maxTimer;
+				Properties.paint = !Properties.paint;
+			}
+		}
+		if(keySet.get(KeyEvent.VK_E)){
+			shiftColor();
+		}
 		if(keySet.get(KeyEvent.VK_H)){
 			Properties.RGB[0] = 255;
 			Properties.RGB[1] = 70;
@@ -582,6 +581,17 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		}
 		if(e.getButton() == MouseEvent.BUTTON3){
 			rmbHeld = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2){
+			System.out.println(lastClick);
+			Point p = e.getPoint();
+			if(lastClick == null){
+				lastClick = p;
+			}
+			else{
+				addWall(lastClick.x, lastClick.y, p.x, p.y);
+				lastClick = null;
+			}
 		}
 	}
 

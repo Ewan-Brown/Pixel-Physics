@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Callable;
 
+import main.Properties;
 import stuff.Bounds;
 
 public class GraphicsBlobWorker implements Callable<BufferedImage> {
@@ -64,7 +65,17 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 				if(r > 5 || g > 5 || b > 5){
 					int rgb2 = r << 16 | g << 8 | b ;
 					image.setRGB(x - this.x, y - this.y, rgb2);
-					RGBs[x][y] = 0;
+
+					if(!Properties.paint){
+						RGBs[x][y] = 0;
+					}
+					else{
+						r -= 10;
+						b -= 10;
+						g -= 10;
+						RGBs[x][y] = (r << 16) & 0XFF0000 | (g << 8) & 0XFF00 | b;
+
+					}
 				}
 			}
 		}
