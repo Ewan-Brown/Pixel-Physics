@@ -17,7 +17,7 @@ public class MainClass {
 	static int width = 1000;
 	static int height = 1000;
 	public static void main(String[] args){
-		System.setProperty("sun.java2d.opengl","True");
+//		System.setProperty("sun.java2d.opengl","True");
 		JOptionPane infoPane = new JOptionPane();
 		Object[] list = null;
 		try {
@@ -32,7 +32,7 @@ public class MainClass {
 		JDialog dialog = infoPane.createDialog(new JFrame(), "Info");
 		dialog.setModal(false);
 		JOptionPane optionPane = new JOptionPane();
-		JSlider slider = getSlider(optionPane,0,1000000,10000);
+		JSlider slider = getSlider(optionPane,0,200000,10000);
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -42,7 +42,7 @@ public class MainClass {
 		JDialog dialog2 = optionPane.createDialog(new JFrame(), "My Slider");
 		dialog2.setVisible(true);
 		dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		if(optionPane.getValue() == "CANCEL"){
+		if(optionPane.getValue() == "CANCEL" || optionPane.getValue() == null){
 			return;
 		}
 		if(optionPane.getValue() == "INFO"){
