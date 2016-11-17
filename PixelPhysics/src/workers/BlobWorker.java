@@ -99,9 +99,9 @@ public class BlobWorker implements Runnable{
 						b1 = (int)b2;
 					}
 					if(pixelized){
-						r1 += (x % 3) + (y % 3);
-						g1 += (x % 3) + (y % 3);
-						b1 += (x % 3) + (y % 3);
+						r1 += ((x % 4) * 3) + ((y % 4) * 3);
+						g1 += ((x % 4) * 3) + ((y % 4) * 3);
+						b1 += ((x % 4) * 3) + ((y % 4) * 3);
 					}
 					if(!LSD){
 						if(r1 > 255){

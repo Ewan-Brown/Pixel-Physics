@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Frame;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -17,15 +18,36 @@ public class MainClass {
 	static int height = 1000;
 	public static void main(String[] args){
 		System.setProperty("sun.java2d.opengl","True");
+		JOptionPane infoPane = new JOptionPane();
+		Object[] list = null;
+		try {
+			list = TextFileReader.readFile("text.text").toArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		infoPane.setMessage(list);
+		infoPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
+		infoPane.setOptionType(JOptionPane.PLAIN_MESSAGE);
+		JDialog dialog = infoPane.createDialog(new JFrame(), "Info");
+		dialog.setModal(false);
 		JOptionPane optionPane = new JOptionPane();
 		JSlider slider = getSlider(optionPane,0,1000000,10000);
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-		JDialog dialog = optionPane.createDialog(new JFrame(), "My Slider");
-		dialog.setVisible(true);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+		Object[] options = { "OK", "CANCEL","INFO" };
+		optionPane.setOptions(options);
+		JDialog dialog2 = optionPane.createDialog(new JFrame(), "My Slider");
+		dialog2.setVisible(true);
+		dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		if(optionPane.getValue() == "CANCEL"){
+			return;
+		}
+		if(optionPane.getValue() == "INFO"){
+			dialog.setVisible(true);
+		}
 		JPanel outer = new JPanel();
 		JFrame frame = new JFrame("Pixel Physics v1.0");
 		outer.setSize(width, height);

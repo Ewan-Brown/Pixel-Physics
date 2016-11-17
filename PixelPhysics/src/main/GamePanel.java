@@ -58,8 +58,10 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 	public static final Random rand = new Random();
 	public BitSet keySet = new BitSet(256);
 	int[][] RGBs = new int[1920][1080];
-	DecimalFormat df = new DecimalFormat("0.00");
+	DecimalFormat df2 = new DecimalFormat("0.00");
+	DecimalFormat df3 = new DecimalFormat("0.000");
 	BufferedImage paintBuffer;
+	public boolean showStats = true;
 	public GamePanel(int w,int h,int m,int s){
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
@@ -130,9 +132,11 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		lastLag1 = (t1 - t0) / 1000000D;
 		double fps = (16D / (double)lastLag1) * 60;
 		g.setColor(Color.WHITE);
-		g.drawString(df.format(lastLag1) + " (" +(int)fps+ ") - " + df.format(lastLag2) + " - " + df.format(lastLag3),0, 20);
-		g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " " + Properties.glowStrength, getWidth() / 2, (getHeight() / 2));
-		g.drawString(Properties.frictionStrength + " - " + Properties.pullStrength + " - " + Properties.size + " - " + Properties.timeSpeed + " - " + df.format(lastLag1) + " - " + df.format(lastLag2) + " - " + df.format(lastLag3), getWidth() / 2, (getHeight() / 2) + 20);	
+		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
+		if(showStats){
+			g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " " + Properties.glowStrength, getWidth() / 2, (getHeight() / 2));
+			g.drawString(df3.format(Properties.frictionStrength) + " - " + df2.format(Properties.pullStrength) + " - " + Properties.size + " - " + df2.format(Properties.timeSpeed), getWidth() / 2, (getHeight() / 2) + 20);	
+		}
 	}
 	public void addWall(int x1,int y1, int x2, int y2){
 		Wall w = new Wall(x1,y1,x2,y2);
@@ -436,13 +440,6 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 		if(keySet.get(KeyEvent.VK_LEFT)){
 			Properties.timeSpeed = 0;
 		}
-		//		if(keySet.get(KeyEvent.VK_T)){
-		//			if(cooldowns[0] == 0){
-		//				lowPerformance = !lowPerformance;
-		//			cooldowns[0] = maxTimer;
-		//			}
-		//		}
-
 		if(keySet.get(KeyEvent.VK_W)){
 			if(Math.abs(Properties.pullStrength) - 1 <= 0){
 				Properties.pullStrength += 0.003;
@@ -534,8 +531,8 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			}
 		}
 		if(keySet.get(KeyEvent.VK_U)){
-			if(cooldowns[7] == 0){
-				cooldowns[7] = maxTimer;
+			if(cooldowns[6] == 0){
+				cooldowns[6] = maxTimer;
 				Properties.pixelized= !Properties.pixelized;
 			}
 		}
@@ -559,6 +556,12 @@ public class GamePanel extends JPanel implements MouseListener,KeyListener,Actio
 			Properties.RGB[0] = 255;
 			Properties.RGB[1] = 70;
 			Properties.RGB[2] = 0;
+		}
+		if(keySet.get(KeyEvent.VK_Z)){
+			if(cooldowns[9] == 0){
+				cooldowns[9] = maxTimer;
+				showStats = !showStats;
+			}
 		}
 	}
 	public void doMouse(){
