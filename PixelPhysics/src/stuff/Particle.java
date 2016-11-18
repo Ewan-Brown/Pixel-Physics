@@ -11,8 +11,6 @@ public class Particle {
 	public double y;
 	public double speedX;
 	public double speedY;
-	public double tempSpeedY;
-	public double tempSpeedX;
 	public static Random rand = new Random();
 	
 	public Particle(int x, int y, double speedX,double speedY,int size){
