@@ -15,7 +15,7 @@ with eachother.
 Values on screen:
 Top left - Last Frame calculation in milliseconds(FPS)
 Middle 1st Row - Red - Green - Blue -Glow Strength/"Brightness"
-Middle 2nd Row - Friction - Mouse force - Pixel Size - TimeScale(1 = 100% time)
+Middle 2nd Row - Friction - Mouse force - Pixel Size - TimeScale(1 = 100% time) - Paint Life(10 by default)
 KeyBinds:
 
 UP     - Speed up time
@@ -36,6 +36,7 @@ Comma  - Decrease Pixel size
 Period - Increase Pixel size
 
 P      - Toggle Paint mode (Works with glow mode!)
+C      - Toggle AbdelMode (Looks cool with paint mode!)
 T      - Toggle Rainbow mode
 E      - (Hold) Speed up color shift
 H      - Switch to Red color (looks like fire!)
@@ -46,4 +47,7 @@ J      - Toggle ball mode
 L      - Decreases glow strength
 O      - Increases glow strength
 U      - Toggle pixelized mode
-Z      - Show/Hide stats on screen
+V      - Show/Hide stats on screen
+(ONLY WORK WITH GLOW + PAINT MODE)
+Z      - Decrease paint life
+X      - Increase paint life

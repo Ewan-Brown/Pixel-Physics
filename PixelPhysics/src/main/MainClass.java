@@ -44,9 +44,6 @@ public class MainClass {
 		if(optionPane.getValue() == "CANCEL" || optionPane.getValue() == null){
 			return;
 		}
-		if(optionPane.getValue() == "INFO"){
-			dialog.setVisible(true);
-		}
 		JPanel outer = new JPanel();
 		JFrame frame = new JFrame("Pixel Physics v1.0");
 		outer.setSize(width, height);
@@ -61,6 +58,9 @@ public class MainClass {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); 
 		gamePanel.init();
+		if(optionPane.getValue() == "INFO"){
+			dialog.setVisible(true);
+		}
 		while(true){
 			try {
 				Thread.sleep(Properties.updateDelay);
