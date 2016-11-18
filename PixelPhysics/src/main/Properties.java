@@ -31,14 +31,8 @@ public class Properties {
 	public static boolean paint = false;
 	public static boolean rainbow = false;
 	public static Random rand = new Random();
-
-
-	public enum paintValue{
-		paint1,
-		paint2,
-		paint3;
-
-	}
+	public static boolean abdelmode = false;
+	public static int glowPaintValue = 10;
 	public static void switchShift(){
 		RGB_switch = rand.nextInt(3);
 		shiftAmount = -1;

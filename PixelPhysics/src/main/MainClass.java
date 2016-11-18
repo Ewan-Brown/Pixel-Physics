@@ -23,7 +23,6 @@ public class MainClass {
 		try {
 			list = TextFileReader.readFile("text.text").toArray();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		infoPane.setMessage(list);

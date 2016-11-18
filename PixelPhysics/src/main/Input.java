@@ -11,7 +11,7 @@ import java.util.BitSet;
 public class Input implements KeyListener,MouseListener{
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
-	public static int[] cooldowns = new int[11];
+	public static int[] cooldowns = new int[14];
 	public static void updateThemkeys(){
 		for(int i = 0 ; i < cooldowns.length; i++){
 			cooldowns[i]--;
@@ -150,7 +150,7 @@ public class Input implements KeyListener,MouseListener{
 			Properties.RGB[1] = 70;
 			Properties.RGB[2] = 0;
 		}
-		if(keySet.get(KeyEvent.VK_Z)){
+		if(keySet.get(KeyEvent.VK_V)){
 			if(cooldowns[9] == 0){
 				cooldowns[9] = maxTimer;
 				Properties.showStats = !Properties.showStats;
@@ -160,6 +160,30 @@ public class Input implements KeyListener,MouseListener{
 			if(cooldowns[10] == 0){
 				cooldowns[10] = maxTimer;
 				Properties.rainbow = !Properties.rainbow;
+			}
+		}
+		if(keySet.get(KeyEvent.VK_C)){
+			if(cooldowns[11] == 0){
+				cooldowns[11] = maxTimer;
+				Properties.abdelmode = !Properties.abdelmode; 
+			}
+		}
+		if(keySet.get(KeyEvent.VK_Z)){
+			if(cooldowns[12] == 0){
+				cooldowns[12] = maxTimer / 4;
+				Properties.glowPaintValue -= 5;
+				if(Properties.glowPaintValue < 5){
+					Properties.glowPaintValue = 5;
+				}
+			}
+		}
+		if(keySet.get(KeyEvent.VK_X)){
+			if(cooldowns[13] == 0){
+				cooldowns[13] = maxTimer / 4;
+				Properties.glowPaintValue += 5;
+				if(Properties.glowPaintValue > 100){
+					Properties.glowPaintValue = 100;
+				}
 			}
 		}
 		

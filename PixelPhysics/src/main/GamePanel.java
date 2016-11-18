@@ -95,7 +95,7 @@ public class GamePanel extends JPanel{
 		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
 		if(Properties.showStats){
 			g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " " + Properties.glowStrength, getWidth() / 2, (getHeight() / 2));
-			g.drawString(df3.format(Properties.frictionStrength) + " - " + df2.format(Properties.pullStrength) + " - " + Properties.size + " - " + df2.format(Properties.timeSpeed), getWidth() / 2, (getHeight() / 2) + 20);	
+			g.drawString(df3.format(Properties.frictionStrength) + " - " + df2.format(Properties.pullStrength) + " - " + Properties.size + " - " + df2.format(Properties.timeSpeed) + " - " + Properties.glowPaintValue, getWidth() / 2, (getHeight() / 2) + 20);	
 		}
 	}
 	public void update(){
@@ -165,16 +165,30 @@ public class GamePanel extends JPanel{
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
 			if(Properties.rainbow){
-//				g.setColor(p.color);
-				int r = 0;
-				int g = 0;
-				int b = 0;
+				gg.setColor(p.color);
+			}
+			if(Properties.abdelmode){
+				int r = (int) (p.x % 600) / 5;
+				r += (int) (p.x % 100);
+				int g = (int) (p.y % 400) / 4;
+				g += (int)(p.y % 50);
+				int b = (int) (p.x % 10) * 10;
+				b += (int) (p.y % 200) / 2;
+				if(r < 0){
+					r = 0;
+				}
+				if(g < 0){
+					g = 0;
+				}				
+				if(b < 0){
+					b = 0;
+				}
 				gg.setColor(new Color(r,g,b));
 			}
 			gg.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
 	}
-	public void drawParticlesPaint(Graphics g){
+	public void drawParticlesPaint(Graphics g1){
 		ArrayList<Particle> pA = packify(particleArray);
 		if(paintBuffer == null){
 			paintBuffer = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
@@ -186,9 +200,27 @@ public class GamePanel extends JPanel{
 			if(Properties.rainbow){
 				gg.setColor(p.color);
 			}
+			if(Properties.abdelmode){
+				int r = (int) (p.x % 600) / 5;
+				r += (int) (p.x % 100);
+				int g = (int) (p.y % 400) / 4;
+				g += (int)(p.y % 50);
+				int b = (int) (p.x % 10) * 10;
+				b += (int) (p.y % 200) / 2;
+				if(r < 0){
+					r = 0;
+				}
+				if(g < 0){
+					g = 0;
+				}				
+				if(b < 0){
+					b = 0;
+				}
+				gg.setColor(new Color(r,g,b));
+			}
 			gg.fillRect((int)p.x, (int)p.y, Properties.size, Properties.size);
 		}	
-		g.drawImage(paintBuffer, 0, 0, null);
+		g1.drawImage(paintBuffer, 0, 0, null);
 	}
 	//TODO When multiple particle are in the same spot it swaps between which one it draws, and when different colors = flickering :(
 	//TODO With packing, particles are non-existant? wut

@@ -70,9 +70,10 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 						RGBs[x][y] = 0;
 					}
 					else{
-						r -= 10;
-						b -= 10;
-						g -= 10;
+						int f = Properties.glowPaintValue;
+						r -= f;
+						b -= f;
+						g -= f;
 						RGBs[x][y] = (r << 16) & 0XFF0000 | (g << 8) & 0XFF00 | b;
 
 					}
