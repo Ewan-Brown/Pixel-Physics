@@ -35,14 +35,15 @@ F      - Reset friction to default    (0.01)
 Comma  - Decrease Pixel size
 Period - Increase Pixel size
 
-P      - Enable Paint mode (Works with glow mode!)
+P      - Toggle Paint mode (Works with glow mode!)
+T      - Toggle Rainbow mode
 E      - (Hold) Speed up color shift
 H      - Switch to Red color (looks like fire!)
 
 G      - Enable Glow mode
 (ONLY WORK WITH GLOW: )
-J      - Switches glow to ball mode
+J      - Toggle ball mode
 L      - Decreases glow strength
 O      - Increases glow strength
-U      - Enable pixelized mode
+U      - Toggle pixelized mode
 Z      - Show/Hide stats on screen

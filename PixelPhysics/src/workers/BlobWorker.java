@@ -38,7 +38,7 @@ public class BlobWorker implements Runnable{
 	public BlobWorker(ArrayList<Particle> p, int[][] RGBs,int w, int h){
 		this.RGBs = RGBs;
 		particleArray = p;
-		glowRadius = Properties.glowRadius;
+		glowRadius = Properties.size * 2;
 		glowStrength = Properties.glowStrength;
 		this.w = w;
 		this.h = h;
@@ -73,6 +73,9 @@ public class BlobWorker implements Runnable{
 			if(maxY > h){
 				maxY = h;
 			}
+			int r = p.color.getRed(); 
+			int g = p.color.getGreen();
+			int b = p.color.getBlue();
 			for(int x = minX; x < maxX;x++){
 				for(int y = minY; y < maxY;y++){
 					double dist = GamePanel.getDistance(x, y, p.x, p.y);
@@ -85,9 +88,14 @@ public class BlobWorker implements Runnable{
 						continue;
 					}
 					double a = glowStrength - (glowStrength * (dist / glowRadius));
-					double r2 = (int)(a * RGB[0]) / 100;
-					double g2 = (int)(a * RGB[1]) / 100;
-					double b2 = (int)(a * RGB[2]) / 100;
+					if(!Properties.rainbow){
+						r = RGB[0];
+						g = RGB[1];
+						b = RGB[2];
+					}
+					double r2 = (int)(a * r) / 100;
+					double g2 = (int)(a * g) / 100;
+					double b2 = (int)(a * b) / 100;
 					if(compound){
 						r1 += r2;
 						g1 += g2;

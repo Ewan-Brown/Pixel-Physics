@@ -32,7 +32,7 @@ public class MainClass {
 		JDialog dialog = infoPane.createDialog(new JFrame(), "Info");
 		dialog.setModal(false);
 		JOptionPane optionPane = new JOptionPane();
-		JSlider slider = getSlider(optionPane,0,200000,10000);
+		JSlider slider = getSlider(optionPane,1,200000,10000);
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
