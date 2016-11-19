@@ -34,6 +34,8 @@ public class MainClass {
 	}
 	public static void main(String[] args){
 		//		System.setProperty("sun.java2d.opengl","True");
+		JFrame frame1 = new JFrame();
+		JOptionPane.showMessageDialog(frame1, "Select an image");
 		JFileChooser fileChooser = new JFileChooser();
 		int returnValue = fileChooser.showOpenDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {

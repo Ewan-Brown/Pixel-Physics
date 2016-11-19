@@ -40,6 +40,8 @@ C      - Toggle AbdelMode (Looks cool with paint mode!)
 T      - Toggle Rainbow mode
 E      - (Hold) Speed up color shift
 H      - Switch to Red color (looks like fire!)
+N      - Switch to Image Mode -- Doesn't work well with rainbow :( 
+	-- if your image is really big (>1500 width) the image will be scaled down so that         it actually runs
 
 G      - Enable Glow mode
 (ONLY WORK WITH GLOW: )
