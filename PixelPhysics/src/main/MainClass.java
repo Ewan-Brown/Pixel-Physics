@@ -1,10 +1,16 @@
 package main;
 
 import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,8 +22,38 @@ import javax.swing.event.ChangeListener;
 public class MainClass {
 	static int width = 1000;
 	static int height = 1000;
+	public static BufferedImage scale(BufferedImage sbi, int imageType, int dWidth, int dHeight, double fWidth, double fHeight) {
+		BufferedImage dbi = null;
+		if(sbi != null) {
+			dbi = new BufferedImage(dWidth, dHeight, imageType);
+			Graphics2D g = dbi.createGraphics();
+			AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
+			g.drawRenderedImage(sbi, at);
+		}
+		return dbi;
+	}
 	public static void main(String[] args){
-//		System.setProperty("sun.java2d.opengl","True");
+		//		System.setProperty("sun.java2d.opengl","True");
+		JFileChooser fileChooser = new JFileChooser();
+		int returnValue = fileChooser.showOpenDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			BufferedImage img = null;
+			File selectedFile = fileChooser.getSelectedFile();
+			try {
+				img = ImageIO.read(selectedFile);
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			while(img.getWidth() > 1500){
+				img = scale(img, img.getType(), img.getWidth() / 2, img.getHeight() / 2, 0.5, 0.5);
+			}
+			Properties.paintImage = img;
+		}
+		else{
+			return;
+		}
 		JOptionPane infoPane = new JOptionPane();
 		Object[] list = null;
 		try {
@@ -35,7 +71,7 @@ public class MainClass {
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-//		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+		//		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 		Object[] options = { "OK", "CANCEL","INFO" };
 		optionPane.setOptions(options);
 		JDialog dialog2 = optionPane.createDialog(new JFrame(), "My Slider");

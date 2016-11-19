@@ -3,7 +3,6 @@ package workers;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import stuff.OccupiedArray;
 import stuff.Particle;
 
 public class PackingWorker implements Callable<ArrayList<Particle>>{

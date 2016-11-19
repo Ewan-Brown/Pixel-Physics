@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class Properties {
@@ -33,6 +34,8 @@ public class Properties {
 	public static Random rand = new Random();
 	public static boolean abdelmode = false;
 	public static int glowPaintValue = 10;
+	public static boolean imageFlag = false;
+	public static BufferedImage paintImage = null;
 	public static void switchShift(){
 		RGB_switch = rand.nextInt(3);
 		shiftAmount = -1;

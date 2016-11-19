@@ -11,7 +11,7 @@ import java.util.BitSet;
 public class Input implements KeyListener,MouseListener{
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
-	public static int[] cooldowns = new int[14];
+	public static int[] cooldowns = new int[20];
 	public static void updateThemkeys(){
 		for(int i = 0 ; i < cooldowns.length; i++){
 			cooldowns[i]--;
@@ -184,6 +184,12 @@ public class Input implements KeyListener,MouseListener{
 				if(Properties.glowPaintValue > 100){
 					Properties.glowPaintValue = 100;
 				}
+			}
+		}
+		if(keySet.get(KeyEvent.VK_N)){
+			if(cooldowns[14] == 0){
+				cooldowns[14] = maxTimer / 2;
+				Properties.imageFlag = true;
 			}
 		}
 		
