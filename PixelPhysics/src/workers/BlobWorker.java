@@ -21,20 +21,20 @@ public class BlobWorker implements Runnable{
 	boolean compound;
 	boolean LSD;
 	boolean pixelized;
-//	public BlobWorker(ArrayList<Particle> p, int[][] r, int[][] g, int[][] b,int w, int h, double gr, int[] RGB,boolean type,double gs){
-//		particleArray = p;
-//		glowRadius = gr;
-//		glowStrength = gs;
-//		this.w = w;
-//		this.h = h;
-//		for(int i = 0; i < RGB.length;i++){
-//			this.RGB[i] = RGB[i];
-//		}
-//		reds = r;
-//		greens = g;
-//		blues = b;
-//		compound = type;
-//	}
+	//	public BlobWorker(ArrayList<Particle> p, int[][] r, int[][] g, int[][] b,int w, int h, double gr, int[] RGB,boolean type,double gs){
+	//		particleArray = p;
+	//		glowRadius = gr;
+	//		glowStrength = gs;
+	//		this.w = w;
+	//		this.h = h;
+	//		for(int i = 0; i < RGB.length;i++){
+	//			this.RGB[i] = RGB[i];
+	//		}
+	//		reds = r;
+	//		greens = g;
+	//		blues = b;
+	//		compound = type;
+	//	}
 	public BlobWorker(ArrayList<Particle> p, int[][] RGBs,int w, int h){
 		this.RGBs = RGBs;
 		particleArray = p;
@@ -49,6 +49,7 @@ public class BlobWorker implements Runnable{
 		this.LSD = Properties.LSD;
 		this.pixelized = Properties.pixelized;
 	}
+	@Override
 	public void run(){
 		double bounds = glowRadius / 2;
 		for(int i = 0; i < particleArray.size();i++){
@@ -56,7 +57,7 @@ public class BlobWorker implements Runnable{
 			if(p.x < 0 - bounds|| p.x > w + bounds || p.y < 0 - bounds || p.y > h + bounds){
 				continue;
 			}
-			
+
 			int minX = (int) (p.x - glowRadius);
 			int minY = (int) (p.y - glowRadius);
 			int maxX = (int) (p.x + glowRadius);
@@ -76,10 +77,15 @@ public class BlobWorker implements Runnable{
 			int r = p.color.getRed(); 
 			int g = p.color.getGreen();
 			int b = p.color.getBlue();
+			double dist = 0;
 			for(int x = minX; x < maxX;x++){
 				for(int y = minY; y < maxY;y++){
-					double dist = GamePanel.getDistance(x, y, p.x, p.y);
-					//TODO less accurate but faster distances
+					if(Properties.diamondGlow){
+						dist = GamePanel.getDiamondDistance(x, y, p.x, p.y);
+					}
+					else{
+						dist = GamePanel.getDistance(x, y, p.x, p.y);
+					}
 					int rgb = RGBs[x][y];
 					int r1 = (rgb >> 16) & 0XFF;
 					int g1 = (rgb >> 8 ) & 0XFF;

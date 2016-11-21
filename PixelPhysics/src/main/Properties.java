@@ -36,6 +36,8 @@ public class Properties {
 	public static int glowPaintValue = 10;
 	public static boolean imageFlag = false;
 	public static BufferedImage paintImage = null;
+	public static boolean diamondGlow = false;
+	public static boolean isWindows = false;
 	public static void switchShift(){
 		RGB_switch = rand.nextInt(3);
 		shiftAmount = -1;

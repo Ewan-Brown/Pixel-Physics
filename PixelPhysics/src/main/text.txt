@@ -1,8 +1,8 @@
 PixelPhysics version 1.5;
 
-Much fun lots pixel. - Adrienne Scott
+10/10 verry good game. - Linus Torvalds
 
-What the heck is this?:
+What the heck is this? I don't really know.
 
 Move the slider to change the amount of particles, then press Done.
 
@@ -31,6 +31,7 @@ A      - Decrease Friction
 R      - Reset mouse force to default (1)
 F      - Reset friction to default    (0.01)
 
+
 (In glow mode these change the glow radius{radius is different than strength})
 Comma  - Decrease Pixel size
 Period - Increase Pixel size
@@ -41,10 +42,10 @@ T      - Toggle Rainbow mode
 E      - (Hold) Speed up color shift
 H      - Switch to Red color (looks like fire!)
 N      - Switch to Image Mode -- Doesn't work well with rainbow :( 
-	-- if your image is really big (>1500 width) the image will be scaled down so that         it actually runs
-
+	   - Image is scaled to the amount of particles you have set
 G      - Enable Glow mode
 (ONLY WORK WITH GLOW: )
+B      - Toggle diamond mode
 J      - Toggle ball mode
 L      - Decreases glow strength
 O      - Increases glow strength

@@ -1,6 +1,5 @@
 package workers;
 
-import main.FastMath;
 import main.GamePanel;
 import main.Properties;
 import stuff.Particle;

@@ -3,12 +3,14 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Transparency;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.awt.image.VolatileImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -18,7 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import stuff.Bounds;
@@ -46,7 +49,8 @@ public class GamePanel extends JPanel{
 	int[][] RGBs = new int[1920][1080];
 	DecimalFormat df2 = new DecimalFormat("0.00");
 	DecimalFormat df3 = new DecimalFormat("0.000");
-	BufferedImage paintBuffer;
+	VolatileImage paintBufferVolatile;
+	VolatileImage gBuffer;
 	public GamePanel(int w,int h,int m,int s){
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
@@ -58,7 +62,7 @@ public class GamePanel extends JPanel{
 		setPreferredSize(d);
 		this.setFocusable(true);
 	}
-	
+
 	public void init(){
 		Input in = new Input();
 		addMouseListener(in);
@@ -68,6 +72,29 @@ public class GamePanel extends JPanel{
 		for(int i = 0; i < a;i++){
 			spawnify();
 		}
+		BufferedImage img = Properties.paintImage;
+		int w1 = 0,h1 = 0;
+		try{
+			w1 = img.getWidth();
+			h1 = img.getHeight();
+		}catch(NullPointerException e){
+			JOptionPane.showMessageDialog(new JFrame(),"The file chosen was not a readable image! - Ending program");
+			System.exit(0);
+		}
+		int n = w1 * h1;
+		if(w1 > 1000){
+			double ratio = (double)h1 / (double)w1;
+			int w2 = (int)Math.sqrt(a / ratio);
+			int h2 = (int)(w2 * ratio);
+			double ratio2 = ((double)w2 / (double)w1);
+			Properties.paintImage = MainClass.scale(img, img.getType(),w2,h2, ratio2, ratio2);
+		}
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+		gBuffer = gc.createCompatibleVolatileImage(1920, 1080, Transparency.TRANSLUCENT);
+		Graphics gg = gBuffer.getGraphics();
+		gg.setColor(Color.BLACK);
+		gg.fillRect(0, 0, 1920, 1080);
 	}
 	@Override
 	public void paint(Graphics g){
@@ -85,7 +112,7 @@ public class GamePanel extends JPanel{
 		}
 		long t1 = System.nanoTime();
 		double lastLag1 = (t1 - t0) / 1000000D;
-		double fps = (16D / (double)lastLag1) * 60;
+		double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
 		if(Properties.showStats){
@@ -102,12 +129,11 @@ public class GamePanel extends JPanel{
 		for(int x = 0; x < w;x++){
 			for(int y = 0; y < h;y++){
 				Color c = new Color(img.getRGB(x, y));
-				spawnify(x, y,0,0,c);
+				spawnify(x + (x * (Properties.size - 1)), y + (y * (Properties.size - 1)),0,0,c);
 			}
 		}
 		Properties.rainbow = true;
 		Properties.imageFlag = false;
-
 	}
 	public void update(){
 		if(Properties.imageFlag){
@@ -168,18 +194,18 @@ public class GamePanel extends JPanel{
 		gg.drawImage(b4, w/2, h/2, this);
 		long t2 = System.nanoTime();
 	}
-	public void drawParticles(Graphics gg){
-		if(paintBuffer != null){
-			paintBuffer = null;
+	public void drawParticles(Graphics g1){
+		if(paintBufferVolatile != null){
+			paintBufferVolatile = null;
 		}
 		ArrayList<Particle> pA = packify(particleArray);
-		gg.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
+		g1.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		int w = getWidth();
 		int h = getHeight();
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
 			if(Properties.rainbow){
-				gg.setColor(p.color);
+				g1.setColor(p.color);
 			}
 			if(Properties.abdelmode){
 				int r = (int) (p.x % 600) / 5;
@@ -197,17 +223,24 @@ public class GamePanel extends JPanel{
 				if(b < 0){
 					b = 0;
 				}
-				gg.setColor(new Color(r,g,b));
+				g1.setColor(new Color(r,g,b));
 			}
-			gg.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
+			g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
 	}
 	public void drawParticlesPaint(Graphics g1){
 		ArrayList<Particle> pA = packify(particleArray);
-		if(paintBuffer == null){
-			paintBuffer = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+		if(paintBufferVolatile == null){
+			if(paintBufferVolatile == null){
+				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+				paintBufferVolatile = gc.createCompatibleVolatileImage(1920, 1080, Transparency.OPAQUE);
+				Graphics gg = paintBufferVolatile.createGraphics();
+				gg.fillRect(0, 0, 1920, 1080);
+			}
 		}
-		Graphics gg = paintBuffer.getGraphics();
+		Graphics gg;
+			gg = paintBufferVolatile.getGraphics();
 		gg.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
@@ -234,7 +267,7 @@ public class GamePanel extends JPanel{
 			}
 			gg.fillRect((int)p.x, (int)p.y, Properties.size, Properties.size);
 		}	
-		g1.drawImage(paintBuffer, 0, 0, null);
+		g1.drawImage(paintBufferVolatile, 0, 0, null);
 	}
 	//TODO When multiple particle are in the same spot it swaps between which one it draws, and when different colors = flickering :(
 	//TODO With packing, particles are non-existant? wut
@@ -254,41 +287,41 @@ public class GamePanel extends JPanel{
 		}
 		return newP;
 	}
-//	public ArrayList<Particle> packifyWithWorker(ArrayList<Particle> pA){
-//		//XXX Strange casts and could be loops stuff here. Please fix!
-//		//TODO find out if 4 threads is really faster than just 2
-//		int q = pA.size() / 4;
-//		int h = pA.size() / 2;
-//		int f = pA.size();
-//		boolean[][] oA = new boolean[1920][1080];
-//		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),oA));
-//		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),oA));
-//		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),oA));
-//		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),oA));
-//
-//		do{
-//
-//		}while(!w1.isDone() && !w2.isDone() && !w3.isDone() && !w4.isDone());
-//
-//		ArrayList<Particle> p1 = null;
-//		ArrayList<Particle> p2 = null;
-//		ArrayList<Particle> p3 = null;
-//		ArrayList<Particle> p4 = null;
-//
-//		try {
-//			p1 = w1.get();
-//			p2 = w2.get();
-//			p3 = w3.get();
-//			p4 = w4.get();
-//
-//			p1.addAll(p2);
-//			p1.addAll(p3);
-//			p1.addAll(p4);
-//		} catch (InterruptedException | ExecutionException e) {
-//			e.printStackTrace();
-//		}
-//		return p1;
-//	}
+	//	public ArrayList<Particle> packifyWithWorker(ArrayList<Particle> pA){
+	//		//XXX Strange casts and could be loops stuff here. Please fix!
+	//		//TODO find out if 4 threads is really faster than just 2
+	//		int q = pA.size() / 4;
+	//		int h = pA.size() / 2;
+	//		int f = pA.size();
+	//		boolean[][] oA = new boolean[1920][1080];
+	//		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),oA));
+	//		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),oA));
+	//		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),oA));
+	//		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),oA));
+	//
+	//		do{
+	//
+	//		}while(!w1.isDone() && !w2.isDone() && !w3.isDone() && !w4.isDone());
+	//
+	//		ArrayList<Particle> p1 = null;
+	//		ArrayList<Particle> p2 = null;
+	//		ArrayList<Particle> p3 = null;
+	//		ArrayList<Particle> p4 = null;
+	//
+	//		try {
+	//			p1 = w1.get();
+	//			p2 = w2.get();
+	//			p3 = w3.get();
+	//			p4 = w4.get();
+	//
+	//			p1.addAll(p2);
+	//			p1.addAll(p3);
+	//			p1.addAll(p4);
+	//		} catch (InterruptedException | ExecutionException e) {
+	//			e.printStackTrace();
+	//		}
+	//		return p1;
+	//	}
 	public void updateParticles(){
 
 		for(int i = 0; i < pullQueue.size();i++){
@@ -333,7 +366,7 @@ public class GamePanel extends JPanel{
 		executorPhysics.submit(new PullPhysicsWorker(x,y,p2,mult));
 		executorPhysics.submit(new PullPhysicsWorker(x,y,p3,mult));
 		executorPhysics.submit(new PullPhysicsWorker(x,y,p4,mult));
-		
+
 
 	}
 	public void spawnify(int x, int y, double dx, double dy,Color c){
@@ -396,6 +429,11 @@ public class GamePanel extends JPanel{
 	}
 	public static double getDistance(double x1, double y1, double x2, double y2){
 		return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+	}
+	public static double getDiamondDistance(double x1, double y1, double x2, double y2){
+		double x = Math.abs(x2 - x1);
+		double y = Math.abs(y2 - y1);
+		return x + y;
 	}
 
 

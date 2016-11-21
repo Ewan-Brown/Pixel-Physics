@@ -1,7 +1,5 @@
 package workers;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;

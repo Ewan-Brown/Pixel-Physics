@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -190,6 +189,12 @@ public class Input implements KeyListener,MouseListener{
 			if(cooldowns[14] == 0){
 				cooldowns[14] = maxTimer / 2;
 				Properties.imageFlag = true;
+			}
+		}
+		if(keySet.get(KeyEvent.VK_B)){
+			if(cooldowns[15] == 0){
+				cooldowns[15] = maxTimer / 2;
+				Properties.diamondGlow = !Properties.diamondGlow;
 			}
 		}
 		

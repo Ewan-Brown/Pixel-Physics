@@ -1,10 +1,12 @@
 package main;
 
+import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -33,33 +35,27 @@ public class MainClass {
 		return dbi;
 	}
 	public static void main(String[] args){
-		//		System.setProperty("sun.java2d.opengl","True");
-		JFrame frame1 = new JFrame();
-		JOptionPane.showMessageDialog(frame1, "Select an image");
-		JFileChooser fileChooser = new JFileChooser();
-		int returnValue = fileChooser.showOpenDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			BufferedImage img = null;
-			File selectedFile = fileChooser.getSelectedFile();
-			try {
-				img = ImageIO.read(selectedFile);
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			while(img.getWidth() > 1500){
-				img = scale(img, img.getType(), img.getWidth() / 2, img.getHeight() / 2, 0.5, 0.5);
-			}
-			Properties.paintImage = img;
-		}
-		else{
+		FileDialog fd = new FileDialog((java.awt.Frame) null);
+		fd.setVisible(true);
+		File f = new File(fd.getDirectory() + fd.getFile());
+		if(fd.getDirectory() == null || fd.getFile() == null){
 			return;
 		}
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(f);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(new JFrame(),"The file chosen was not a readable image!");
+			return;
+		}
+		Properties.paintImage = img;
+		System.setProperty("sun.java2d.opengl","True");
 		JOptionPane infoPane = new JOptionPane();
 		Object[] list = null;
 		try {
-			list = TextFileReader.readFile("text.text").toArray();
+			list = TextFileReader.readFile().toArray();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -69,7 +65,7 @@ public class MainClass {
 		JDialog dialog = infoPane.createDialog(new JFrame(), "Info");
 		dialog.setModal(false);
 		JOptionPane optionPane = new JOptionPane();
-		JSlider slider = getSlider(optionPane,1,200000,10000);
+		JSlider slider = getSlider(optionPane,1,1000000,30000);
 		JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
