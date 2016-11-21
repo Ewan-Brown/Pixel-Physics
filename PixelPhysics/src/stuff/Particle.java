@@ -25,4 +25,7 @@ public class Particle {
 	public Point2D getPoint(){
 		return new Point2D.Double(x,y);
 	}
+	public double getAngle(){
+		return Math.atan2(-speedY, speedX);
+	}
 }

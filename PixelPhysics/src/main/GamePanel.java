@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 
 import stuff.Bounds;
 import stuff.Particle;
+import stuff.Wall;
 import workers.BlobWorker;
 import workers.GraphicsBlobWorker;
 import workers.PullPhysicsWorker;
@@ -109,6 +110,9 @@ public class GamePanel extends JPanel{
 		}
 		else{
 			drawParticles(g);
+		}
+		for(int i = 0; i < Properties.walls.size();i++){
+			g.fillPolygon(Properties.walls.get(i).p);
 		}
 		long t1 = System.nanoTime();
 		double lastLag1 = (t1 - t0) / 1000000D;
@@ -350,8 +354,29 @@ public class GamePanel extends JPanel{
 			moveify(p);
 			//gravitify(p);
 			frictionify(p);
+			for(int j = 0; j < Properties.walls.size();j++){
+				Wall w = Properties.walls.get(j);
+				if(w.isColliding(p)){
+					collide(w,p);
+				}
+			}
 		}
 
+	}
+	public static void collide(Wall w, Particle p){
+		p.x -= p.speedX;	
+		p.y -= p.speedY;
+		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
+		double wAngle = Math.toDegrees(w.getAngle());
+		double bAngle = Math.toDegrees(p.getAngle());
+		double diff = wAngle - bAngle;
+		double newAngle = (bAngle + 2 * diff) % 360;
+		double x = Math.cos(Math.toRadians(newAngle)) * speed;
+		double y = Math.sin(Math.toRadians(newAngle)) * speed;
+		p.speedX = x;
+		p.speedY = -y;
+//		p.speedY -= p.speedY / 20;
+//		p.speedX -= p.speedX / 20;
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		int q = particleArray.size() / 4;

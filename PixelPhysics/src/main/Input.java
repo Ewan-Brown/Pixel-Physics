@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.BitSet;
 
+import stuff.Wall;
+
 public class Input implements KeyListener,MouseListener{
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
@@ -213,6 +215,7 @@ public class Input implements KeyListener,MouseListener{
 				Properties.lastClick = p;
 			}
 			else{
+				Properties.walls.add(new Wall(Properties.lastClick.x,Properties.lastClick.y,p.x,p.y));
 				Properties.lastClick = null;
 			}
 		}

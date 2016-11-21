@@ -2,7 +2,10 @@ package main;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Random;
+
+import stuff.Wall;
 
 public class Properties {
 
@@ -38,6 +41,7 @@ public class Properties {
 	public static BufferedImage paintImage = null;
 	public static boolean diamondGlow = false;
 	public static boolean isWindows = false;
+	public static ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static void switchShift(){
 		RGB_switch = rand.nextInt(3);
 		shiftAmount = -1;
