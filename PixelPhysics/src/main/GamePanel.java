@@ -8,6 +8,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Transparency;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.sound.sampled.Line;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -112,6 +114,7 @@ public class GamePanel extends JPanel{
 			drawParticles(g);
 		}
 		for(int i = 0; i < Properties.walls.size();i++){
+			g.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
 		long t1 = System.nanoTime();
@@ -244,7 +247,7 @@ public class GamePanel extends JPanel{
 			}
 		}
 		Graphics gg;
-			gg = paintBufferVolatile.getGraphics();
+		gg = paintBufferVolatile.getGraphics();
 		gg.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		for(int i = 0; i < pA.size();i++){
 			Particle p = pA.get(i);
@@ -326,6 +329,7 @@ public class GamePanel extends JPanel{
 	//		}
 	//		return p1;
 	//	}
+	@SuppressWarnings("unused")
 	public void updateParticles(){
 
 		for(int i = 0; i < pullQueue.size();i++){
@@ -351,17 +355,35 @@ public class GamePanel extends JPanel{
 				particleArray.remove(i);
 				continue;
 			}
-			moveify(p);
+			Line2D vector = moveify(p);
+			double dist = Double.MAX_VALUE;
+			Point2D intersect = null;
+			Line2D intersectLine = null;
+			for(int j = 0; j < Properties.walls.size();j++)
+			{
+				Wall w = Properties.walls.get(j);
+				for(int k = 0; k < w.p.npoints - 1;k++){
+					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
+					if(l.intersectsLine(vector)){
+						Point2D point = getIntersect(vector, l);
+						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
+						if(distNew < dist){
+							dist = distNew;
+							intersect = point;
+							intersectLine = l;
+						}
+					}
+				}
+			}
+			if(intersect != null && intersectLine != null){
+				p.x = intersect.getX();
+				p.y = intersect.getY();
+				collide(intersectLine, p);
+			}
 			if(Properties.gravity){
 				gravitify(p);
 			}
 			frictionify(p);
-			for(int j = 0; j < Properties.walls.size();j++){
-				Wall w = Properties.walls.get(j);
-				if(w.isColliding(p)){
-					collide(w,p);
-				}
-			}
 		}
 
 	}
@@ -370,6 +392,38 @@ public class GamePanel extends JPanel{
 		p.y -= p.speedY;
 		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
 		double wAngle = Math.toDegrees(w.getAngle());
+		double bAngle = Math.toDegrees(p.getAngle());
+		double diff = wAngle - bAngle;
+		double newAngle = (bAngle + 2 * diff) % 360;
+		double x = Math.cos(Math.toRadians(newAngle)) * speed;
+		double y = Math.sin(Math.toRadians(newAngle)) * speed;
+		p.speedX = x;
+		p.speedY = -y;
+		p.speedY -= p.speedY / 50;
+		p.speedX -= p.speedX / 50;
+	}
+	public static double getAngle(Line2D l){
+		double xD;		
+		double yD;
+		double x1 = l.getX1();
+		double y1 = l.getY1();
+		double x2 = l.getX2();
+		double y2 = l.getY2();
+		if(y2 > y1){
+			yD = y2 - y1;
+			xD = x2 - x1;
+		}
+		else{
+			yD = y1 - y2;
+			xD = x1 - x2;
+		}
+		return -1 * Math.atan2(yD, xD);
+	}
+	public static void collide(Line2D l,Particle p){
+		p.x -= p.speedX;	
+		p.y -= p.speedY;
+		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
+		double wAngle = Math.toDegrees(getAngle(l));
 		double bAngle = Math.toDegrees(p.getAngle());
 		double diff = wAngle - bAngle;
 		double newAngle = (bAngle + 2 * diff) % 360;
@@ -418,9 +472,12 @@ public class GamePanel extends JPanel{
 		p.speedY -= p.speedY * Properties.frictionStrength;
 
 	}
-	public void moveify(Particle p){
+	public Line2D moveify(Particle p){
+		double x =  p.x;
+		double y =  p.y;
 		p.x += p.speedX * Properties.timeSpeed;
 		p.y += p.speedY * Properties.timeSpeed;
+		return new Line2D.Double(x,y,p.x,p.y);
 	}
 	public boolean areCollidifying(Particle p1, Particle p2){
 		double diffX = Math.abs(p1.x - p2.x);
@@ -461,6 +518,29 @@ public class GamePanel extends JPanel{
 		double x = Math.abs(x2 - x1);
 		double y = Math.abs(y2 - y1);
 		return x + y;
+	}
+	public static Point2D getIntersect(Line2D l1, Line2D l2){
+		double m1 = (l1.getY2() - l1.getY1()) / (l1.getX2() - l1.getX1());
+		double m2 = (l2.getY2() - l2.getY1()) / (l2.getX2() - l2.getX1());
+		if(m1 == Double.NEGATIVE_INFINITY){
+			m1 = - 100000;
+		}
+		if(m1 == Double.POSITIVE_INFINITY){
+			m1 = 100000;
+		}
+		if(m2 == Double.NEGATIVE_INFINITY){
+			m2 = -100000;
+		}
+		if(m2 == Double.POSITIVE_INFINITY){
+			m2 = 100000;
+		}
+		Point2D p1 = l1.getP2();
+		Point2D p2 = l2.getP2();
+		double b1 = p1.getY() - (m1 * p1.getX());
+		double b2 = p2.getY() - (m2 * p2.getX());
+		  double x = (b2 - b1) / (m1 - m2);
+		    double y = m1 * x + b1;
+		    return new Point((int) x, (int) y);
 	}
 
 

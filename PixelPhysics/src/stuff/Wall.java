@@ -7,8 +7,8 @@ import main.Properties;
 
 public class Wall {
 	static double radius = 5;
-	int[] x = new int[4];
-	int[] y = new int[4];
+	public int[] x = new int[4];
+	public int[] y = new int[4];
 	public Polygon p;
 	boolean flag = false;
 	public Wall(double x1, double y1, double x2, double y2){
