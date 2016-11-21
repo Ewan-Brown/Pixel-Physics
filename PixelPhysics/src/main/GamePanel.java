@@ -352,7 +352,9 @@ public class GamePanel extends JPanel{
 				continue;
 			}
 			moveify(p);
-			//gravitify(p);
+			if(Properties.gravity){
+				gravitify(p);
+			}
 			frictionify(p);
 			for(int j = 0; j < Properties.walls.size();j++){
 				Wall w = Properties.walls.get(j);
@@ -375,8 +377,8 @@ public class GamePanel extends JPanel{
 		double y = Math.sin(Math.toRadians(newAngle)) * speed;
 		p.speedX = x;
 		p.speedY = -y;
-//		p.speedY -= p.speedY / 20;
-//		p.speedX -= p.speedX / 20;
+		p.speedY -= p.speedY / 50;
+		p.speedX -= p.speedX / 50;
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		int q = particleArray.size() / 4;
@@ -409,7 +411,7 @@ public class GamePanel extends JPanel{
 		spawnify(rand.nextInt(getWidth()),rand.nextInt(getHeight()));
 	}
 	public void gravitify(Particle p){
-		p.speedY -= Properties.gravityStrength;
+		p.speedY += Properties.gravityStrength;
 	}
 	public void frictionify(Particle p){
 		p.speedX -= p.speedX * Properties.frictionStrength;

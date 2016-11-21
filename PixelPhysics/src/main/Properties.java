@@ -24,6 +24,7 @@ public class Properties {
 	public static boolean pixelized = false;
 	public static double timeSpeed = 1;
 	public static long updateDelay = 10;
+	public static boolean gravity = false;
 	public static int[] RGB = new int[3];
 	public static boolean compound = true;
 	public static int shiftAmount = 1;

@@ -199,6 +199,12 @@ public class Input implements KeyListener,MouseListener{
 				Properties.diamondGlow = !Properties.diamondGlow;
 			}
 		}
+		if(keySet.get(KeyEvent.VK_M)){
+			if(cooldowns[16] == 0){
+				cooldowns[16] = maxTimer / 2;
+				Properties.gravity = !Properties.gravity;
+			}
+		}
 		
 	}
 	@Override

@@ -11,13 +11,14 @@ Right click does the inverse, pushing them away.
 
 Particles are affected by friction so they will eventually slow down. They do not interact
 with eachother.
+particles also bounce off of walls
 
 Values on screen:
 Top left - Last Frame calculation in milliseconds(FPS)
 Middle 1st Row - Red - Green - Blue -Glow Strength/"Brightness"
 Middle 2nd Row - Friction - Mouse force - Pixel Size - TimeScale(1 = 100% time) - Paint Life(10 by default)
 KeyBinds:
-
+Middle click (twice) place wall
 UP     - Speed up time
 DOWN   - Slow down time
 RIGHT  - Set time to half-speed
@@ -35,7 +36,7 @@ F      - Reset friction to default    (0.01)
 (In glow mode these change the glow radius{radius is different than strength})
 Comma  - Decrease Pixel size
 Period - Increase Pixel size
-
+M      - Toggle gravity 
 P      - Toggle Paint mode (Works with glow mode!)
 C      - Toggle AbdelMode (Looks cool with paint mode!)
 T      - Toggle Rainbow mode
