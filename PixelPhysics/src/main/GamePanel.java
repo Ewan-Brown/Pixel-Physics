@@ -363,6 +363,7 @@ public class GamePanel extends JPanel{
 			Line2D intersectLine = null;
 			for(int j = 0; j < Properties.walls.size();j++)
 			{
+				//TODO Faster collision-elimination - (AABB bounding boxes for wall)
 				Wall w = Properties.walls.get(j);
 				for(int k = 0; k < w.p.npoints - 1;k++){
 					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
@@ -407,8 +408,8 @@ public class GamePanel extends JPanel{
 		return -1 * Math.atan2(yD, xD);
 	}
 	public static void collide(Line2D l,Particle p,double over){
-		p.x -= p.speedX;	
-		p.y -= p.speedY;
+		p.x -= p.speedX * Properties.timeSpeed;	
+		p.y -= p.speedY * Properties.timeSpeed;
 		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
 		double wAngle = Math.toDegrees(getAngle(l));
 		double bAngle = Math.toDegrees(p.getAngle());
