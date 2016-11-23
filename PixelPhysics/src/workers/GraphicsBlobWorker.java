@@ -24,7 +24,6 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	@Override
 	public BufferedImage call() throws Exception {
 		BufferedImage image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-//		Graphics gg = image.getGraphics();
 		for(int x = this.x; x < w;x++){
 			for(int y = this.y; y < h;y++){
 				if(x < bounds.minX && x > bounds.maxX && y < bounds.minY && y > bounds.maxY){

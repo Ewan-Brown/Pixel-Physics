@@ -54,6 +54,7 @@ public class GamePanel extends JPanel{
 	DecimalFormat df3 = new DecimalFormat("0.000");
 	VolatileImage paintBufferVolatile;
 	VolatileImage gBuffer;
+	double lastLag1 = 0;
 	public GamePanel(int w,int h,int m,int s){
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
@@ -102,7 +103,7 @@ public class GamePanel extends JPanel{
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-		long t0 = System.nanoTime();
+//		long t0 = System.nanoTime();
 		if(Properties.glow){
 			drawBlobsWithWorkers(g);
 			//			drawBlobs(g);
@@ -117,8 +118,8 @@ public class GamePanel extends JPanel{
 			g.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
-		long t1 = System.nanoTime();
-		double lastLag1 = (t1 - t0) / 1000000D;
+//		long t1 = System.nanoTime();
+//		double lastLag1 = (t1 - t0) / 1000000D;
 		double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
@@ -146,7 +147,10 @@ public class GamePanel extends JPanel{
 		if(Properties.imageFlag){
 			doImage();
 		}
+		double t0 = System.nanoTime();
 		this.updateParticles();
+		double t1 = System.nanoTime();
+		lastLag1 = (t1 - t0) / 1000000D;
 		Input.updateThemkeys();
 		this.doMouse();
 		this.repaint();
@@ -156,12 +160,11 @@ public class GamePanel extends JPanel{
 		}
 	}
 	public void drawBlobsWithWorkers(Graphics gg){
-		int qr = particleArray.size() / 4;
-		int hf = particleArray.size() / 2;
-		int fl = particleArray.size();
+//		int qr = particleArray.size() / 4;
+//		int hf = particleArray.size() / 2;
+//		int fl = particleArray.size();
 		int w = getWidth();
 		int h = getHeight();
-		long t0 = System.nanoTime();
 		Bounds bounds = new Bounds(particleArray);
 		Future<?>[] blobWorkers = new Future<?>[Properties.cores];
 		int splitSize = particleArray.size() / Properties.cores;
@@ -178,7 +181,6 @@ public class GamePanel extends JPanel{
 				}
 			}
 		}while(!finished);
-		long t1 = System.nanoTime();
 		Future<BufferedImage> g1 = executorGraphics.submit(new GraphicsBlobWorker(0,0,w / 2,h / 2,RGBs,bounds));
 		Future<BufferedImage> g2 = executorGraphics.submit(new GraphicsBlobWorker(w/2,0,w,h/2,RGBs,bounds));
 		Future<BufferedImage> g3 = executorGraphics.submit(new GraphicsBlobWorker(0,h/2,w/2,h,RGBs,bounds));
@@ -199,13 +201,14 @@ public class GamePanel extends JPanel{
 		gg.drawImage(b2, w/2, 0, this);
 		gg.drawImage(b3, 0, h/2, this);
 		gg.drawImage(b4, w/2, h/2, this);
-		long t2 = System.nanoTime();
 	}
 	public void drawParticles(Graphics g1){
 		if(paintBufferVolatile != null){
 			paintBufferVolatile = null;
 		}
-		ArrayList<Particle> pA = packify(particleArray);
+//		ArrayList<Particle> pA = packify(particleArray);
+		//TODO Does packing actually help anything? So far only adds lag.
+		ArrayList<Particle> pA = particleArray;
 		g1.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 		int w = getWidth();
 		int h = getHeight();
@@ -329,7 +332,6 @@ public class GamePanel extends JPanel{
 	//		}
 	//		return p1;
 	//	}
-	@SuppressWarnings("unused")
 	public void updateParticles(){
 
 		for(int i = 0; i < pullQueue.size();i++){
@@ -378,7 +380,7 @@ public class GamePanel extends JPanel{
 			if(intersect != null && intersectLine != null){
 				p.x = intersect.getX();
 				p.y = intersect.getY();
-				collide(intersectLine, p);
+				collide(intersectLine, p,dist);
 			}
 			if(Properties.gravity){
 				gravitify(p);
@@ -386,21 +388,6 @@ public class GamePanel extends JPanel{
 			frictionify(p);
 		}
 
-	}
-	public static void collide(Wall w, Particle p){
-		p.x -= p.speedX;	
-		p.y -= p.speedY;
-		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
-		double wAngle = Math.toDegrees(w.getAngle());
-		double bAngle = Math.toDegrees(p.getAngle());
-		double diff = wAngle - bAngle;
-		double newAngle = (bAngle + 2 * diff) % 360;
-		double x = Math.cos(Math.toRadians(newAngle)) * speed;
-		double y = Math.sin(Math.toRadians(newAngle)) * speed;
-		p.speedX = x;
-		p.speedY = -y;
-		p.speedY -= p.speedY / 50;
-		p.speedX -= p.speedX / 50;
 	}
 	public static double getAngle(Line2D l){
 		double xD;		
@@ -419,7 +406,7 @@ public class GamePanel extends JPanel{
 		}
 		return -1 * Math.atan2(yD, xD);
 	}
-	public static void collide(Line2D l,Particle p){
+	public static void collide(Line2D l,Particle p,double over){
 		p.x -= p.speedX;	
 		p.y -= p.speedY;
 		double speed = Math.sqrt((p.speedX*p.speedX) + (p.speedY*p.speedY));
@@ -429,6 +416,10 @@ public class GamePanel extends JPanel{
 		double newAngle = (bAngle + 2 * diff) % 360;
 		double x = Math.cos(Math.toRadians(newAngle)) * speed;
 		double y = Math.sin(Math.toRadians(newAngle)) * speed;
+		double dX = Math.cos(Math.toRadians(newAngle)) * over;
+		double dY = -Math.sin(Math.toRadians(newAngle)) * over;
+		p.x += dX;
+		p.y += dY;
 		p.speedX = x;
 		p.speedY = -y;
 		p.speedY -= p.speedY / 50;
@@ -443,11 +434,20 @@ public class GamePanel extends JPanel{
 		Particle[] p3 = particleArray.subList(h, h+q).toArray(new Particle[particleArray.size()]);
 		Particle[] p4 = particleArray.subList(h+q, f).toArray(new Particle[particleArray.size()]);
 
-		executorPhysics.submit(new PullPhysicsWorker(x,y,p1,mult));
-		executorPhysics.submit(new PullPhysicsWorker(x,y,p2,mult));
-		executorPhysics.submit(new PullPhysicsWorker(x,y,p3,mult));
-		executorPhysics.submit(new PullPhysicsWorker(x,y,p4,mult));
+		Future<?> f1 = executorPhysics.submit(new PullPhysicsWorker(x,y,p1,mult));
+		Future<?> f2 = executorPhysics.submit(new PullPhysicsWorker(x,y,p2,mult));
+		Future<?> f3 = executorPhysics.submit(new PullPhysicsWorker(x,y,p3,mult));
+		Future<?> f4 = executorPhysics.submit(new PullPhysicsWorker(x,y,p4,mult));
 
+		try {
+			f1.get();
+			f2.get();
+			f3.get();
+			f4.get();
+		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+		}
+		
 
 	}
 	public void spawnify(int x, int y, double dx, double dy,Color c){
