@@ -6,24 +6,24 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class MainClass {
-	static int width = 1000;
-	static int height = 1000;
+	static int width = 1920;
+	static int height = 1080;
 	public static BufferedImage scale(BufferedImage sbi, int imageType, int dWidth, int dHeight, double fWidth, double fHeight) {
 		BufferedImage dbi = null;
 		if(sbi != null) {
@@ -72,21 +72,21 @@ public class MainClass {
 		//		optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 		Object[] options = { "OK", "CANCEL","INFO" };
 		optionPane.setOptions(options);
-		JDialog dialog2 = optionPane.createDialog(new JFrame(), "My Slider");
+		JDialog dialog2 = optionPane.createDialog(new JFrame(), "Pixel Physics");
 		dialog2.setVisible(true);
 		dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		if(optionPane.getValue() == "CANCEL" || optionPane.getValue() == null){
 			return;
 		}
-		JPanel outer = new JPanel();
-		JFrame frame = new JFrame("Pixel Physics v1.0");
-		outer.setSize(width, height);
+		JTextField text = new JTextField("hello");
+		JFrame frame = new JFrame("Pixel Physics");
 		GamePanel gamePanel = new GamePanel(width,height,slider.getValue(),slider2.getValue());
 		gamePanel.setSize(width, height);
-		outer.setLayout(new BoxLayout(outer, BoxLayout.Y_AXIS));
-		outer.add(gamePanel);
+		gamePanel.setLayout(null);
+		gamePanel.add(text);
+		text.setBounds(100,100,text.getPreferredSize().width,text.getPreferredSize().height);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setContentPane(outer);
+		frame.setContentPane(gamePanel);
 		frame.setVisible(true);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
