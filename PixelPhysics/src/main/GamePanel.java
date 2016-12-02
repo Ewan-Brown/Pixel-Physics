@@ -85,7 +85,6 @@ public class GamePanel extends JPanel{
 			JOptionPane.showMessageDialog(new JFrame(),"The file chosen was not a readable image! - Ending program");
 			System.exit(0);
 		}
-		int n = w1 * h1;
 		if(w1 > 1000){
 			double ratio = (double)h1 / (double)w1;
 			int w2 = (int)Math.sqrt(a / ratio);
@@ -235,7 +234,7 @@ public class GamePanel extends JPanel{
 				}
 				g1.setColor(new Color(r,g,b));
 			}
-			g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
+				g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
 	}
 	public void drawParticlesPaint(Graphics g1){
@@ -365,16 +364,31 @@ public class GamePanel extends JPanel{
 			{
 				//TODO Faster collision-elimination - (AABB bounding boxes for wall)
 				Wall w = Properties.walls.get(j);
-				for(int k = 0; k < w.p.npoints - 1;k++){
-					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
-					if(l.intersectsLine(vector)){
-						Point2D point = getIntersect(vector, l);
-						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
-						if(distNew < dist){
-							dist = distNew;
-							intersect = point;
-							intersectLine = l;
-						}
+//				for(int k = 0; k < w.p.npoints - 1;k++){
+//					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
+//					if(l.intersectsLine(vector)){
+//						Point2D point = getIntersect(vector, l);
+//						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
+//						if(distNew < dist){
+//							dist = distNew;
+//							intersect = point;
+//							intersectLine = l;
+//						}
+//					}
+//				}
+				Line2D l = null;
+				try{
+				l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
+				}catch(NullPointerException e){
+					System.err.print(w.oX[0]);
+				}
+				if(l.intersectsLine(vector)){
+					Point2D point = getIntersect(vector, l);
+					double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
+					if(distNew < dist){
+						dist = distNew;
+						intersect = point;
+						intersectLine = l;
 					}
 				}
 			}
@@ -423,8 +437,8 @@ public class GamePanel extends JPanel{
 		p.y += dY;
 		p.speedX = x;
 		p.speedY = -y;
-		p.speedY -= p.speedY / 50;
-		p.speedX -= p.speedX / 50;
+//		p.speedY -= p.speedY / 20;
+//		p.speedX -= p.speedX / 20;
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		int q = particleArray.size() / 4;

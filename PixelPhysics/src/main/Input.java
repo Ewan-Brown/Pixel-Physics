@@ -210,10 +210,34 @@ public class Input implements KeyListener,MouseListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
-			Properties.lmbHeld = true;
+			if(keySet.get(KeyEvent.VK_SPACE)){
+				Point p = e.getPoint();
+				if(Properties.lastClick == null){
+					Properties.lastClick = p;
+				}
+				else{
+					Properties.walls.add(new Wall(Properties.lastClick.x,Properties.lastClick.y,p.x,p.y));
+					Properties.lastClick = null;
+				}
+			}
+			else{
+				Properties.lmbHeld = true;
+			}
 		}
 		if(e.getButton() == MouseEvent.BUTTON3){
-			Properties.rmbHeld = true;
+			if(keySet.get(KeyEvent.VK_SPACE)){
+				Point p = e.getPoint();
+				if(Properties.lastClick == null){
+					Properties.lastClick = p;
+				}
+				else{
+					Properties.walls.add(new Wall(Properties.lastClick.x,Properties.lastClick.y,p.x,p.y));
+					Properties.lastClick = null;
+				}
+			}
+			else{
+				Properties.rmbHeld = true;
+			}
 		}
 		if(e.getButton() == MouseEvent.BUTTON2){
 			Point p = e.getPoint();
