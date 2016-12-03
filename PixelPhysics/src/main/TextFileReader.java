@@ -14,17 +14,41 @@ import java.util.List;
 public class TextFileReader {
 
 
-	public static void main(String[] args) throws IOException{
-	}
-	public static void printText(List<String> text){
-		for(int i = 0; i < text.size() ; i++){
-			System.out.println(text.get(i));
+	public static void appendFile(final String path, final String text) throws IOException{
+		try {
+			Files.write(Paths.get(path), text.getBytes(), StandardOpenOption.APPEND);
+		}catch (final IOException e) {
+			e.printStackTrace();
 		}
 	}
+	public static void createFile(final String path) throws IOException{
+		try {
+			Files.write(Paths.get(path), " ".getBytes(), StandardOpenOption.CREATE_NEW);
+		}catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void eraseFile(final String path) throws IOException{
+		try{
+			final PrintWriter writer = new PrintWriter(path);
+			writer.print("");
+			writer.close();
+		}
+		catch(final IOException e){
+			e.printStackTrace();
+		}
+
+	}
+	public static void main(final String[] args) throws IOException{
+	}
+	public static void printText(final List<String> text){
+		for(int i = 0; i < text.size() ; i++)
+			System.out.println(text.get(i));
+	}
 	public static List<String> readFile() throws IOException{
-		List<String> text = new ArrayList<String>();
-		InputStream in = MainClass.class.getResourceAsStream("text.txt"); 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		final List<String> text = new ArrayList<String>();
+		final InputStream in = MainClass.class.getResourceAsStream("text.txt");
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		String line = reader.readLine();
 		while (line != null) {
 			text.add(line);
@@ -32,37 +56,12 @@ public class TextFileReader {
 		}
 		return text;
 	}
-	public static void writeFile(String path,String text) throws IOException{
+	public static void writeFile(final String path,final String text) throws IOException{
 		try {
 			Files.write(Paths.get(path), text.getBytes(), StandardOpenOption.WRITE);
-		}catch (IOException e) {
+		}catch (final IOException e) {
 			e.printStackTrace();
 		}
-	}
-	public static void createFile(String path) throws IOException{
-		try {
-			Files.write(Paths.get(path), " ".getBytes(), StandardOpenOption.CREATE_NEW);
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	public static void appendFile(String path, String text) throws IOException{
-		try {
-			Files.write(Paths.get(path), text.getBytes(), StandardOpenOption.APPEND);
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	public static void eraseFile(String path) throws IOException{
-		try{
-			PrintWriter writer = new PrintWriter(path);
-			writer.print("");
-			writer.close();
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-
 	}
 
 }

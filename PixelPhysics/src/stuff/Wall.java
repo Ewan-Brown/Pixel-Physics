@@ -7,18 +7,18 @@ import main.Properties;
 
 public class Wall {
 	static double radius = 2;
-	public int[] x = new int[4];
-	public int[] y = new int[4];
+	boolean flag = false;
 	public int[] oX = new int[2];
 	public int[] oY = new int[2];
 	public Polygon p;
-	boolean flag = false;
-	public Wall(double x1, double y1, double x2, double y2){
-		double m1 = (y2 - y1) / (x2 - x1);
-		double m2 = -1D / m1;
-		double a = Math.atan(m2);
-		double dX = Math.cos(a) * radius;
-		double dY = Math.sin(a) * radius;
+	public int[] x = new int[4];
+	public int[] y = new int[4];
+	public Wall(final double x1, final double y1, final double x2, final double y2){
+		final double m1 = (y2 - y1) / (x2 - x1);
+		final double m2 = -1D / m1;
+		final double a = Math.atan(m2);
+		final double dX = Math.cos(a) * radius;
+		final double dY = Math.sin(a) * radius;
 		oX[0] = (int)x1;
 		oX[1] = (int)x2;
 		oY[0] = (int)y1;
@@ -33,12 +33,8 @@ public class Wall {
 		y[3] = (int)(y1 - dY);
 		p = new Polygon(x,y,4);
 	}
-	public boolean isColliding(Particle b){
-		Rectangle2D rect = new Rectangle2D.Double(b.x, b.y, Properties.size,Properties.size);
-		return p.intersects(rect);
-	}
 	public double getAngle(){
-		double xD;		
+		double xD;
 		double yD;
 		if(oY[1] > oY[0]){
 			yD = oY[1] - oY[0];
@@ -50,6 +46,10 @@ public class Wall {
 		}
 		return -1 * Math.atan2(yD, xD);
 
+	}
+	public boolean isColliding(final Particle b){
+		final Rectangle2D rect = new Rectangle2D.Double(b.x, b.y, Properties.size,Properties.size);
+		return p.intersects(rect);
 	}
 
 }
