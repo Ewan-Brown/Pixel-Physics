@@ -7,9 +7,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.BitSet;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import stuff.Wall;
 
-public class Input implements KeyListener,MouseListener{
+public class Input implements KeyListener,MouseListener,ChangeListener{
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
 	public static int[] cooldowns = new int[20];
@@ -36,8 +39,8 @@ public class Input implements KeyListener,MouseListener{
 			Properties.timeSpeed = 0;
 		}
 		if(keySet.get(KeyEvent.VK_W)){
-			if(Math.abs(Properties.pullStrength) - 1 <= 0){
-				Properties.pullStrength += 0.003;
+			if(Properties.pullStrength <= 1){
+				Properties.pullStrength += 0.005;
 			}
 			else{
 				Properties.pullStrength += Math.abs(Properties.pullStrength) / 100D;
@@ -45,6 +48,8 @@ public class Input implements KeyListener,MouseListener{
 			if(Properties.pullStrength > Properties.pulls[2]){
 				Properties.pullStrength = Properties.pulls[2];
 			}
+			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
+
 		}
 		if(keySet.get(KeyEvent.VK_R)){
 			Properties.pullStrength = Properties.pulls[1];
@@ -54,8 +59,8 @@ public class Input implements KeyListener,MouseListener{
 		}
 
 		if(keySet.get(KeyEvent.VK_S)){
-			if(Math.abs(Properties.pullStrength) - 1 <= 0){
-				Properties.pullStrength -= 0.003;
+			if(Properties.pullStrength <= 1){
+				Properties.pullStrength -= 0.005;
 			}
 			else{
 				Properties.pullStrength -= Math.abs(Properties.pullStrength) / 100D;
@@ -63,19 +68,30 @@ public class Input implements KeyListener,MouseListener{
 			if(Properties.pullStrength < Properties.pulls[0]){
 				Properties.pullStrength = Properties.pulls[0];
 			}
+			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
 
 		}
 		if(keySet.get(KeyEvent.VK_A)){
+			if(Properties.frictionStrength < 0.003){
+				Properties.frictionStrength -= 0.00003;
+			}
 			Properties.frictionStrength -= Properties.frictionStrength / 50D;
 			if(Properties.frictionStrength < Properties.frictions[0]){
 				Properties.frictionStrength = Properties.frictions[0];
 			}
+			MainClass.sliderFriction.setValue((int)(Properties.frictionStrength * 100000D));
 		}
 		if(keySet.get(KeyEvent.VK_D)){
+			if(Properties.frictionStrength < 0.003){
+				Properties.frictionStrength += 0.00008;
+			}
+			else{
 			Properties.frictionStrength += Properties.frictionStrength / 50D;
+			}
 			if(Properties.frictionStrength > Properties.frictions[2]){
 				Properties.frictionStrength = Properties.frictions[2];
 			}
+			MainClass.sliderFriction.setValue((int)(Properties.frictionStrength * 100000D));
 		}
 		if(keySet.get(KeyEvent.VK_COMMA)){
 			if(cooldowns[0] == 0){
@@ -205,9 +221,9 @@ public class Input implements KeyListener,MouseListener{
 				Properties.gravity = !Properties.gravity;
 			}
 		}
-		
+
 	}
-	@Override
+
 	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
 			if(keySet.get(KeyEvent.VK_SPACE)){
@@ -251,29 +267,38 @@ public class Input implements KeyListener,MouseListener{
 		}
 	}
 
-	@Override
+
 	public void keyPressed(KeyEvent e) {
 		keySet.set(e.getKeyCode(),true);
 	}
-	@Override
+
 	public void keyReleased(KeyEvent e) {
 		keySet.set(e.getKeyCode(),false);
 	}
-	@Override
+
 	public void mouseReleased(MouseEvent e) {
 		Properties.lmbHeld = false;
 		Properties.rmbHeld = false;
 	}
-	@Override
+
 	public void mouseExited(MouseEvent e) {
 		Properties.lmbHeld = false;
 		Properties.rmbHeld = false;
 	}
 
-	@Override
+	public void stateChanged(ChangeEvent e) {
+		if(e.getSource() == MainClass.sliderFriction){
+			Properties.frictionStrength = (double)MainClass.sliderFriction.getValue() / 100000D;
+		}
+		if(e.getSource() == MainClass.sliderPull){
+			Properties.pullStrength = (double)MainClass.sliderPull.getValue() / 100D;
+		}
+	}
+
 	public void mouseEntered(MouseEvent e) {}
-	@Override
+
 	public void mouseClicked(MouseEvent e) {}
-	@Override
+
 	public void keyTyped(KeyEvent e) {}
+
 }

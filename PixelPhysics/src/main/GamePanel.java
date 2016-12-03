@@ -66,25 +66,20 @@ public class GamePanel extends JPanel{
 		setPreferredSize(d);
 		this.setFocusable(true);
 	}
-
 	public void init(){
 		Input in = new Input();
 		addMouseListener(in);
-		int a = Properties.maxPixels;
 		addKeyListener(in);
+
+		int a = Properties.maxPixels;
 		setBackground(Color.BLACK);
 		for(int i = 0; i < a;i++){
 			spawnify();
 		}
 		BufferedImage img = Properties.paintImage;
 		int w1 = 0,h1 = 0;
-		try{
-			w1 = img.getWidth();
-			h1 = img.getHeight();
-		}catch(NullPointerException e){
-			JOptionPane.showMessageDialog(new JFrame(),"The file chosen was not a readable image! - Ending program");
-			System.exit(0);
-		}
+		w1 = img.getWidth();
+		h1 = img.getHeight();
 		if(w1 > 1000){
 			double ratio = (double)h1 / (double)w1;
 			int w2 = (int)Math.sqrt(a / ratio);
@@ -102,7 +97,10 @@ public class GamePanel extends JPanel{
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-//		long t0 = System.nanoTime();
+		if(Properties.paused){
+			return;
+		}
+		//		long t0 = System.nanoTime();
 		if(Properties.glow){
 			drawBlobsWithWorkers(g);
 			//			drawBlobs(g);
@@ -117,8 +115,8 @@ public class GamePanel extends JPanel{
 			g.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
-//		long t1 = System.nanoTime();
-//		double lastLag1 = (t1 - t0) / 1000000D;
+		//		long t1 = System.nanoTime();
+		//		double lastLag1 = (t1 - t0) / 1000000D;
 		double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
@@ -143,6 +141,9 @@ public class GamePanel extends JPanel{
 		Properties.imageFlag = false;
 	}
 	public void update(){
+		if(Properties.paused){
+			return;
+		}
 		if(Properties.imageFlag){
 			doImage();
 		}
@@ -159,9 +160,9 @@ public class GamePanel extends JPanel{
 		}
 	}
 	public void drawBlobsWithWorkers(Graphics gg){
-//		int qr = particleArray.size() / 4;
-//		int hf = particleArray.size() / 2;
-//		int fl = particleArray.size();
+		//		int qr = particleArray.size() / 4;
+		//		int hf = particleArray.size() / 2;
+		//		int fl = particleArray.size();
 		int w = getWidth();
 		int h = getHeight();
 		Bounds bounds = new Bounds(particleArray);
@@ -202,10 +203,14 @@ public class GamePanel extends JPanel{
 		gg.drawImage(b4, w/2, h/2, this);
 	}
 	public void drawParticles(Graphics g1){
+		//TODO unused Pause value checker
+		if(Properties.paused){
+			return;
+		}
 		if(paintBufferVolatile != null){
 			paintBufferVolatile = null;
 		}
-//		ArrayList<Particle> pA = packify(particleArray);
+		//		ArrayList<Particle> pA = packify(particleArray);
 		//TODO Does packing actually help anything? So far only adds lag.
 		ArrayList<Particle> pA = particleArray;
 		g1.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
@@ -234,7 +239,7 @@ public class GamePanel extends JPanel{
 				}
 				g1.setColor(new Color(r,g,b));
 			}
-				g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
+			g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
 	}
 	public void drawParticlesPaint(Graphics g1){
@@ -364,21 +369,21 @@ public class GamePanel extends JPanel{
 			{
 				//TODO Faster collision-elimination - (AABB bounding boxes for wall)
 				Wall w = Properties.walls.get(j);
-//				for(int k = 0; k < w.p.npoints - 1;k++){
-//					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
-//					if(l.intersectsLine(vector)){
-//						Point2D point = getIntersect(vector, l);
-//						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
-//						if(distNew < dist){
-//							dist = distNew;
-//							intersect = point;
-//							intersectLine = l;
-//						}
-//					}
-//				}
+				//				for(int k = 0; k < w.p.npoints - 1;k++){
+				//					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
+				//					if(l.intersectsLine(vector)){
+				//						Point2D point = getIntersect(vector, l);
+				//						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
+				//						if(distNew < dist){
+				//							dist = distNew;
+				//							intersect = point;
+				//							intersectLine = l;
+				//						}
+				//					}
+				//				}
 				Line2D l = null;
 				try{
-				l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
+					l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
 				}catch(NullPointerException e){
 					System.err.print(w.oX[0]);
 				}
@@ -437,8 +442,8 @@ public class GamePanel extends JPanel{
 		p.y += dY;
 		p.speedX = x;
 		p.speedY = -y;
-//		p.speedY -= p.speedY / 20;
-//		p.speedX -= p.speedX / 20;
+		//		p.speedY -= p.speedY / 20;
+		//		p.speedX -= p.speedX / 20;
 	}
 	public void pullWithWorkers(double x, double y, double mult){
 		int q = particleArray.size() / 4;
@@ -460,9 +465,9 @@ public class GamePanel extends JPanel{
 			f3.get();
 			f4.get();
 		} catch (InterruptedException | ExecutionException e) {
-//			e.printStackTrace();
+			//			e.printStackTrace();
 		}
-		
+
 
 	}
 	public void spawnify(int x, int y, double dx, double dy,Color c){
@@ -553,9 +558,9 @@ public class GamePanel extends JPanel{
 		Point2D p2 = l2.getP2();
 		double b1 = p1.getY() - (m1 * p1.getX());
 		double b2 = p2.getY() - (m2 * p2.getX());
-		  double x = (b2 - b1) / (m1 - m2);
-		    double y = m1 * x + b1;
-		    return new Point((int) x, (int) y);
+		double x = (b2 - b1) / (m1 - m2);
+		double y = m1 * x + b1;
+		return new Point((int) x, (int) y);
 	}
 
 

@@ -10,7 +10,9 @@ import stuff.Wall;
 public class Properties {
 
 	public static double gravityStrength = 0.007;
-	public static final double[] frictions = {0.0001,0.01,0.1};
+	//TODO Paused is not used yet, maybe use it for when tabbed out?
+	public static boolean paused;
+	public static final double[] frictions = {0,0.01,0.1};
 	public static final double[] pulls = {.01,1,5};
 	public static double frictionStrength = frictions[1];
 	public static double pullStrength = pulls[1];
