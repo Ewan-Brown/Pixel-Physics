@@ -299,9 +299,10 @@ public class GamePanel extends JPanel{
 		double u1y = p1.speedY;
 		double u2x = p2.speedX;
 		double u2y = p2.speedY;
+		//u1 normalized to u2
+		//u2P = 0;
 		double u1xP = u1x - u2x;
 		double u1yP = u1y - u2y;
-		//u2 = 0;
 		double angleOfCollision = Math.atan2(u2y - u1y, u2x- u1x);
 		double rotationalAngle = Math.toRadians((Math.toDegrees(angleOfCollision) + 180) % 360);
 		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
@@ -311,8 +312,16 @@ public class GamePanel extends JPanel{
 		double v2yP = 2 / Math.sqrt(2 * u1yP2 + Math.sqrt((
 				(2 * u1yP2) - 8 * (Math.pow(v1xP,2) - Math.pow(u1xP2, 2))) / 4));
 		if(v2yP == v2yP){
-		System.out.println(u1xP2 + " " + v2yP);
+			//TODO Strange NAN if this isn't called :(
+			System.out.println(u1xP2 + " " + v2yP);
 		}
+		double v1yP = u1yP2 - v2yP;
+		//Undo transformations (Rotate & Translate from u1-u2 normalization)
+		double v1y;
+		double v1x;
+		double v2x;
+		double v2y;
+		
 
 
 	}
