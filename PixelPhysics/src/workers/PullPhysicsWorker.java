@@ -21,6 +21,7 @@ public class PullPhysicsWorker implements Runnable{
 	public void run() {
 		for (final Particle element : array) {
 			final Particle p = element;
+			//TODO XXX getting NullPointers here for no reason?
 			final double dist = GamePanel.getDistance(p.x, p.y, baseX, baseY);
 			final double deltaX = (p.x - baseX) / dist;
 			final double deltaY = (p.y - baseY) / dist;

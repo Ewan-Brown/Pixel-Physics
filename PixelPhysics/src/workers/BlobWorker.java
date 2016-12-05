@@ -118,7 +118,6 @@ public class BlobWorker implements Runnable{
 		}
 		final int rgb2 = r1 << 16 & 0XFF0000 | g1 << 8 & 0XFF00 | b1 ;
 		RGBs[x][y] = rgb2;
-		//TODO RGBs are always 0 for some reason;
 				}
 		}
 	}

@@ -37,7 +37,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 			if(Properties.pullStrength <= 1)
 				Properties.pullStrength += 0.005;
 			else
-				Properties.pullStrength += Math.abs(Properties.pullStrength) / 100D;
+				Properties.pullStrength += Math.abs(Properties.pullStrength) / 50D;
 			if(Properties.pullStrength > Properties.pulls[2])
 				Properties.pullStrength = Properties.pulls[2];
 			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
@@ -56,7 +56,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 			if(Properties.pullStrength <= 1)
 				Properties.pullStrength -= 0.005;
 			else
-				Properties.pullStrength -= Math.abs(Properties.pullStrength) / 100D;
+				Properties.pullStrength -= Math.abs(Properties.pullStrength) / 50D;
 			if(Properties.pullStrength < Properties.pulls[0])
 				Properties.pullStrength = Properties.pulls[0];
 			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
@@ -152,7 +152,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		if(keySet.get(KeyEvent.VK_C))
 			if(cooldowns[11] == 0){
 				cooldowns[11] = maxTimer;
-				Properties.abdelmode = !Properties.abdelmode;
+				Properties.colorGrid = !Properties.colorGrid;
 			}
 		if(keySet.get(KeyEvent.VK_Z))
 			if(cooldowns[12] == 0){
@@ -183,7 +183,12 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				cooldowns[16] = maxTimer / 2;
 				Properties.gravity = !Properties.gravity;
 			}
-
+		if(keySet.get(KeyEvent.VK_Q)){
+			if(cooldowns[17] == 0){
+				cooldowns[17] = maxTimer / 2;
+				Properties.planetMode = !Properties.planetMode;
+			}
+		}
 	}
 
 	@Override

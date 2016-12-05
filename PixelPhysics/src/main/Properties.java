@@ -9,7 +9,8 @@ import stuff.Wall;
 
 public class Properties {
 
-	public static boolean abdelmode = false;
+	public static boolean colorGrid = false;
+	public static boolean planetMode = false;
 	public static boolean compound = true;
 	public static int cores = 1;
 	public static boolean diamondGlow = false;

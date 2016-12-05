@@ -34,7 +34,7 @@ public class GamePanel extends JPanel{
 
 	public static final Random rand = new Random();
 	private static final long serialVersionUID = 1L;
-	public static void collide(final Line2D l,final Particle p,final double over){
+	public static void wallCollide(final Line2D l,final Particle p,final double over){
 		p.x -= p.speedX * Properties.timeSpeed;
 		p.y -= p.speedY * Properties.timeSpeed;
 		final double speed = Math.sqrt(p.speedX*p.speedX + p.speedY*p.speedY);
@@ -113,7 +113,7 @@ public class GamePanel extends JPanel{
 	/**
 	 *
 	 */
-	private final ExecutorService executorPhysics = Executors.newCachedThreadPool();
+	private static final ExecutorService executorPhysics = Executors.newCachedThreadPool();
 	public boolean flag = false;
 	VolatileImage gBuffer;
 	public BitSet keySet = new BitSet(256);
@@ -224,7 +224,7 @@ public class GamePanel extends JPanel{
 			final Particle p = pA.get(i);
 			if(Properties.rainbow)
 				g1.setColor(p.color);
-			if(Properties.abdelmode){
+			if(Properties.colorGrid){
 				int r = (int) (p.x % 600) / 5;
 				r += (int) (p.x % 100);
 				int g = (int) (p.y % 400) / 4;
@@ -259,7 +259,7 @@ public class GamePanel extends JPanel{
 			final Particle p = pA.get(i);
 			if(Properties.rainbow)
 				gg.setColor(p.color);
-			if(Properties.abdelmode){
+			if(Properties.colorGrid){
 				int r = (int) (p.x % 600) / 5;
 				r += (int) (p.x % 100);
 				int g = (int) (p.y % 400) / 4;
@@ -276,12 +276,65 @@ public class GamePanel extends JPanel{
 			}
 			gg.fillRect((int)p.x, (int)p.y, Properties.size, Properties.size);
 		}
-		g1.drawImage(paintBufferVolatile, 0, 0, null);
+		super.paint(g1);
+		g1.drawImage(paintBufferVolatile, 0,0, this);
 	}
 	public void frictionify(final Particle p){
 		p.speedX -= p.speedX * Properties.frictionStrength;
 		p.speedY -= p.speedY * Properties.frictionStrength;
 
+	}
+	public void planetifyParticles(){
+		Particle p1,p2;
+		for(int i = 0 ; i < particleArray.size();i++){
+			p1 = particleArray.get(i);
+			for(int j = i + 1; j < particleArray.size();j++){
+				p2 = particleArray.get(j);
+				planetify(p1, p2);
+			}
+		}
+	}
+	public static void collidePlanets(final Particle p1, final Particle p2){
+		p1.x -= p1.speedX;
+		p1.y -= p1.speedY;
+		p2.x -= p2.speedX;
+		p2.y -= p2.speedY;
+
+	}
+	public void planetify(final Particle p1, final Particle p2){
+		final double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
+		if(dist < 0.02){
+			collidePlanets(p1, p2);
+		}
+		double mult = 0.1;
+		double a = 1D - (dist / 500D);
+		//		double a = 1 / (dist * dist);
+		//		double b = 5D / (0.1 * (dist + 5));
+		//		a += b;
+		if(a < 0){
+			a = 0;
+		}
+		mult *= a;
+		if(dist <  (double)0.5){
+			mult = 0;
+			p1.x -= p1.speedX;
+			p1.y -= p1.speedY;
+			p2.x -= p2.speedX;
+			p2.y -= p2.speedY;
+
+			p2.speedX *= -0.9;
+			p2.speedY *= -0.9;
+			p1.speedX *= -0.9;
+			p1.speedY *= -0.9;
+		}
+		final double deltaX = (p2.x - p1.x) / dist;
+		final double deltaY = (p2.y - p1.y) / dist;
+		final double deltaX2 = (p1.x - p2.x) / dist;
+		final double deltaY2 = (p1.y - p2.y) / dist;
+		p2.speedX -= deltaX * Properties.timeSpeed * mult;
+		p2.speedY -= deltaY * Properties.timeSpeed * mult;
+		p1.speedX -= deltaX2 * Properties.timeSpeed * mult;
+		p1.speedY -= deltaY2 * Properties.timeSpeed * mult;
 	}
 	public void gravitify(final Particle p){
 		p.speedY += Properties.gravityStrength;
@@ -295,17 +348,16 @@ public class GamePanel extends JPanel{
 		setBackground(Color.BLACK);
 		for(int i = 0; i < a;i++)
 			spawnify();
-		final BufferedImage img = Properties.paintImage;
+		BufferedImage img = Properties.paintImage;
 		int w1 = 0,h1 = 0;
 		w1 = img.getWidth();
 		h1 = img.getHeight();
-		if(w1 > 1000){
-			final double ratio = (double)h1 / (double)w1;
-			final int w2 = (int)Math.sqrt(a / ratio);
-			final int h2 = (int)(w2 * ratio);
-			final double ratio2 = (double)w2 / (double)w1;
-			Properties.paintImage = MainClass.scale(img, img.getType(),w2,h2, ratio2, ratio2);
-		}
+		final double ratio = (double)h1 / (double)w1;
+		final int w2 = (int)Math.sqrt(a / ratio);
+		System.out.println(w2);
+		final int h2 = (int)(w2 * ratio);
+		final double ratio2 = (double)w2 / (double)w1;
+		Properties.paintImage = MainClass.scale(img, img.getType(),w2,h2, ratio2, ratio2);
 		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 		gBuffer = gc.createCompatibleVolatileImage(1920, 1080, Transparency.TRANSLUCENT);
@@ -342,10 +394,8 @@ public class GamePanel extends JPanel{
 		super.paint(g);
 		if(Properties.paused)
 			return;
-		//		long t0 = System.nanoTime();
 		if(Properties.glow)
 			drawBlobsWithWorkers(g);
-		//			drawBlobs(g);
 		else if(Properties.paint)
 			drawParticlesPaint(g);
 		else
@@ -354,8 +404,6 @@ public class GamePanel extends JPanel{
 			g.setColor(new Color(Properties.RGB[0],Properties.RGB[1],Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
-		//		long t1 = System.nanoTime();
-		//		double lastLag1 = (t1 - t0) / 1000000D;
 		final double fps = 16D / lastLag1 * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df2.format(lastLag1) + " (" +(int)fps+")",0, 20);
@@ -384,9 +432,9 @@ public class GamePanel extends JPanel{
 			f3.get();
 			f4.get();
 		} catch (InterruptedException | ExecutionException e) {
-			//			e.printStackTrace();
+			//				e.printStackTrace();
+			//TODO XXX same null errors for pulling here
 		}
-
 
 	}
 	public void spawnify(){
@@ -420,43 +468,10 @@ public class GamePanel extends JPanel{
 		if(flag)
 			Properties.shiftColor();
 	}
-	//	public ArrayList<Particle> packifyWithWorker(ArrayList<Particle> pA){
-	//		//XXX Strange casts and could be loops stuff here. Please fix!
-	//		//TODO find out if 4 threads is really faster than just 2
-	//		int q = pA.size() / 4;
-	//		int h = pA.size() / 2;
-	//		int f = pA.size();
-	//		boolean[][] oA = new boolean[1920][1080];
-	//		Future<ArrayList<Particle>> w1 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(0, q)),getWidth(),getHeight(),oA));
-	//		Future<ArrayList<Particle>> w2 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(q, h)),getWidth(),getHeight(),oA));
-	//		Future<ArrayList<Particle>> w3 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(h , f - q)),getWidth(),getHeight(),oA));
-	//		Future<ArrayList<Particle>> w4 =  executorPhysics.submit(new PackingWorker(new ArrayList<Particle>(pA.subList(f - q, f)),getWidth(),getHeight(),oA));
-	//
-	//		do{
-	//
-	//		}while(!w1.isDone() && !w2.isDone() && !w3.isDone() && !w4.isDone());
-	//
-	//		ArrayList<Particle> p1 = null;
-	//		ArrayList<Particle> p2 = null;
-	//		ArrayList<Particle> p3 = null;
-	//		ArrayList<Particle> p4 = null;
-	//
-	//		try {
-	//			p1 = w1.get();
-	//			p2 = w2.get();
-	//			p3 = w3.get();
-	//			p4 = w4.get();
-	//
-	//			p1.addAll(p2);
-	//			p1.addAll(p3);
-	//			p1.addAll(p4);
-	//		} catch (InterruptedException | ExecutionException e) {
-	//			e.printStackTrace();
-	//		}
-	//		return p1;
-	//	}
 	public void updateParticles(){
-
+		if(Properties.planetMode){
+			planetifyParticles();
+		}
 		for(int i = 0; i < pullQueue.size();i++){
 			final Point2D p = pullQueue.get(i);
 
@@ -486,26 +501,8 @@ public class GamePanel extends JPanel{
 			Line2D intersectLine = null;
 			for(int j = 0; j < Properties.walls.size();j++)
 			{
-				//TODO Faster collision-elimination - (AABB bounding boxes for wall)
 				final Wall w = Properties.walls.get(j);
-				//				for(int k = 0; k < w.p.npoints - 1;k++){
-				//					Line2D l = new Line2D.Double(w.x[k],w.y[k],w.x[k+1],w.y[k+1]);
-				//					if(l.intersectsLine(vector)){
-				//						Point2D point = getIntersect(vector, l);
-				//						double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
-				//						if(distNew < dist){
-				//							dist = distNew;
-				//							intersect = point;
-				//							intersectLine = l;
-				//						}
-				//					}
-				//				}
-				Line2D l = null;
-				try{
-					l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
-				}catch(final NullPointerException e){
-					System.err.print(w.oX[0]);
-				}
+				Line2D l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
 				if(l.intersectsLine(vector)){
 					final Point2D point = getIntersect(vector, l);
 					final double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
@@ -519,7 +516,7 @@ public class GamePanel extends JPanel{
 			if(intersect != null && intersectLine != null){
 				p.x = intersect.getX();
 				p.y = intersect.getY();
-				collide(intersectLine, p,dist);
+				wallCollide(intersectLine, p,dist);
 			}
 			if(Properties.gravity)
 				gravitify(p);
