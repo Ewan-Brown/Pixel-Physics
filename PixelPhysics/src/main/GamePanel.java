@@ -303,7 +303,9 @@ public class GamePanel extends JPanel{
 		//u2P = 0;
 		double u1xP = u1x - u2x;
 		double u1yP = u1y - u2y;
+		//Angle of collison from u1 to u2;
 		double angleOfCollision = Math.atan2(u2y - u1y, u2x- u1x);
+		//Normalization angle
 		double rotationalAngle = Math.toRadians((Math.toDegrees(angleOfCollision) + 180) % 360);
 		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
 		double u1yP2 = (u1xP * Math.sin(rotationalAngle)) + (u1yP * Math.cos(rotationalAngle));
