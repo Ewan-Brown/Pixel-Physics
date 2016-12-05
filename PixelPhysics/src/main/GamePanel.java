@@ -295,15 +295,30 @@ public class GamePanel extends JPanel{
 		}
 	}
 	public static void collidePlanets(final Particle p1, final Particle p2){
-		p1.x -= p1.speedX;
-		p1.y -= p1.speedY;
-		p2.x -= p2.speedX;
-		p2.y -= p2.speedY;
+		double u1x = p1.speedX;
+		double u1y = p1.speedY;
+		double u2x = p2.speedX;
+		double u2y = p2.speedY;
+		double u1xP = u1x - u2x;
+		double u1yP = u1y - u2y;
+		//u2 = 0;
+		double angleOfCollision = Math.atan2(u2y - u1y, u2x- u1x);
+		double rotationalAngle = Math.toRadians((Math.toDegrees(angleOfCollision) + 180) % 360);
+		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
+		double u1yP2 = (u1xP * Math.sin(rotationalAngle)) + (u1yP * Math.cos(rotationalAngle));
+		double v2xP = 0;
+		double v1xP = u1xP2;
+		double v2yP = 2 / Math.sqrt(2 * u1yP2 + Math.sqrt((
+				(2 * u1yP2) - 8 * (Math.pow(v1xP,2) - Math.pow(u1xP2, 2))) / 4));
+		if(v2yP == v2yP){
+		System.out.println(u1xP2 + " " + v2yP);
+		}
+
 
 	}
 	public void planetify(final Particle p1, final Particle p2){
 		final double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
-		if(dist < 0.02){
+		if(dist < 1){
 			collidePlanets(p1, p2);
 		}
 		double mult = 0.1;
@@ -315,17 +330,9 @@ public class GamePanel extends JPanel{
 			a = 0;
 		}
 		mult *= a;
-		if(dist <  (double)0.5){
+		if(dist <  1){
 			mult = 0;
-			p1.x -= p1.speedX;
-			p1.y -= p1.speedY;
-			p2.x -= p2.speedX;
-			p2.y -= p2.speedY;
-
-			p2.speedX *= -0.9;
-			p2.speedY *= -0.9;
-			p1.speedX *= -0.9;
-			p1.speedY *= -0.9;
+			collidePlanets(p1, p2);
 		}
 		final double deltaX = (p2.x - p1.x) / dist;
 		final double deltaY = (p2.y - p1.y) / dist;
