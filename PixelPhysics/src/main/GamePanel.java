@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
@@ -34,6 +35,7 @@ public class GamePanel extends JPanel{
 
 	public static final Random rand = new Random();
 	private static final long serialVersionUID = 1L;
+	public Slider pullSlider = new Slider(960,300);
 	public static void wallCollide(final Line2D l,final Particle p,final double over){
 		p.x -= p.speedX * Properties.timeSpeed;
 		p.y -= p.speedY * Properties.timeSpeed;
@@ -241,6 +243,9 @@ public class GamePanel extends JPanel{
 			}
 			g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
+		Graphics2D g2 = (Graphics2D) g1;
+		g2.setColor(Color.WHITE);
+		g2.fill(pullSlider.getRect());
 	}
 	public void drawParticlesPaint(final Graphics g1){
 		final ArrayList<Particle> pA = packify(particleArray);

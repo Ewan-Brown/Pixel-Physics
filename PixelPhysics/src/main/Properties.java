@@ -62,13 +62,14 @@ public class Properties {
 		return a;
 	}
 	public static void setValueOf(String s,double value){
+		value /= 100;
 		s.toLowerCase();
 		switch(s){
 		case "pull":
-			pullStrength = value;
+			pullStrength = ((pulls[2] - pulls[0]) * value) + pulls[0];
 			break;
 		case "friction":
-			frictionStrength = value;
+			frictionStrength = frictions[2] * value;
 			break;
 		default:
 			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
