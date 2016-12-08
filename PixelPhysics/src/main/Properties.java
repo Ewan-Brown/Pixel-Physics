@@ -46,6 +46,34 @@ public class Properties {
 	public static double timeSpeed = 1;
 	public static long updateDelay = 10;
 	public static ArrayList<Wall> walls = new ArrayList<Wall>();
+	public static double getValueOf(String s){
+		s.toLowerCase();
+		double a = 0;
+		switch(s){
+		case "pull":
+			a = pullStrength;
+			break;
+		case "friction":
+			a = pullStrength;
+			break;
+		default:
+			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
+		}
+		return a;
+	}
+	public static void setValueOf(String s,double value){
+		s.toLowerCase();
+		switch(s){
+		case "pull":
+			pullStrength = value;
+			break;
+		case "friction":
+			frictionStrength = value;
+			break;
+		default:
+			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
+		}
+	}
 	public static boolean getPositive(final int index){
 		if(RGB[index] < 127)
 			return true;

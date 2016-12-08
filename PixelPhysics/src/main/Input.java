@@ -40,16 +40,13 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.pullStrength += Math.abs(Properties.pullStrength) / 50D;
 			if(Properties.pullStrength > Properties.pulls[2])
 				Properties.pullStrength = Properties.pulls[2];
-			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
 
 		}
 		if(keySet.get(KeyEvent.VK_R)){
 			Properties.pullStrength = Properties.pulls[1];
-			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
 		}
 		if(keySet.get(KeyEvent.VK_F)){
 			Properties.frictionStrength = Properties.frictions[1];
-			MainClass.sliderFriction.setValue((int)(Properties.frictionStrength * 100000D));
 		}
 
 		if(keySet.get(KeyEvent.VK_S)){
@@ -59,7 +56,6 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.pullStrength -= Math.abs(Properties.pullStrength) / 50D;
 			if(Properties.pullStrength < Properties.pulls[0])
 				Properties.pullStrength = Properties.pulls[0];
-			MainClass.sliderPull.setValue((int)(Properties.pullStrength * 100D));
 
 		}
 		if(keySet.get(KeyEvent.VK_A)){
@@ -68,7 +64,6 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 			Properties.frictionStrength -= Properties.frictionStrength / 50D;
 			if(Properties.frictionStrength < Properties.frictions[0])
 				Properties.frictionStrength = Properties.frictions[0];
-			MainClass.sliderFriction.setValue((int)(Properties.frictionStrength * 100000D));
 		}
 		if(keySet.get(KeyEvent.VK_D)){
 			if(Properties.frictionStrength < 0.003)
@@ -77,7 +72,6 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.frictionStrength += Properties.frictionStrength / 50D;
 			if(Properties.frictionStrength > Properties.frictions[2])
 				Properties.frictionStrength = Properties.frictions[2];
-			MainClass.sliderFriction.setValue((int)(Properties.frictionStrength * 100000D));
 		}
 		if(keySet.get(KeyEvent.VK_COMMA))
 			if(cooldowns[0] == 0){
@@ -259,11 +253,8 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 	}
 
 	@Override
-	public void stateChanged(final ChangeEvent e) {
-		if(e.getSource() == MainClass.sliderFriction)
-			Properties.frictionStrength = MainClass.sliderFriction.getValue() / 100000D;
-		if(e.getSource() == MainClass.sliderPull)
-			Properties.pullStrength = MainClass.sliderPull.getValue() / 100D;
+	public void stateChanged(ChangeEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
-
 }

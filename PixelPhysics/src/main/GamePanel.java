@@ -299,52 +299,53 @@ public class GamePanel extends JPanel{
 		double u1y = p1.speedY;
 		double u2x = p2.speedX;
 		double u2y = p2.speedY;
-		//u1 normalized to u2
-		//u2P = 0;
 		double u1xP = u1x - u2x;
 		double u1yP = u1y - u2y;
-		//Angle of collison from u1 to u2;
-		double angleOfCollision = Math.atan2(u2y - u1y, u2x- u1x);
+		//Angle of collision from u1 to u2;
+		double angleOfCollision = Math.atan2(p2.y - p1.y, p2.y - p2.x);
 		//Normalization angle
-		double rotationalAngle = Math.toRadians((Math.toDegrees(angleOfCollision) + 180) % 360);
+		double rotationalAngle = -angleOfCollision;
 		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
 		double u1yP2 = (u1xP * Math.sin(rotationalAngle)) + (u1yP * Math.cos(rotationalAngle));
-		double v2xP = 0;
-		double v1xP = u1xP2;
-		double v2yP = 2 / Math.sqrt(2 * u1yP2 + Math.sqrt((
-				(2 * u1yP2) - 8 * (Math.pow(v1xP,2) - Math.pow(u1xP2, 2))) / 4));
-		if(v2yP == v2yP){
-			//TODO Strange NAN if this isn't called :(
-			System.out.println(u1xP2 + " " + v2yP);
-		}
-		double v1yP = u1yP2 - v2yP;
+		double v2yP2 = 0;
+		double v1yP2 = u1yP2;
+		double v2xP2 = (u1xP2 + Math.sqrt(u1xP2 * u1xP2 - 2 * (v1yP2 * v1yP2 - u1yP2 * u1yP2))) / 2;
+		double v1xP2 = u1xP2 - v2xP2;
 		//Undo transformations (Rotate & Translate from u1-u2 normalization)
-		double v1y;
-		double v1x;
-		double v2x;
-		double v2y;
-		
+		rotationalAngle = -rotationalAngle;
+		double v1xP = (v1xP2 * Math.cos(rotationalAngle)) - (v1yP2 * Math.sin(rotationalAngle));
+		double v1yP = (v1xP2 * Math.sin(rotationalAngle)) + (v1yP2 * Math.cos(rotationalAngle));;
+		double v2xP = (v2xP2 * Math.cos(rotationalAngle)) - (v2yP2 * Math.sin(rotationalAngle));;
+		double v2yP = (v2xP2 * Math.sin(rotationalAngle)) + (v2yP2 * Math.cos(rotationalAngle));;
+		double v1x = v1xP + u2x;
+		double v1y = v1yP + u2y;
+		double v2x = v2xP + u2x;
+		double v2y = v2yP + u2y;
+		p1.speedX = v1x;
+		p1.speedY = v1y;
+		p2.speedX = v2x;
+		p2.speedY = v2y;
 
 
 	}
 	public void planetify(final Particle p1, final Particle p2){
 		final double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
-		if(dist < 1){
-			collidePlanets(p1, p2);
+		if(dist < 3){
+			return;
 		}
-		double mult = 0.1;
-		double a = 1D - (dist / 500D);
-		//		double a = 1 / (dist * dist);
+		double mult = 2;
+		double a =  1D / (dist * dist);
+//		double b = 1 / (dist * dist);
 		//		double b = 5D / (0.1 * (dist + 5));
 		//		a += b;
 		if(a < 0){
 			a = 0;
 		}
 		mult *= a;
-		if(dist <  1){
-			mult = 0;
-			collidePlanets(p1, p2);
-		}
+//		if(dist < Properties.size){
+//			mult = 0;
+//			collidePlanets(p1, p2);
+//		}
 		final double deltaX = (p2.x - p1.x) / dist;
 		final double deltaY = (p2.y - p1.y) / dist;
 		final double deltaX2 = (p1.x - p2.x) / dist;
@@ -372,7 +373,6 @@ public class GamePanel extends JPanel{
 		h1 = img.getHeight();
 		final double ratio = (double)h1 / (double)w1;
 		final int w2 = (int)Math.sqrt(a / ratio);
-		System.out.println(w2);
 		final int h2 = (int)(w2 * ratio);
 		final double ratio2 = (double)w2 / (double)w1;
 		Properties.paintImage = MainClass.scale(img, img.getType(),w2,h2, ratio2, ratio2);
