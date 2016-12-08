@@ -51,11 +51,17 @@ public class Properties {
 		double a = 0;
 		switch(s){
 		case "pull":
-			a = pullStrength;
-			break;
+			return pullStrength;
+		case "pullMin":
+			return pulls[0];
+		case "pullMax":
+			return pulls[2];
 		case "friction":
-			a = pullStrength;
-			break;
+			return frictionStrength;
+		case "frictionMin":
+			return frictions[0];
+		case "frictionMax":
+			return frictions[2];
 		default:
 			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
 		}

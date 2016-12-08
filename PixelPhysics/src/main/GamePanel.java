@@ -35,7 +35,8 @@ public class GamePanel extends JPanel{
 
 	public static final Random rand = new Random();
 	private static final long serialVersionUID = 1L;
-	public Slider pullSlider = new Slider(960,300);
+	public Slider pullSlider = new Slider(960,30,"pull");
+	public Slider frictionSlider = new Slider(960,50,"friction");
 	public static void wallCollide(final Line2D l,final Particle p,final double over){
 		p.x -= p.speedX * Properties.timeSpeed;
 		p.y -= p.speedY * Properties.timeSpeed;
@@ -243,9 +244,6 @@ public class GamePanel extends JPanel{
 			}
 			g1.fillRect((int)p.x ,(int)p.y, Properties.size,Properties.size);
 		}
-		Graphics2D g2 = (Graphics2D) g1;
-		g2.setColor(Color.WHITE);
-		g2.fill(pullSlider.getRect());
 	}
 	public void drawParticlesPaint(final Graphics g1){
 		final ArrayList<Particle> pA = packify(particleArray);
@@ -434,6 +432,17 @@ public class GamePanel extends JPanel{
 			g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " " + Properties.glowStrength, getWidth() / 2, getHeight() / 2);
 			g.drawString(df3.format(Properties.frictionStrength) + " - " + df2.format(Properties.pullStrength) + " - " + Properties.size + " - " + df2.format(Properties.timeSpeed) + " - " + Properties.glowPaintValue, getWidth() / 2, getHeight() / 2 + 20);
 		}
+		Graphics2D g2 = (Graphics2D) g;
+		pullSlider.x = getWidth() / 2;
+		g2.setColor(Color.WHITE);
+		g2.fill(pullSlider.getRect());
+		g2.setColor(Color.RED);
+		g2.fill(pullSlider.getValueRect());
+		frictionSlider.x = getWidth() / 2;
+		g2.setColor(Color.WHITE);
+		g2.fill(frictionSlider.getRect());
+		g2.setColor(Color.RED);
+		g2.fill(frictionSlider.getValueRect());
 	}
 	public void pullWithWorkers(final double x, final double y, final double mult){
 		final int q = particleArray.size() / 4;
