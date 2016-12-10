@@ -1,5 +1,6 @@
 package workers;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import main.GamePanel;
@@ -68,9 +69,10 @@ public class BlobWorker implements Runnable{
 				maxX = w;
 			if(maxY > h)
 				maxY = h;
-			int r = p.color.getRed();
-			int g = p.color.getGreen();
-			int b = p.color.getBlue();
+			Color c = GamePanel.getParticleColor(p);
+			int r = c.getRed();
+			int g = c.getGreen();
+			int b = c.getBlue();
 			double dist = 0;
 			for(int x = minX; x < maxX;x++)
 				for(int y = minY; y < maxY;y++){
@@ -85,11 +87,6 @@ public class BlobWorker implements Runnable{
 		if(dist > glowRadius)
 			continue;
 		final double a = glowStrength - glowStrength * (dist / glowRadius);
-		if(!Properties.rainbow){
-			r = RGB[0];
-			g = RGB[1];
-			b = RGB[2];
-		}
 		final double r2 = (int)(a * r) / 100;
 		final double g2 = (int)(a * g) / 100;
 		final double b2 = (int)(a * b) / 100;

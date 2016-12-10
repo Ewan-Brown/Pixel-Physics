@@ -1,10 +1,7 @@
 package main;
 
-import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +11,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,14 +36,6 @@ public class MainClass {
 		return slider;
 	}
 	public static void main(final String[] args){
-		//		double dist = 1;
-		//		double a;
-		//		for(int i = 0; i < 30; dist += 0.1){
-		//			i++;
-		//			a =  1D / (dist * dist);
-		//			System.out.println(a);
-		//		}
-		//		return;
 		final FileDialog fd = new FileDialog((java.awt.Frame) null);
 		fd.setTitle("Choose an image");
 		fd.setVisible(true);
@@ -86,7 +74,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,20000,1000);
+		final JSlider slider = getSlider(optionPane,1,20000,800);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -115,7 +103,7 @@ public class MainClass {
 		long l1 = System.nanoTime();
 		while(true){
 			long l2 = System.nanoTime();
-			if(l2 - l1 > Properties.getValueOf("delay")){
+			if(l2 - l1 > Properties.getValueOfDouble("delay")){
 				gamePanel.update();
 				l1 = l2;
 			}

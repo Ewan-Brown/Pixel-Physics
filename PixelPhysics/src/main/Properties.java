@@ -9,11 +9,13 @@ import stuff.Wall;
 
 public class Properties {
 
-	public static boolean colorGrid = false;
+	public static boolean gridColor = false;
 	public static boolean planetMode = false;
 	public static boolean compound = true;
 	public static int cores = 1;
 	public static boolean diamondGlow = false;
+	public static boolean singleColor = true;
+	public static boolean velocityColor = false;
 	public static final double[] frictions = {0,0.01,0.1};
 	public static final double[] gravities = {0,1,1,5};
 	public static double trueGravity = gravities[1];
@@ -48,7 +50,43 @@ public class Properties {
 	public static double timeSpeed = 1;
 	public static long updateDelay = 17000000;
 	public static ArrayList<Wall> walls = new ArrayList<Wall>();
-	public static double getValueOf(String s){
+	//GridColor
+	//SingleColor
+	//VelocityColor
+	//RainbowColor
+	public static boolean getValueOfBool(String s){
+		switch(s){
+		case "gridcolor":
+			return gridColor;
+		case "singlecolor":
+			return singleColor;
+		case "velocitycolor":
+			return velocityColor;
+		case "rainbowcolor":
+			return rainbow;
+		default: 
+			return false;
+		}
+	}
+	public static void setValueOfBool(String s, boolean value){
+		switch(s){
+		case "gridcolor":
+			gridColor = value;
+			break;
+		case "singlecolor":
+			singleColor = value;
+			break;
+		case "velocitycolor":
+			velocityColor = value;
+			break;
+		case "rainbowcolor":
+			rainbow = value;
+			break;
+		default: 
+			break;
+		}
+	}
+	public static double getValueOfDouble(String s){
 		s.toLowerCase();
 		double a = 0;
 		switch(s){
@@ -83,7 +121,7 @@ public class Properties {
 		}
 		return a;
 	}
-	public static void setValueOf(String s,double value){
+	public static void setValueOfDouble(String s,double value){
 		value /= 100;
 		s.toLowerCase();
 		switch(s){

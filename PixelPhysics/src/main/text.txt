@@ -18,6 +18,8 @@ D      - Increase friction
 A      - Decrease Friction
 R      - Reset mouse force to default (1)
 F      - Reset friction to default    (0.01)
+[	   - Decrease Gravity Force
+]      - Increase Gravity Force
 
 Comma  - Decrease Pixel/GlowRadius size
 Period - Increase Pixel/GlowRadius size

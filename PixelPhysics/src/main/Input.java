@@ -146,7 +146,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		if(keySet.get(KeyEvent.VK_C))
 			if(cooldowns[11] == 0){
 				cooldowns[11] = maxTimer;
-				Properties.colorGrid = !Properties.colorGrid;
+				Properties.gridColor = !Properties.gridColor;
 			}
 		if(keySet.get(KeyEvent.VK_Z))
 			if(cooldowns[12] == 0){
@@ -199,6 +199,18 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 			Properties.trueGravity -= Properties.trueGravity / 50D;
 			if(Properties.trueGravity < Properties.gravities[0]){
 				Properties.trueGravity = Properties.gravities[0];
+			}
+		}
+		if(keySet.get(KeyEvent.VK_K)){
+			if(cooldowns[18] == 0){
+				cooldowns[18] = maxTimer / 4;
+				Properties.velocityColor = !Properties.velocityColor;
+			}
+		}
+		if(keySet.get(KeyEvent.VK_SLASH)){
+			if(cooldowns[19] == 0){
+				cooldowns[19] = maxTimer / 4;
+				Properties.singleColor = !Properties.singleColor;
 			}
 		}
 
