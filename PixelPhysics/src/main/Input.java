@@ -175,7 +175,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		if(keySet.get(KeyEvent.VK_M))
 			if(cooldowns[16] == 0){
 				cooldowns[16] = maxTimer / 2;
-				Properties.gravity = !Properties.gravity;
+				Properties.fall = !Properties.fall;
 			}
 		if(keySet.get(KeyEvent.VK_Q)){
 			if(cooldowns[17] == 0){
@@ -183,6 +183,25 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.planetMode = !Properties.planetMode;
 			}
 		}
+		if(keySet.get(KeyEvent.VK_CLOSE_BRACKET)){
+			if(Properties.trueGravity < 1){
+				Properties.trueGravity += 0.003;
+			}
+			Properties.trueGravity += Properties.trueGravity / 50D;
+			if(Properties.trueGravity > Properties.gravities[2]){
+				Properties.trueGravity = Properties.gravities[2];
+			}
+		}
+		if(keySet.get(KeyEvent.VK_OPEN_BRACKET)){
+			if(Properties.trueGravity < 1){
+				Properties.trueGravity -= 0.003;
+			}
+			Properties.trueGravity -= Properties.trueGravity / 50D;
+			if(Properties.trueGravity < Properties.gravities[0]){
+				Properties.trueGravity = Properties.gravities[0];
+			}
+		}
+
 	}
 
 	@Override
@@ -255,6 +274,6 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

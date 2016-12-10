@@ -2,7 +2,7 @@ package main;
 
 import java.awt.Rectangle;
 
-public class Slider {
+public class Slider{
 
 	int width = 1000;
 	int height = 10;
@@ -20,6 +20,9 @@ public class Slider {
 	}
 	public Rectangle getRect(){
 		return new Rectangle(x - width / 2, y,width, height);
+	}
+	public boolean isHidden(){
+		return false;
 	}
 	public Rectangle getValueRect(){
 		double v = Properties.getValueOf(key) - Properties.getValueOf(key + "Min");

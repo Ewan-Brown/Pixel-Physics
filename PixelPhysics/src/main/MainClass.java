@@ -40,14 +40,14 @@ public class MainClass {
 		return slider;
 	}
 	public static void main(final String[] args){
-//		double dist = 1;
-//		double a;
-//		for(int i = 0; i < 30; dist += 0.1){
-//			i++;
-//			a =  1D / (dist * dist);
-//			System.out.println(a);
-//		}
-//		return;
+		//		double dist = 1;
+		//		double a;
+		//		for(int i = 0; i < 30; dist += 0.1){
+		//			i++;
+		//			a =  1D / (dist * dist);
+		//			System.out.println(a);
+		//		}
+		//		return;
 		final FileDialog fd = new FileDialog((java.awt.Frame) null);
 		fd.setTitle("Choose an image");
 		fd.setVisible(true);
@@ -86,7 +86,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,20000,500);
+		final JSlider slider = getSlider(optionPane,1,20000,1000);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -112,23 +112,24 @@ public class MainClass {
 		gamePanel.init();
 		if(optionPane.getValue() == "INFO")
 			infoDialog.setVisible(true);
+		long l1 = System.nanoTime();
 		while(true){
-			try {
-				Thread.sleep(Properties.updateDelay);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
+			long l2 = System.nanoTime();
+			if(l2 - l1 > Properties.getValueOf("delay")){
+				gamePanel.update();
+				l1 = l2;
 			}
-			gamePanel.update();
+
 		}
 	}
 	public static BufferedImage scale(final BufferedImage sbi, final int imageType, final int dWidth, final int dHeight, final double fWidth, final double fHeight) {
 		BufferedImage dbi = null;
-		if(sbi != null) {
-			dbi = new BufferedImage(dWidth, dHeight, imageType);
-			final Graphics2D g = dbi.createGraphics();
-			final AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
-			g.drawRenderedImage(sbi, at);
-		}
+//		if(sbi != null) {
+//			dbi = new BufferedImage(dWidth, dHeight, imageType);
+//			final Graphics2D g = dbi.createGraphics();
+//			final AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
+//			g.drawRenderedImage(sbi, at);
+//		}
 		return dbi;
 	}
 

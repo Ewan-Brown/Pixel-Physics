@@ -15,12 +15,14 @@ public class Properties {
 	public static int cores = 1;
 	public static boolean diamondGlow = false;
 	public static final double[] frictions = {0,0.01,0.1};
+	public static final double[] gravities = {0,1,1,5};
+	public static double trueGravity = gravities[1];
 	public static double frictionStrength = frictions[1];
 	public static boolean glow = false;
 	public static int glowPaintValue = 10;
 	public static double glowStrength = 100;
-	public static boolean gravity = false;
-	public static double gravityStrength = 0.007;
+	public static boolean fall = false;
+	public static double fallStrength = 0.007;
 	public static boolean imageFlag = false;
 	public static boolean isWindows = false;
 	public static Point lastClick = null;
@@ -44,7 +46,7 @@ public class Properties {
 	public static boolean showStats = true;
 	public static int size = 1;
 	public static double timeSpeed = 1;
-	public static long updateDelay = 10;
+	public static long updateDelay = 17000000;
 	public static ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static double getValueOf(String s){
 		s.toLowerCase();
@@ -62,8 +64,22 @@ public class Properties {
 			return frictions[0];
 		case "frictionMax":
 			return frictions[2];
+		case "time":
+			return timeSpeed;
+		case "delay":
+			if(planetMode){
+				return updateDelay / 1D;
+			}
+			return updateDelay;
+		case "gravity":
+			return trueGravity;
+		case "gravityMin":
+			return gravities[0];
+		case "gravityMax":
+			return gravities[1];
 		default:
 			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
+			System.exit(0);
 		}
 		return a;
 	}
@@ -79,6 +95,7 @@ public class Properties {
 			break;
 		default:
 			System.out.println("Properties.getValueOf(s) s is not a valid Key, s = "+s);
+			System.exit(0);
 		}
 	}
 	public static boolean getPositive(final int index){
