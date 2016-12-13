@@ -6,23 +6,23 @@ import java.awt.Rectangle;
 
 public abstract class CustomComponent {
 
+	String key;
 	int x = 0;
 	int y = 0;
-	String key;
-	public void update(int width, int height){
-		
-	}
-	public boolean onClick(Point click){
-		return false;
+	public Color[] getColors(){
+		return null;
 	}
 	public Rectangle[] getRects(){
 		return null;
 	}
-	public Color[] getColors(){
-		return null;
-	}
 	public boolean isHidden(){
 		return false;
+	}
+	public boolean onClick(Point click){
+		return false;
+	}
+	public void update(int width, int height){
+		
 	}
 	
 }

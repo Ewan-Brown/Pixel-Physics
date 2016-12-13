@@ -2,6 +2,8 @@ package main;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +38,7 @@ public class MainClass {
 		return slider;
 	}
 	public static void main(final String[] args){
+		System.setProperty("sun.java2d.opengl","True");
 		final FileDialog fd = new FileDialog((java.awt.Frame) null);
 		fd.setTitle("Choose an image");
 		fd.setVisible(true);
@@ -45,7 +48,6 @@ public class MainClass {
 		BufferedImage img = null;
 		try {
 			img = ImageIO.read(f);
-			//XXX Test to see if is a readable image
 			img.getType();
 		} catch (IOException | NullPointerException e) {
 			String extension = "";
@@ -59,7 +61,6 @@ public class MainClass {
 			System.exit(0);
 		}
 		Properties.paintImage = img;
-		System.setProperty("sun.java2d.opengl","True");
 		final JOptionPane infoPane = new JOptionPane();
 		Object[] list = null;
 		try {
@@ -74,7 +75,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,20000,800);
+		final JSlider slider = getSlider(optionPane,1,300000,2);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -90,7 +91,7 @@ public class MainClass {
 		gamePanel.setSize(width, height);
 		gamePanel.setLayout(null);
 		//TODO dear god this is disgusting please fix it
-		final Input in = new Input();
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(gamePanel);
 		frame.setVisible(true);

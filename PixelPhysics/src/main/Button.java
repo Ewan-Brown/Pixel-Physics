@@ -10,19 +10,35 @@ import javax.swing.Timer;
 
 public class Button extends CustomComponent implements ActionListener{
 	
-	public int width = 50;
-	public int height = 50;
+	public static final Color COLOR_OFF = Color.BLUE;
+	public static final Color COLOR_ON = Color.GREEN;
 	public int bounds = 2;
 	boolean flag = true;
-	Timer t = new Timer(1000,this);
+	public int height = 50;
+	Timer t = new Timer(500,this);
+	public int width = 50;
 	public Button(int x, int y, String key){
 		t.start();
 		this.x = x;
 		this.y = y;
 		this.key = key;
 	}
-	public void update(int width, int height){
-		
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		flag = true;
+	}
+	public Color[] getColors(){
+		Color c = (Properties.getValueOfBool(key)) ? COLOR_ON : COLOR_OFF;
+		return new Color[]{Color.WHITE,c};
+	}
+	private Rectangle getRect(){
+		return new Rectangle(x - width / 2, y - height / 2,width, height);
+	}
+	public Rectangle[] getRects(){
+		return new Rectangle[]{getRect(),getValueRect()};
+	}
+	private Rectangle getValueRect(){
+		return new Rectangle((x - width / 2) + bounds, (y - height / 2) + bounds,width- bounds * 2, height - bounds * 2);
 	}
 	public boolean onClick(Point click){
 
@@ -37,21 +53,7 @@ public class Button extends CustomComponent implements ActionListener{
 		}
 		return false;
 	}
-	public Rectangle[] getRects(){
-		return new Rectangle[]{getRect(),getValueRect()};
-	}
-	public Color[] getColors(){
-		Color c = (Properties.getValueOfBool(key)) ? Color.GREEN : Color.RED;
-		return new Color[]{Color.WHITE,c};
-	}
-	private Rectangle getRect(){
-		return new Rectangle(x - width / 2, y - height / 2,width, height);
-	}
-	private Rectangle getValueRect(){
-		return new Rectangle((x - width / 2) + bounds, (y - height / 2) + bounds,width- bounds * 2, height - bounds * 2);
-	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		flag = true;
+	public void update(int width, int height){
+		
 	}
 }

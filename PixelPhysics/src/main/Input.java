@@ -13,7 +13,7 @@ import javax.swing.event.ChangeListener;
 import stuff.Wall;
 
 public class Input implements KeyListener,MouseListener,ChangeListener{
-	public static int[] cooldowns = new int[20];
+	public static int[] cooldowns = new int[30];
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
 	public static void updateThemkeys(){
@@ -75,14 +75,14 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		}
 		if(keySet.get(KeyEvent.VK_COMMA))
 			if(cooldowns[0] == 0){
-				cooldowns[0] = maxTimer;
+				cooldowns[0] = maxTimer / 2;
 				Properties.size--;
 				if(Properties.size < 1)
 					Properties.size = 1;
 			}
 		if(keySet.get(KeyEvent.VK_PERIOD))
 			if(cooldowns[1] == 0){
-				cooldowns[1] = maxTimer;
+				cooldowns[1] = maxTimer / 2;
 				Properties.size++;
 				if(Properties.size > Properties.maxSize)
 					Properties.size = Properties.maxSize;
@@ -138,16 +138,6 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				cooldowns[9] = maxTimer;
 				Properties.showStats = !Properties.showStats;
 			}
-		if(keySet.get(KeyEvent.VK_T))
-			if(cooldowns[10] == 0){
-				cooldowns[10] = maxTimer;
-				Properties.rainbow = !Properties.rainbow;
-			}
-		if(keySet.get(KeyEvent.VK_C))
-			if(cooldowns[11] == 0){
-				cooldowns[11] = maxTimer;
-				Properties.gridColor = !Properties.gridColor;
-			}
 		if(keySet.get(KeyEvent.VK_Z))
 			if(cooldowns[12] == 0){
 				cooldowns[12] = maxTimer / 4;
@@ -201,16 +191,39 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.trueGravity = Properties.gravities[0];
 			}
 		}
-		if(keySet.get(KeyEvent.VK_K)){
+		if(keySet.get(KeyEvent.VK_1)){
+			if(cooldowns[17] == 0){
+				cooldowns[17] = maxTimer / 2;
+				Properties.singleColor = !Properties.singleColor;
+			}
+
+		}
+		if(keySet.get(KeyEvent.VK_2)){
 			if(cooldowns[18] == 0){
-				cooldowns[18] = maxTimer / 4;
-				Properties.velocityColor = !Properties.velocityColor;
+				cooldowns[18] = maxTimer / 2;
+				Properties.rainbowColor = !Properties.rainbowColor;
+
 			}
 		}
-		if(keySet.get(KeyEvent.VK_SLASH)){
+		if(keySet.get(KeyEvent.VK_3)){
 			if(cooldowns[19] == 0){
-				cooldowns[19] = maxTimer / 4;
-				Properties.singleColor = !Properties.singleColor;
+				cooldowns[19] = maxTimer / 2;
+				Properties.gridColor = !Properties.gridColor;
+
+			}
+		}
+		if(keySet.get(KeyEvent.VK_4)){
+			if(cooldowns[20] == 0){
+				cooldowns[20] = maxTimer / 2;
+				Properties.velocityColor = !Properties.velocityColor;
+
+			}
+		}
+		if(keySet.get(KeyEvent.VK_5)){
+			if(cooldowns[21] == 0){
+				cooldowns[21] = maxTimer / 2;
+				Properties.directionalColor = !Properties.directionalColor;
+
 			}
 		}
 

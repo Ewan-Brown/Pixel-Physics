@@ -2,14 +2,14 @@ package main;
 
 
 public class FastMath {
-
+	
 	private static final int ATAN2_BITS = 7;
 	private static final int ATAN2_BITS2 = ATAN2_BITS << 1;
 	private static final int ATAN2_MASK = ~(-1 << ATAN2_BITS2);
 	private static final int ATAN2_COUNT = ATAN2_MASK + 1;
+	private static final double[] atan2 = new double[ATAN2_COUNT];
 	private static final int ATAN2_DIM = (int) Math.sqrt(ATAN2_COUNT);
 
-	private static final double[] atan2 = new double[ATAN2_COUNT];
 
 	private static final double DEG = 180.0f / Math.PI;
 	private static final double INV_ATAN2_DIM_MINUS_1 = 1.0f / (ATAN2_DIM - 1);
