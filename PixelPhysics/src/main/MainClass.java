@@ -75,7 +75,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,3000000,10000);
+		final JSlider slider = getSlider(optionPane,1,30000,10000);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -113,12 +113,12 @@ public class MainClass {
 	}
 	public static BufferedImage scale(final BufferedImage sbi, final int imageType, final int dWidth, final int dHeight, final double fWidth, final double fHeight) {
 		BufferedImage dbi = null;
-//		if(sbi != null) {
-//			dbi = new BufferedImage(dWidth, dHeight, imageType);
-//			final Graphics2D g = dbi.createGraphics();
-//			final AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
-//			g.drawRenderedImage(sbi, at);
-//		}
+		if(sbi != null) {
+			dbi = new BufferedImage(dWidth, dHeight, imageType);
+			final Graphics2D g = dbi.createGraphics();
+			final AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
+			g.drawRenderedImage(sbi, at);
+		}
 		return dbi;
 	}
 

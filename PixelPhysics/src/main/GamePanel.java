@@ -701,7 +701,7 @@ public class GamePanel extends JPanel {
 	}
 	public void updateParticles() {
 		if (Properties.planetMode) {
-			planetifyParticles();
+			//			planetifyParticles();
 		}
 		for (int i = 0; i < pullQueue.size(); i++) {
 			final Point2D p = pullQueue.get(i);
@@ -717,22 +717,20 @@ public class GamePanel extends JPanel {
 			pushQueue.remove(i);
 		}
 		temporaryDrawLines = new ArrayList<ParticleTrail>();
-		if(Properties.paint && Properties.diamondGlow){
-			int h = particleArray.size() / 2;
-			int q = h / 2;
-			final Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
-			final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, h)));
-			final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h, h + q)));
-			final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h + q, particleArray.size())));
+		int h = particleArray.size() / 2;
+		int q = h / 2;
+		final Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
+		final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, h)));
+		final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h, h + q)));
+		final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h + q, particleArray.size())));
 
-			try {
-				temporaryDrawLines.addAll(f1.get());
-				temporaryDrawLines.addAll(f2.get());
-				temporaryDrawLines.addAll(f3.get());
-				temporaryDrawLines.addAll(f4.get());
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
+		try {
+			temporaryDrawLines.addAll(f1.get());
+			temporaryDrawLines.addAll(f2.get());
+			temporaryDrawLines.addAll(f3.get());
+			temporaryDrawLines.addAll(f4.get());
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
 
 		for (int i = 0; i < particleArray.size(); i++) {
@@ -744,10 +742,6 @@ public class GamePanel extends JPanel {
 				continue;
 			}
 			final Line2D vector = moveify(p);
-			if(Properties.paint && !Properties.diamondGlow){
-				if(p.x > 0 && p.y > 0 && p.x < getWidth() && p.y < getHeight())
-					temporaryDrawLines.add(new ParticleTrail(vector,getParticleColor(p)));
-			}
 			double dist = Double.MAX_VALUE;
 			Point2D intersect = null;
 			Line2D intersectLine = null;
