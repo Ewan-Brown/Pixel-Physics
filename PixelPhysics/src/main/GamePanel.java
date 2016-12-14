@@ -250,10 +250,11 @@ public class GamePanel extends JPanel {
 			modesOn++;
 			double a = p.getAngle();
 			double deg = (Math.toDegrees(a) + 180) % 360;
+			double deg2 = (deg + 120) % 360;
+			double deg3 = (deg2 + 120) % 360;
 			int r2a = (int)Math.abs((deg)- 180) - 60;
-			//Get these two done.
-			int g2a = (int)Math.abs((deg)- 180) - 60;
-			int b2a = (int)Math.abs((deg)- 180) - 60;
+			int g2a = (int)Math.abs((deg2)- 180) - 60;
+			int b2a = (int)Math.abs((deg3)- 180) - 60;
 			r2[4] = (int)(((double)r2a / 120D) * 255D);
 			g2[4] = (int)(((double)g2a / 120D) * 255D);
 			b2[4] = (int)(((double)b2a / 120D) * 255D);
