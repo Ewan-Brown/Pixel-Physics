@@ -68,6 +68,8 @@ public class Properties {
 			return rainbowColor;
 		case "directionalcolor":
 			return directionalColor;
+		case "diamondglow":
+			return diamondGlow;
 		default: 
 			return false;
 		}
@@ -123,6 +125,8 @@ public class Properties {
 			break;
 		case "directionalcolor":
 			directionalColor = value;
+		case "diamondglow":
+			diamondGlow = value;
 		default: 
 			break;
 		}

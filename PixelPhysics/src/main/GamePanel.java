@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -32,6 +31,7 @@ import stuff.ParticleTrail;
 import stuff.Wall;
 import workers.BlobWorker;
 import workers.GraphicsBlobWorker;
+import workers.PaintTrailWorker;
 import workers.PullPhysicsWorker;
 
 public class GamePanel extends JPanel {
@@ -97,39 +97,39 @@ public class GamePanel extends JPanel {
 		//Test if addition or subtraction here?
 		t = (-b + Math.sqrt((b * b) - (4D * a * c)))/ 2D * a;
 		System.out.println(t);
-//		p1.x = vector1.getX1() + (u1x * t * Properties.timeSpeed);
-//		p1.y = vector1.getY1() + (u1y * t * Properties.timeSpeed);
-//		p2.x = vector2.getX1() + (u2x * t * Properties.timeSpeed);
-//		p2.y = vector2.getY1() + (u2y * t * Properties.timeSpeed);
-//		double u1xP = u1x - u2x;
-//		double u1yP = u1y - u2y;
-//		// Angle of collision from u1 to u2;
-//		double angleOfCollision = Math.atan2(p2.y - p1.y, p2.y - p2.x);
-//		// Normalization angle
-//		double rotationalAngle = -angleOfCollision;
-//		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
-//		double u1yP2 = (u1xP * Math.sin(rotationalAngle)) + (u1yP * Math.cos(rotationalAngle));
-//		double v2yP2 = 0;
-//		double v1yP2 = u1yP2;
-//		double v2xP2 = (u1xP2 + Math.sqrt((u1xP2 * u1xP2) - (2 * ((v1yP2 * v1yP2) - (u1yP2 * u1yP2))))) / 2;
-//		double v1xP2 = u1xP2 - v2xP2;
-//		// Undo transformations (Rotate & Translate from u1-u2 normalization)
-//		rotationalAngle = -rotationalAngle;
-//		double v1xP = (v1xP2 * Math.cos(rotationalAngle)) - (v1yP2 * Math.sin(rotationalAngle));
-//		double v1yP = (v1xP2 * Math.sin(rotationalAngle)) + (v1yP2 * Math.cos(rotationalAngle));
-//		;
-//		double v2xP = (v2xP2 * Math.cos(rotationalAngle)) - (v2yP2 * Math.sin(rotationalAngle));
-//		;
-//		double v2yP = (v2xP2 * Math.sin(rotationalAngle)) + (v2yP2 * Math.cos(rotationalAngle));
-//		;
-//		double v1x = v1xP + u2x;
-//		double v1y = v1yP + u2y;
-//		double v2x = v2xP + u2x;
-//		double v2y = v2yP + u2y;
-//		p1.speedX = v1x;
-//		p1.speedY = v1y;
-//		p2.speedX = v2x;
-//		p2.speedY = v2y;
+		//		p1.x = vector1.getX1() + (u1x * t * Properties.timeSpeed);
+		//		p1.y = vector1.getY1() + (u1y * t * Properties.timeSpeed);
+		//		p2.x = vector2.getX1() + (u2x * t * Properties.timeSpeed);
+		//		p2.y = vector2.getY1() + (u2y * t * Properties.timeSpeed);
+		//		double u1xP = u1x - u2x;
+		//		double u1yP = u1y - u2y;
+		//		// Angle of collision from u1 to u2;
+		//		double angleOfCollision = Math.atan2(p2.y - p1.y, p2.y - p2.x);
+		//		// Normalization angle
+		//		double rotationalAngle = -angleOfCollision;
+		//		double u1xP2 = (u1xP * Math.cos(rotationalAngle)) - (u1yP * Math.sin(rotationalAngle));
+		//		double u1yP2 = (u1xP * Math.sin(rotationalAngle)) + (u1yP * Math.cos(rotationalAngle));
+		//		double v2yP2 = 0;
+		//		double v1yP2 = u1yP2;
+		//		double v2xP2 = (u1xP2 + Math.sqrt((u1xP2 * u1xP2) - (2 * ((v1yP2 * v1yP2) - (u1yP2 * u1yP2))))) / 2;
+		//		double v1xP2 = u1xP2 - v2xP2;
+		//		// Undo transformations (Rotate & Translate from u1-u2 normalization)
+		//		rotationalAngle = -rotationalAngle;
+		//		double v1xP = (v1xP2 * Math.cos(rotationalAngle)) - (v1yP2 * Math.sin(rotationalAngle));
+		//		double v1yP = (v1xP2 * Math.sin(rotationalAngle)) + (v1yP2 * Math.cos(rotationalAngle));
+		//		;
+		//		double v2xP = (v2xP2 * Math.cos(rotationalAngle)) - (v2yP2 * Math.sin(rotationalAngle));
+		//		;
+		//		double v2yP = (v2xP2 * Math.sin(rotationalAngle)) + (v2yP2 * Math.cos(rotationalAngle));
+		//		;
+		//		double v1x = v1xP + u2x;
+		//		double v1y = v1yP + u2y;
+		//		double v2x = v2xP + u2x;
+		//		double v2y = v2yP + u2y;
+		//		p1.speedX = v1x;
+		//		p1.speedY = v1y;
+		//		p2.speedX = v2x;
+		//		p2.speedY = v2y;
 
 	}
 	public static double getAngle(final Line2D l) {
@@ -151,8 +151,8 @@ public class GamePanel extends JPanel {
 	public static double getDiamondDistance(final double x1, final double y1, final double x2, final double y2) {
 		final double x = Math.abs(x2 - x1);
 		final double y = Math.abs(y2 - y1);
-//		final double x = 0;
-//		final double y = 0;
+		//		final double x = 0;
+		//		final double y = 0;
 		return x + y;
 	}
 	public static double getDistance(final double x1, final double y1, final double x2, final double y2) {
@@ -249,13 +249,14 @@ public class GamePanel extends JPanel {
 		if(Properties.directionalColor){
 			modesOn++;
 			double a = p.getAngle();
-			double deg = (Math.toDegrees(a) + 180);
-			int r2a = (int)Math.abs((deg)- 180);
-			int g2a = Math.abs(r2a - 180);
-			int b2a = (int)(45 - Math.abs((deg % 90) - 45)) * 4;
-			r2[4] = r2a;
-			g2[4] = g2a;
-			b2[4] = b2a;
+			double deg = (Math.toDegrees(a) + 180) % 360;
+			int r2a = (int)Math.abs((deg)- 180) - 60;
+			//Get these two done.
+			int g2a = (int)Math.abs((deg)- 180) - 60;
+			int b2a = (int)Math.abs((deg)- 180) - 60;
+			r2[4] = (int)(((double)r2a / 120D) * 255D);
+			g2[4] = (int)(((double)g2a / 120D) * 255D);
+			b2[4] = (int)(((double)b2a / 120D) * 255D);
 		}
 		for(int i = 0; i < r2.length;i++){
 			r += (int)((double)r2[i] / (double)modesOn);
@@ -284,27 +285,27 @@ public class GamePanel extends JPanel {
 		return new Color(r,g,b);
 	}
 	public static void planetify(final Particle p1, final Particle p2) {
-//		Line2D vector1 = p1.lastVector;
-//		Line2D vector2 = p2.lastVector;
+		//		Line2D vector1 = p1.lastVector;
+		//		Line2D vector2 = p2.lastVector;
 		if(getDistance(p1.x, p1.y, p2.x, p2.y) < (Properties.size * 2)){
 			collidePlanets(p1, p2);
 		}
-//		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
-//		double deltaX = (p2.x - p1.x) / dist;
-//		double deltaY = (p2.y - p1.y) / dist;
-//		double distMin = 3;
-//		dist = Math.max(dist, distMin);
-//		double mult = Properties.trueGravity;
-//		double g = 1D / (dist * dist);
-//		if (g < 0) {
-//			g = 0;
-//		}
-//		mult *= g;
-//
-//		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
-//		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
-//		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
-//		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
+		//		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
+		//		double deltaX = (p2.x - p1.x) / dist;
+		//		double deltaY = (p2.y - p1.y) / dist;
+		//		double distMin = 3;
+		//		dist = Math.max(dist, distMin);
+		//		double mult = Properties.trueGravity;
+		//		double g = 1D / (dist * dist);
+		//		if (g < 0) {
+		//			g = 0;
+		//		}
+		//		mult *= g;
+		//
+		//		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
+		//		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
+		//		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
+		//		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
 	}
 	public static Color randomColor() {
 		final Random rand = new Random();
@@ -423,8 +424,8 @@ public class GamePanel extends JPanel {
 		long t2 = System.nanoTime();
 		double a = t1 - t0;
 		double b = t2 - t1;
-//		lastLag2 = (b / a);
-//		lastLag2 = (int)(a / 10000);
+		//		lastLag2 = (b / a);
+		//		lastLag2 = (int)(a / 10000);
 		gg.drawImage(b1, 0, 0, this);
 		gg.drawImage(b2, w / 2, 0, this);
 		gg.drawImage(b3, 0, h / 2, this);
@@ -462,15 +463,20 @@ public class GamePanel extends JPanel {
 		Graphics gg;
 		gg = paintBufferVolatile.getGraphics();
 		Graphics2D g2 = (Graphics2D) gg;
-		for(int i = 0; i < temporaryDrawLines.size(); i++){
-			ParticleTrail pt = temporaryDrawLines.get(i);
-			if(pt == null){
-				continue;
+		for(int i = 0; i < temporaryDrawLines.size(); i ++){
+			ParticleTrail pt = null;
+			try{
+				pt = temporaryDrawLines.get(i);
+			}catch(java.lang.IndexOutOfBoundsException e){
+				e.printStackTrace();
 			}
-			gg.setColor(pt.color);
-			for(int j = 0; j < pt.trail.size();j++){
-				g2.fill(pt.trail.get(j));
+			if(pt != null){
+				gg.setColor(pt.color);
+				for(int j = 0; j < pt.trail.size();j++){
+					g2.fill(pt.trail.get(j));
+				}
 			}
+
 		}
 		super.paint(g1);
 		g1.drawImage(paintBufferVolatile, 0, 0, this);
@@ -494,6 +500,8 @@ public class GamePanel extends JPanel {
 		components.add(new Button(100,300,"gridcolor"));
 		components.add(new Button(100,400,"velocitycolor"));
 		components.add(new Button(100,500,"directionalcolor"));
+		components.add(new Button(100,600,"diamondglow"));
+
 
 		final Input in = new Input();
 		addMouseListener(in);
@@ -566,7 +574,7 @@ public class GamePanel extends JPanel {
 			drawParticles(g);
 		}
 		final double t1 = System.nanoTime();
-//		lastLag1 = (t1 - t0) / 1000000D;
+		//		lastLag1 = (t1 - t0) / 1000000D;
 		for (int i = 0; i < Properties.walls.size(); i++) {
 			g.setColor(new Color(Properties.RGB[0], Properties.RGB[1], Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
@@ -707,17 +715,37 @@ public class GamePanel extends JPanel {
 
 			pushQueue.remove(i);
 		}
-		temporaryDrawLines.clear();
+		temporaryDrawLines = new ArrayList<ParticleTrail>();
+		if(Properties.paint && Properties.diamondGlow){
+			int h = particleArray.size() / 2;
+			int q = h / 2;
+			final Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
+			final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, h)));
+			final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h, h + q)));
+			final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h + q, particleArray.size())));
+
+			try {
+				temporaryDrawLines.addAll(f1.get());
+				temporaryDrawLines.addAll(f2.get());
+				temporaryDrawLines.addAll(f3.get());
+				temporaryDrawLines.addAll(f4.get());
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+
 		for (int i = 0; i < particleArray.size(); i++) {
 			final Particle p = particleArray.get(i);
+
 			// TODO XXX Particles are null after doImage() is used
 			if (p == null) {
 				particleArray.remove(i);
 				continue;
 			}
 			final Line2D vector = moveify(p);
-			if(Properties.paint){
-				temporaryDrawLines.add(new ParticleTrail(vector,getParticleColor(p)));
+			if(Properties.paint && !Properties.diamondGlow){
+				if(p.x > 0 && p.y > 0 && p.x < getWidth() && p.y < getHeight())
+					temporaryDrawLines.add(new ParticleTrail(vector,getParticleColor(p)));
 			}
 			double dist = Double.MAX_VALUE;
 			Point2D intersect = null;
