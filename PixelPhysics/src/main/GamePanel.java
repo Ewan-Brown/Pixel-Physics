@@ -467,6 +467,8 @@ public class GamePanel extends JPanel {
 		for(int i = 0; i < temporaryDrawLines.size(); i ++){
 			ParticleTrail pt = null;
 			try{
+				//TODO XXX Index Out Of Bounds Exception here!
+				System.out.println("Panel Line 471: Occasional Index Bounds Exception fix pleease");
 				pt = temporaryDrawLines.get(i);
 			}catch(java.lang.IndexOutOfBoundsException e){
 				e.printStackTrace();
@@ -720,9 +722,9 @@ public class GamePanel extends JPanel {
 		int h = particleArray.size() / 2;
 		int q = h / 2;
 		final Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
-		final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, h)));
-		final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h, h + q)));
-		final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(h + q, particleArray.size())));
+		final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, q * 2)));
+		final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 2, q * 3)));
+		final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 3, q * 4)));
 
 		try {
 			temporaryDrawLines.addAll(f1.get());
