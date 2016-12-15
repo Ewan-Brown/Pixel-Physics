@@ -14,6 +14,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -23,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import stuff.Bounds;
@@ -71,6 +74,7 @@ public class GamePanel extends JPanel {
 	double lastLag1 = 0;
 	double lastLag2 = 0;
 	VolatileImage paintBufferVolatile;
+	boolean captureFlag = false;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public Slider pullSlider = new Slider(960, 30, "pull");
@@ -96,7 +100,7 @@ public class GamePanel extends JPanel {
 		double c = -(Properties.size * 2D) * (Properties.size * 2D);
 		//Test if addition or subtraction here?
 		t = (-b + Math.sqrt((b * b) - (4D * a * c)))/ 2D * a;
-		System.out.println(t);
+		System.out.println(t + " " + u1x + " " + u1y);
 		//		p1.x = vector1.getX1() + (u1x * t * Properties.timeSpeed);
 		//		p1.y = vector1.getY1() + (u1y * t * Properties.timeSpeed);
 		//		p2.x = vector2.getX1() + (u2x * t * Properties.timeSpeed);
@@ -452,6 +456,7 @@ public class GamePanel extends JPanel {
 	}
 
 	public void drawParticlesPaint(final Graphics g1) {
+		//TODO XXX save screenshot of game
 		if (paintBufferVolatile == null) {
 			if (paintBufferVolatile == null) {
 				final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -468,10 +473,9 @@ public class GamePanel extends JPanel {
 			ParticleTrail pt = null;
 			try{
 				//TODO XXX Index Out Of Bounds Exception here!
-				System.out.println("Panel Line 471: Occasional Index Bounds Exception fix pleease");
 				pt = temporaryDrawLines.get(i);
 			}catch(java.lang.IndexOutOfBoundsException e){
-				e.printStackTrace();
+				System.out.println(i + " " + temporaryDrawLines.size());
 			}
 			if(pt != null){
 				gg.setColor(pt.color);
@@ -503,7 +507,6 @@ public class GamePanel extends JPanel {
 		components.add(new Button(100,300,"gridcolor"));
 		components.add(new Button(100,400,"velocitycolor"));
 		components.add(new Button(100,500,"directionalcolor"));
-		components.add(new Button(100,600,"diamondglow"));
 
 
 		final Input in = new Input();
@@ -563,8 +566,10 @@ public class GamePanel extends JPanel {
 	}
 
 	@Override
-	public void paint(final Graphics g) {
-		super.paint(g);
+	public void paint(final Graphics g1) {
+		super.paint(g1);
+		BufferedImage b = new BufferedImage(1920,1080, BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D g = b.createGraphics();
 		final double t0 = System.nanoTime();
 		if (Properties.paused) {
 			return;
@@ -606,6 +611,12 @@ public class GamePanel extends JPanel {
 				g2.setColor(cA[j]);
 				g2.fill(rA[j]);
 			}
+		}
+		g1.drawImage(b, 0, 0, null);
+		try {
+			ImageIO.write(b, "png", new File(System.getProperty("user.home"), "Desktop"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -703,7 +714,7 @@ public class GamePanel extends JPanel {
 	}
 	public void updateParticles() {
 		if (Properties.planetMode) {
-			//			planetifyParticles();
+			planetifyParticles();
 		}
 		for (int i = 0; i < pullQueue.size(); i++) {
 			final Point2D p = pullQueue.get(i);
