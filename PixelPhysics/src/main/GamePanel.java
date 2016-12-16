@@ -9,6 +9,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -74,7 +75,6 @@ public class GamePanel extends JPanel {
 	double lastLag1 = 0;
 	double lastLag2 = 0;
 	VolatileImage paintBufferVolatile;
-	boolean captureFlag = false;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public Slider pullSlider = new Slider(960, 30, "pull");
@@ -99,8 +99,7 @@ public class GamePanel extends JPanel {
 		double b = 2*((Qx * Dx)+(Qy * Dy));
 		double c = -(Properties.size * 2D) * (Properties.size * 2D);
 		//Test if addition or subtraction here?
-		t = (-b + Math.sqrt((b * b) - (4D * a * c)))/ 2D * a;
-		System.out.println(t + " " + u1x + " " + u1y);
+		//		t = (-b + Math.sqrt((b * b) - (4D * a * c)))/ 2D * a;
 		//		p1.x = vector1.getX1() + (u1x * t * Properties.timeSpeed);
 		//		p1.y = vector1.getY1() + (u1y * t * Properties.timeSpeed);
 		//		p2.x = vector2.getX1() + (u2x * t * Properties.timeSpeed);
@@ -189,9 +188,9 @@ public class GamePanel extends JPanel {
 		int r = 0;
 		int g = 0;
 		int b = 0;
-		int[] r2 = new int[6];
-		int[] g2 = new int[6];
-		int[] b2 = new int[6];
+		int[] r2 = new int[7];
+		int[] g2 = new int[7];
+		int[] b2 = new int[7];
 		int modesOn = 0;
 		if(Properties.singleColor){
 			modesOn++;
@@ -231,7 +230,7 @@ public class GamePanel extends JPanel {
 		if(Properties.velocityColor){
 			modesOn++;
 			double v = p.getVelocity();
-			int r2a = (int)-((v - 50) *(v - 50)) + 240;
+			int r2a = (int)(-0.6*((v - 50) *(v - 50))) + 240;
 			if(r2a < 0){
 				r2a = 0;
 			}
@@ -263,6 +262,14 @@ public class GamePanel extends JPanel {
 			g2[4] = (int)(((double)g2a / 120D) * 255D);
 			b2[4] = (int)(((double)b2a / 120D) * 255D);
 		}
+		if(true){
+			//TODO CONTINUE
+			Point2D pt = MouseInfo.getPointerInfo().getLocation();
+			double x = pt.getX() - getLocationOnScreen().getX();
+			double y = pt.getY() - getLocationOnScreen().getY();
+			double d = getDistance(p.x, p.y, x, y);
+			
+		}
 		for(int i = 0; i < r2.length;i++){
 			r += (int)((double)r2[i] / (double)modesOn);
 			g += (int)((double)g2[i] / (double)modesOn);
@@ -292,25 +299,25 @@ public class GamePanel extends JPanel {
 	public static void planetify(final Particle p1, final Particle p2) {
 		//		Line2D vector1 = p1.lastVector;
 		//		Line2D vector2 = p2.lastVector;
-		if(getDistance(p1.x, p1.y, p2.x, p2.y) < (Properties.size * 2)){
-			collidePlanets(p1, p2);
-		}
-		//		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
-		//		double deltaX = (p2.x - p1.x) / dist;
-		//		double deltaY = (p2.y - p1.y) / dist;
-		//		double distMin = 3;
-		//		dist = Math.max(dist, distMin);
-		//		double mult = Properties.trueGravity;
-		//		double g = 1D / (dist * dist);
-		//		if (g < 0) {
-		//			g = 0;
+		//		if(getDistance(p1.x, p1.y, p2.x, p2.y) < (Properties.size * 2)){
+		//			collidePlanets(p1, p2);
 		//		}
-		//		mult *= g;
-		//
-		//		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
-		//		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
-		//		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
-		//		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
+		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
+		double deltaX = (p2.x - p1.x) / dist;
+		double deltaY = (p2.y - p1.y) / dist;
+		double distMin = 3;
+		dist = Math.max(dist, distMin);
+		double mult = Properties.trueGravity;
+		double g = 1D / (dist * dist);
+		if (g < 0) {
+			g = 0;
+		}
+		mult *= g;
+
+		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
+		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
+		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
+		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
 	}
 	public static Color randomColor() {
 		final Random rand = new Random();
@@ -388,7 +395,7 @@ public class GamePanel extends JPanel {
 		final int w = getWidth();
 		final int h = getHeight();
 		final Bounds bounds = new Bounds(particleArray);
-		long t0 = System.nanoTime();
+		//		long t0 = System.nanoTime();
 		final Future<?>[] blobWorkers = new Future<?>[Properties.cores];
 		final int splitSize = particleArray.size() / Properties.cores;
 		for (int i = 0; i < Properties.cores; i++) {
@@ -405,7 +412,7 @@ public class GamePanel extends JPanel {
 				}
 			}
 		} while (!finished);
-		long t1 = System.nanoTime();
+		//		long t1 = System.nanoTime();
 		final Future<BufferedImage> g1 = executorGraphics
 				.submit(new GraphicsBlobWorker(0, 0, w / 2, h / 2, RGBs, bounds));
 		final Future<BufferedImage> g2 = executorGraphics
@@ -426,9 +433,9 @@ public class GamePanel extends JPanel {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
-		long t2 = System.nanoTime();
-		double a = t1 - t0;
-		double b = t2 - t1;
+		//		long t2 = System.nanoTime();
+		//		double a = t1 - t0;
+		//		double b = t2 - t1;
 		//		lastLag2 = (b / a);
 		//		lastLag2 = (int)(a / 10000);
 		gg.drawImage(b1, 0, 0, this);
@@ -475,7 +482,7 @@ public class GamePanel extends JPanel {
 				//TODO XXX Index Out Of Bounds Exception here!
 				pt = temporaryDrawLines.get(i);
 			}catch(java.lang.IndexOutOfBoundsException e){
-				System.out.println(i + " " + temporaryDrawLines.size());
+				//				System.out.println(i + " " + temporaryDrawLines.size());
 			}
 			if(pt != null){
 				gg.setColor(pt.color);
@@ -568,9 +575,14 @@ public class GamePanel extends JPanel {
 	@Override
 	public void paint(final Graphics g1) {
 		super.paint(g1);
-		BufferedImage b = new BufferedImage(1920,1080, BufferedImage.TYPE_3BYTE_BGR);
-		Graphics2D g = b.createGraphics();
-		final double t0 = System.nanoTime();
+		BufferedImage b = new BufferedImage(1920,1080, BufferedImage.TYPE_3BYTE_BGR);;
+		Graphics2D g = (Graphics2D) g1;
+		if(Properties.captureFlag){
+			g = b.createGraphics();
+		}
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		//		final double t0 = System.nanoTime();
 		if (Properties.paused) {
 			return;
 		}
@@ -581,11 +593,22 @@ public class GamePanel extends JPanel {
 		} else {
 			drawParticles(g);
 		}
-		final double t1 = System.nanoTime();
-		//		lastLag1 = (t1 - t0) / 1000000D;
 		for (int i = 0; i < Properties.walls.size(); i++) {
 			g.setColor(new Color(Properties.RGB[0], Properties.RGB[1], Properties.RGB[2]));
 			g.fillPolygon(Properties.walls.get(i).p);
+		}
+		if(Properties.captureFlag){
+			try {
+				int i = 0;
+				File f = new File("PixelPhysics-ScreenShot.png");
+				do{
+					f = new File("PixelPhysics-ScreenShot("+i+").png");
+					i++;
+				}while(f.exists());
+				ImageIO.write(b, "png", f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		final double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
@@ -612,12 +635,8 @@ public class GamePanel extends JPanel {
 				g2.fill(rA[j]);
 			}
 		}
-		g1.drawImage(b, 0, 0, null);
-		try {
-			ImageIO.write(b, "png", new File(System.getProperty("user.home"), "Desktop"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		Properties.captureFlag = false;
 	}
 
 	public void paintImage() {
@@ -638,11 +657,12 @@ public class GamePanel extends JPanel {
 
 	public void planetifyParticles() {
 		Particle p1, p2;
-		int f = particleArray.size();
-		int h = f / 2;
-		int q = f / 4;
-		Particle[] pA1 = particleArray.subList(0, h).toArray(new Particle[h]);
-		Particle[] pA2 = particleArray.subList(h, f).toArray(new Particle[h]);
+		//		int f = particleArray.size();
+		//		int h = f / 2;
+		//		int q = f / 4;
+		//TODO Make gravity multithreaded
+		//		Particle[] pA1 = particleArray.subList(0, h).toArray(new Particle[h]);
+		//		Particle[] pA2 = particleArray.subList(h, f).toArray(new Particle[h]);
 		for (int i = 0; i < particleArray.size(); i++) {
 			p1 = particleArray.get(i);
 			for (int j = i + 1; j < particleArray.size(); j++) {

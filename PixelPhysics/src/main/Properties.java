@@ -51,6 +51,7 @@ public class Properties {
 	public static long updateDelay = 17000000;
 	public static boolean velocityColor = false;
 	public static ArrayList<Wall> walls = new ArrayList<Wall>();
+	public static boolean captureFlag = false;
 	public static boolean getPositive(final int index){
 		if(RGB[index] < 127)
 			return true;

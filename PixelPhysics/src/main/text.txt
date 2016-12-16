@@ -11,7 +11,7 @@ UP     - Speed up time
 DOWN   - Slow down time
 RIGHT  - Set time to half-speed
 LEFT   - Pause time
-
+SLASH(/) - Screenshot. Saves png image of game to whereever you have the game .jar installed to.
 W      - Increase mouse force
 S      - Decrease mouse force
 D      - Increase friction
