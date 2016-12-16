@@ -13,6 +13,7 @@ public class Properties {
 	public static int cores = 1;
 	public static boolean diamondGlow = false;
 	public static boolean directionalColor = false;
+	public static boolean mouseColor = false;
 	public static boolean fall = false;
 	public static double fallStrength = 0.007;
 	public static final double[] frictions = {0,0.01,0.1};
@@ -71,6 +72,8 @@ public class Properties {
 			return directionalColor;
 		case "diamondglow":
 			return diamondGlow;
+		case "mousecolor":
+			return mouseColor;
 		default: 
 			return false;
 		}
@@ -128,6 +131,8 @@ public class Properties {
 			directionalColor = value;
 		case "diamondglow":
 			diamondGlow = value;
+		case "mousecolor":
+			mouseColor = value;
 		default: 
 			break;
 		}

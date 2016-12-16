@@ -62,6 +62,8 @@ public class GamePanel extends JPanel {
 	private final ExecutorService executorBlobs = Executors.newCachedThreadPool();
 
 	private final ExecutorService executorGraphics = Executors.newCachedThreadPool();
+	
+	public static GamePanel instance;
 
 	public boolean flag = false;
 	public Slider frictionSlider = new Slider(960, 50, "friction");
@@ -262,12 +264,28 @@ public class GamePanel extends JPanel {
 			g2[4] = (int)(((double)g2a / 120D) * 255D);
 			b2[4] = (int)(((double)b2a / 120D) * 255D);
 		}
-		if(true){
-			//TODO CONTINUE
+		if(Properties.mouseColor){
+			modesOn++;
 			Point2D pt = MouseInfo.getPointerInfo().getLocation();
-			double x = pt.getX() - getLocationOnScreen().getX();
-			double y = pt.getY() - getLocationOnScreen().getY();
+			double x = pt.getX() - instance.getLocationOnScreen().getX();
+			double y = pt.getY() - instance.getLocationOnScreen().getY();
 			double d = getDistance(p.x, p.y, x, y);
+
+			double r2a = 255D - 255D * (d / 500D);
+			if(d > 500){
+				r2a = 0;	
+			}
+			double g2a = 100D - 100D * (d / 1000D);
+			if(d > 1000){
+				g2a = 0;	
+			}
+			double b2a = 100D - 100D * (d / 500D);
+			if(d > 500 || d < 200){
+				b2a = 0;	
+			}
+			r2[5] = (int)r2a;
+			g2[5] = (int)g2a;
+			b2[5] = (int)b2a;
 			
 		}
 		for(int i = 0; i < r2.length;i++){
@@ -348,6 +366,7 @@ public class GamePanel extends JPanel {
 	}
 
 	public GamePanel(final int w, final int h, final int m, final int s) {
+		instance = this;
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
 		Properties.size = s;
@@ -514,6 +533,7 @@ public class GamePanel extends JPanel {
 		components.add(new Button(100,300,"gridcolor"));
 		components.add(new Button(100,400,"velocitycolor"));
 		components.add(new Button(100,500,"directionalcolor"));
+		components.add(new Button(100,600,"mousecolor"));
 
 
 		final Input in = new Input();
@@ -598,17 +618,17 @@ public class GamePanel extends JPanel {
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
 		if(Properties.captureFlag){
-			try {
-				int i = 0;
-				File f = new File("PixelPhysics-ScreenShot.png");
-				do{
-					f = new File("PixelPhysics-ScreenShot("+i+").png");
-					i++;
-				}while(f.exists());
-				ImageIO.write(b, "png", f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				int i = 0;
+//				File f = new File("PixelPhysics-ScreenShot.png");
+//				do{
+//					f = new File("PixelPhysics-ScreenShot("+i+").png");
+//					i++;
+//				}while(f.exists());
+//				ImageIO.write(b, "bmp", f);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}
 		final double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);

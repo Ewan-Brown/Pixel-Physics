@@ -226,9 +226,16 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 
 			}
 		}
+		if(keySet.get(KeyEvent.VK_6)){
+			if(cooldowns[22] == 0){
+				cooldowns[22] = maxTimer / 2;
+				Properties.mouseColor= !Properties.mouseColor;
+
+			}
+		}
 		if(keySet.get(KeyEvent.VK_SLASH)){
-			if(cooldowns[21] == 0){
-				cooldowns[21] = maxTimer / 2;
+			if(cooldowns[23] == 0){
+				cooldowns[23] = maxTimer / 2;
 				Properties.captureFlag = true;
 			}
 		}
