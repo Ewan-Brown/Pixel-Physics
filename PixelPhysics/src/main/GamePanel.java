@@ -618,17 +618,17 @@ public class GamePanel extends JPanel {
 			g.fillPolygon(Properties.walls.get(i).p);
 		}
 		if(Properties.captureFlag){
-//			try {
-//				int i = 0;
-//				File f = new File("PixelPhysics-ScreenShot.png");
-//				do{
-//					f = new File("PixelPhysics-ScreenShot("+i+").png");
-//					i++;
-//				}while(f.exists());
-//				ImageIO.write(b, "bmp", f);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				int i = 0;
+				File f = new File("PixelPhysics-ScreenShot.png");
+				do{
+					f = new File("PixelPhysics-ScreenShot("+i+").png");
+					i++;
+				}while(f.exists());
+				ImageIO.write(b, "bmp", f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		final double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
