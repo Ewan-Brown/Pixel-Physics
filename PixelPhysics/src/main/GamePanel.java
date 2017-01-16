@@ -36,6 +36,7 @@ import stuff.Wall;
 import workers.BlobWorker;
 import workers.GraphicsBlobWorker;
 import workers.PaintTrailWorker;
+import workers.PlanetWorker;
 import workers.PullPhysicsWorker;
 
 public class GamePanel extends JPanel {
@@ -44,10 +45,10 @@ public class GamePanel extends JPanel {
 	 *
 	 */
 
-	private static final ExecutorService executorPhysics = Executors.newCachedThreadPool();
-	public static final Random rand = new Random();
+	private static  ExecutorService executorPhysics = Executors.newCachedThreadPool();
+	public static  Random rand = new Random();
 
-	private static final long serialVersionUID = 1L;
+	private static  long serialVersionUID = 1L;
 
 	public ArrayList<Slider> colors = new ArrayList<Slider>();
 
@@ -59,10 +60,10 @@ public class GamePanel extends JPanel {
 
 	DecimalFormat df3 = new DecimalFormat("0.000");
 
-	private final ExecutorService executorBlobs = Executors.newCachedThreadPool();
+	private  ExecutorService executorBlobs = Executors.newCachedThreadPool();
 
-	private final ExecutorService executorGraphics = Executors.newCachedThreadPool();
-	
+	private  ExecutorService executorGraphics = Executors.newCachedThreadPool();
+
 	public static GamePanel instance;
 
 	public boolean flag = false;
@@ -85,7 +86,7 @@ public class GamePanel extends JPanel {
 
 	public ArrayList<ParticleTrail> temporaryDrawLines = new ArrayList<ParticleTrail>();
 
-	public static void collidePlanets(final Particle p1, final Particle p2) {
+	public static void collidePlanets( Particle p1,  Particle p2) {
 		double u1x = p1.speedX;
 		double u1y = p1.speedY;
 		double u2x = p2.speedX;
@@ -137,13 +138,13 @@ public class GamePanel extends JPanel {
 		//		p2.speedY = v2y;
 
 	}
-	public static double getAngle(final Line2D l) {
+	public static double getAngle( Line2D l) {
 		double xD;
 		double yD;
-		final double x1 = l.getX1();
-		final double y1 = l.getY1();
-		final double x2 = l.getX2();
-		final double y2 = l.getY2();
+		double x1 = l.getX1();
+		double y1 = l.getY1();
+		double x2 = l.getX2();
+		double y2 = l.getY2();
 		if (y2 > y1) {
 			yD = y2 - y1;
 			xD = x2 - x1;
@@ -153,17 +154,17 @@ public class GamePanel extends JPanel {
 		}
 		return -1 * Math.atan2(yD, xD);
 	}
-	public static double getDiamondDistance(final double x1, final double y1, final double x2, final double y2) {
-		final double x = Math.abs(x2 - x1);
-		final double y = Math.abs(y2 - y1);
-		//		final double x = 0;
-		//		final double y = 0;
+	public static double getDiamondDistance( double x1,  double y1,  double x2,  double y2) {
+		double x = Math.abs(x2 - x1);
+		double y = Math.abs(y2 - y1);
+		//		 double x = 0;
+		//		 double y = 0;
 		return x + y;
 	}
-	public static double getDistance(final double x1, final double y1, final double x2, final double y2) {
+	public static double getDistance( double x1,  double y1,  double x2,  double y2) {
 		return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
 	}
-	public static Point2D getIntersect(final Line2D l1, final Line2D l2) {
+	public static Point2D getIntersect( Line2D l1,  Line2D l2) {
 		double m1 = (l1.getY2() - l1.getY1()) / (l1.getX2() - l1.getX1());
 		double m2 = (l2.getY2() - l2.getY1()) / (l2.getX2() - l2.getX1());
 		if (m1 == Double.NEGATIVE_INFINITY) {
@@ -178,12 +179,12 @@ public class GamePanel extends JPanel {
 		if (m2 == Double.POSITIVE_INFINITY) {
 			m2 = 100000;
 		}
-		final Point2D p1 = l1.getP2();
-		final Point2D p2 = l2.getP2();
-		final double b1 = p1.getY() - (m1 * p1.getX());
-		final double b2 = p2.getY() - (m2 * p2.getX());
-		final double x = (b2 - b1) / (m1 - m2);
-		final double y = (m1 * x) + b1;
+		Point2D p1 = l1.getP2();
+		Point2D p2 = l2.getP2();
+		double b1 = p1.getY() - (m1 * p1.getX());
+		double b2 = p2.getY() - (m2 * p2.getX());
+		double x = (b2 - b1) / (m1 - m2);
+		double y = (m1 * x) + b1;
 		return new Point((int) x, (int) y);
 	}
 	public static Color getParticleColor(Particle p){
@@ -286,7 +287,7 @@ public class GamePanel extends JPanel {
 			r2[5] = (int)r2a;
 			g2[5] = (int)g2a;
 			b2[5] = (int)b2a;
-			
+
 		}
 		for(int i = 0; i < r2.length;i++){
 			r += (int)((double)r2[i] / (double)modesOn);
@@ -314,49 +315,49 @@ public class GamePanel extends JPanel {
 		}
 		return new Color(r,g,b);
 	}
-	public static void planetify(final Particle p1, final Particle p2) {
-		//		Line2D vector1 = p1.lastVector;
-		//		Line2D vector2 = p2.lastVector;
-		//		if(getDistance(p1.x, p1.y, p2.x, p2.y) < (Properties.size * 2)){
-		//			collidePlanets(p1, p2);
-		//		}
-		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
-		double deltaX = (p2.x - p1.x) / dist;
-		double deltaY = (p2.y - p1.y) / dist;
-		double distMin = 3;
-		dist = Math.max(dist, distMin);
-		double mult = Properties.trueGravity;
-		double g = 1D / (dist * dist);
-		if (g < 0) {
-			g = 0;
-		}
-		mult *= g;
-
-		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
-		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
-		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
-		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
-	}
+	//	public static void planetify( Particle p1,  Particle p2) {
+	//		//		Line2D vector1 = p1.lastVector;
+	//		//		Line2D vector2 = p2.lastVector;
+	//		//		if(getDistance(p1.x, p1.y, p2.x, p2.y) < (Properties.size * 2)){
+	//		//			collidePlanets(p1, p2);
+	//		//		}
+	//		double dist = GamePanel.getDistance(p2.x, p2.y, p1.x, p1.y);
+	//		double deltaX = (p2.x - p1.x) / dist;
+	//		double deltaY = (p2.y - p1.y) / dist;
+	//		double distMin = 3;
+	//		dist = Math.max(dist, distMin);
+	//		double mult = Properties.trueGravity;
+	//		double g = 1D / (dist * dist);
+	//		if (g < 0) {
+	//			g = 0;
+	//		}
+	//		mult *= g;
+	//
+	//		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
+	//		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
+	//		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
+	//		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
+	//	}
 	public static Color randomColor() {
-		final Random rand = new Random();
-		final int[] rgb = new int[3];
+		Random rand = new Random();
+		int[] rgb = new int[3];
 		rgb[0] = rand.nextInt(255);
 		rgb[1] = rand.nextInt(255);
 		rgb[2] = rand.nextInt(255);
 		return new Color(rgb[0], rgb[1], rgb[2]);
 	}
-	public static void wallCollide(final Line2D l, final Particle p, final double over) {
+	public static void wallCollide( Line2D l,  Particle p,  double over) {
 		p.x -= p.speedX * Properties.getValueOfDouble("time");
 		p.y -= p.speedY * Properties.getValueOfDouble("time");
-		final double speed = Math.sqrt((p.speedX * p.speedX) + (p.speedY * p.speedY));
-		final double wAngle = Math.toDegrees(getAngle(l));
-		final double bAngle = Math.toDegrees(p.getAngle());
-		final double diff = wAngle - bAngle;
-		final double newAngle = (bAngle + (2 * diff)) % 360;
-		final double x = Math.cos(Math.toRadians(newAngle)) * speed;
-		final double y = Math.sin(Math.toRadians(newAngle)) * speed;
-		final double dX = Math.cos(Math.toRadians(newAngle)) * over;
-		final double dY = -Math.sin(Math.toRadians(newAngle)) * over;
+		double speed = Math.sqrt((p.speedX * p.speedX) + (p.speedY * p.speedY));
+		double wAngle = Math.toDegrees(getAngle(l));
+		double bAngle = Math.toDegrees(p.getAngle());
+		double diff = wAngle - bAngle;
+		double newAngle = (bAngle + (2 * diff)) % 360;
+		double x = Math.cos(Math.toRadians(newAngle)) * speed;
+		double y = Math.sin(Math.toRadians(newAngle)) * speed;
+		double dX = Math.cos(Math.toRadians(newAngle)) * over;
+		double dY = -Math.sin(Math.toRadians(newAngle)) * over;
 		p.x += dX;
 		p.y += dY;
 		p.speedX = x;
@@ -365,7 +366,7 @@ public class GamePanel extends JPanel {
 		// p.speedX -= p.speedX / 20;
 	}
 
-	public GamePanel(final int w, final int h, final int m, final int s) {
+	public GamePanel( int w,  int h,  int m,  int s) {
 		instance = this;
 		Properties.cores = Runtime.getRuntime().availableProcessors();
 		Properties.maxPixels = m;
@@ -373,15 +374,15 @@ public class GamePanel extends JPanel {
 		for (int i = 0; i < Properties.RGB.length; i++) {
 			Properties.RGB[i] = rand.nextInt(255);
 		}
-		final Dimension d = new Dimension(w, h);
+		Dimension d = new Dimension(w, h);
 		setPreferredSize(d);
 		this.setFocusable(true);
 	}
 
-	public boolean areCollidifying(final Particle p1, final Particle p2) {
-		final double diffX = Math.abs(p1.x - p2.x);
-		final double diffY = Math.abs(p1.y - p2.y);
-		final int size = Properties.size;
+	public boolean areCollidifying( Particle p1,  Particle p2) {
+		double diffX = Math.abs(p1.x - p2.x);
+		double diffY = Math.abs(p1.y - p2.y);
+		int size = Properties.size;
 		if ((diffX < ((size + size) / 2)) && (diffY < ((size + size) / 2))) {
 			return true;
 		}
@@ -391,9 +392,9 @@ public class GamePanel extends JPanel {
 	public void doMouse() {
 		if (Properties.lmbHeld) {
 
-			final Point p = MouseInfo.getPointerInfo().getLocation();
-			final int x = (int) (p.getX() - this.getLocationOnScreen().getX());
-			final int y = (int) (p.getY() - this.getLocationOnScreen().getY());
+			Point p = MouseInfo.getPointerInfo().getLocation();
+			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
+			int y = (int) (p.getY() - this.getLocationOnScreen().getY());
 			Point p2 = new Point(x, y);
 			for(CustomComponent c : components){
 				if(c.onClick(p2)){
@@ -402,23 +403,23 @@ public class GamePanel extends JPanel {
 			}
 			pullQueue.add(p2);
 		} else if (Properties.rmbHeld) {
-			final Point p = MouseInfo.getPointerInfo().getLocation();
+			Point p = MouseInfo.getPointerInfo().getLocation();
 
-			final int x = (int) (p.getX() - this.getLocationOnScreen().getX());
-			final int y = (int) ((int) p.getY() + this.getLocationOnScreen().getY()) - 57;
+			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
+			int y = (int) ((int) p.getY() + this.getLocationOnScreen().getY()) - 57;
 			pushQueue.add(new Point(x, y));
 		}
 	}
 
-	public void drawBlobsWithWorkers(final Graphics gg) {
-		final int w = getWidth();
-		final int h = getHeight();
-		final Bounds bounds = new Bounds(particleArray);
+	public void drawBlobsWithWorkers( Graphics gg) {
+		int w = getWidth();
+		int h = getHeight();
+		Bounds bounds = new Bounds(particleArray);
 		//		long t0 = System.nanoTime();
-		final Future<?>[] blobWorkers = new Future<?>[Properties.cores];
-		final int splitSize = particleArray.size() / Properties.cores;
+		Future<?>[] blobWorkers = new Future<?>[Properties.cores];
+		int splitSize = particleArray.size() / Properties.cores;
 		for (int i = 0; i < Properties.cores; i++) {
-			final int k = i * splitSize;
+			int k = i * splitSize;
 			blobWorkers[i] = executorBlobs.submit(
 					new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)), RGBs, w, h));
 		}
@@ -432,13 +433,13 @@ public class GamePanel extends JPanel {
 			}
 		} while (!finished);
 		//		long t1 = System.nanoTime();
-		final Future<BufferedImage> g1 = executorGraphics
+		Future<BufferedImage> g1 = executorGraphics
 				.submit(new GraphicsBlobWorker(0, 0, w / 2, h / 2, RGBs, bounds));
-		final Future<BufferedImage> g2 = executorGraphics
+		Future<BufferedImage> g2 = executorGraphics
 				.submit(new GraphicsBlobWorker(w / 2, 0, w, h / 2, RGBs, bounds));
-		final Future<BufferedImage> g3 = executorGraphics
+		Future<BufferedImage> g3 = executorGraphics
 				.submit(new GraphicsBlobWorker(0, h / 2, w / 2, h, RGBs, bounds));
-		final Future<BufferedImage> g4 = executorGraphics
+		Future<BufferedImage> g4 = executorGraphics
 				.submit(new GraphicsBlobWorker(w / 2, h / 2, w, h, RGBs, bounds));
 		BufferedImage b1 = null;
 		BufferedImage b2 = null;
@@ -463,7 +464,7 @@ public class GamePanel extends JPanel {
 		gg.drawImage(b4, w / 2, h / 2, this);
 	}
 
-	public void drawParticles(final Graphics g1) {
+	public void drawParticles( Graphics g1) {
 		// TODO unused Pause value checker
 		if (Properties.paused) {
 			return;
@@ -473,22 +474,22 @@ public class GamePanel extends JPanel {
 		}
 		// ArrayList<Particle> pA = packify(particleArray);
 		// TODO Does packing actually help anything? So far only adds lag.
-		final ArrayList<Particle> pA = particleArray;
+		ArrayList<Particle> pA = particleArray;
 		for (int i = 0; i < pA.size(); i++) {
-			final Particle p = pA.get(i);
+			Particle p = pA.get(i);
 			g1.setColor(getParticleColor(p));
 			g1.fillRect((int) p.x, (int) p.y, Properties.size, Properties.size);
 		}
 	}
 
-	public void drawParticlesPaint(final Graphics g1) {
+	public void drawParticlesPaint( Graphics g1) {
 		//TODO XXX save screenshot of game
 		if (paintBufferVolatile == null) {
 			if (paintBufferVolatile == null) {
-				final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-				final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 				paintBufferVolatile = gc.createCompatibleVolatileImage(1920, 1080, Transparency.OPAQUE);
-				final Graphics gg = paintBufferVolatile.createGraphics();
+				Graphics gg = paintBufferVolatile.createGraphics();
 				gg.fillRect(0, 0, 1920, 1080);
 			}
 		}
@@ -515,13 +516,13 @@ public class GamePanel extends JPanel {
 		g1.drawImage(paintBufferVolatile, 0, 0, this);
 	}
 
-	public void frictionify(final Particle p) {
+	public void frictionify( Particle p) {
 		p.speedX -= p.speedX * (Properties.frictionStrength * Properties.getValueOfDouble("time"));
 		p.speedY -= p.speedY * (Properties.frictionStrength * Properties.getValueOfDouble("time"));
 
 	}
 
-	public void gravitify(final Particle p) {
+	public void gravitify( Particle p) {
 		p.speedY += Properties.fallStrength;
 	}
 	public void init() {
@@ -536,11 +537,11 @@ public class GamePanel extends JPanel {
 		components.add(new Button(100,600,"mousecolor"));
 
 
-		final Input in = new Input();
+		Input in = new Input();
 		addMouseListener(in);
 		addKeyListener(in);
 
-		final int a = Properties.maxPixels;
+		int a = Properties.maxPixels;
 		setBackground(Color.BLACK);
 		for (int i = 0; i < a; i++) {
 			spawnify();
@@ -549,22 +550,22 @@ public class GamePanel extends JPanel {
 		int w1 = 0, h1 = 0;
 		w1 = img.getWidth();
 		h1 = img.getHeight();
-		final double ratio = (double) h1 / (double) w1;
-		final int w2 = (int) Math.sqrt(a / ratio);
-		final int h2 = (int) (w2 * ratio);
-		final double ratio2 = (double) w2 / (double) w1;
+		double ratio = (double) h1 / (double) w1;
+		int w2 = (int) Math.sqrt(a / ratio);
+		int h2 = (int) (w2 * ratio);
+		double ratio2 = (double) w2 / (double) w1;
 		Properties.paintImage = MainClass.scale(img, img.getType(), w2, h2, ratio2, ratio2);
-		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 		gBuffer = gc.createCompatibleVolatileImage(1920, 1080, Transparency.TRANSLUCENT);
-		final Graphics gg = gBuffer.getGraphics();
+		Graphics gg = gBuffer.getGraphics();
 		gg.setColor(Color.BLACK);
 		gg.fillRect(0, 0, 1920, 1080);
 	}
 
-	public Line2D moveify(final Particle p) {
-		final double x = p.x;
-		final double y = p.y;
+	public Line2D moveify( Particle p) {
+		double x = p.x;
+		double y = p.y;
 		p.x += p.speedX * Properties.getValueOfDouble("time");
 		p.y += p.speedY * Properties.getValueOfDouble("time");
 		Line2D l = new Line2D.Double(x, y, p.x, p.y);
@@ -575,13 +576,13 @@ public class GamePanel extends JPanel {
 	// TODO When multiple particle are in the same spot it swaps between which
 	// one it draws, and when different colors = flickering :(
 	// TODO With packing, particles are non-existant? wtf
-	public ArrayList<Particle> packify(final ArrayList<Particle> pA) {
-		final boolean[][] occupiedArray = new boolean[1920][1080];
-		final ArrayList<Particle> newP = new ArrayList<Particle>();
+	public ArrayList<Particle> packify( ArrayList<Particle> pA) {
+		boolean[][] occupiedArray = new boolean[1920][1080];
+		ArrayList<Particle> newP = new ArrayList<Particle>();
 		for (int i = 0; i < pA.size(); i++) {
-			final Particle p = pA.get(i);
-			final int x = (int) p.x;
-			final int y = getHeight() - (int) p.y;
+			Particle p = pA.get(i);
+			int x = (int) p.x;
+			int y = getHeight() - (int) p.y;
 			if ((x > 0) && (x < getWidth()) && (y > 0) && (y < getHeight())) {
 				if (!occupiedArray[x][y]) {
 					occupiedArray[x][y] = true;
@@ -593,7 +594,7 @@ public class GamePanel extends JPanel {
 	}
 
 	@Override
-	public void paint(final Graphics g1) {
+	public void paint( Graphics g1) {
 		super.paint(g1);
 		BufferedImage b = new BufferedImage(1920,1080, BufferedImage.TYPE_3BYTE_BGR);;
 		Graphics2D g = (Graphics2D) g1;
@@ -602,7 +603,7 @@ public class GamePanel extends JPanel {
 		}
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		//		final double t0 = System.nanoTime();
+		//		 double t0 = System.nanoTime();
 		if (Properties.paused) {
 			return;
 		}
@@ -630,7 +631,7 @@ public class GamePanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
-		final double fps = (16D / lastLag1) * 60;
+		double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
 		g.drawString(df2.format(lastLag1) + " (" + (int) fps + ")" + " - " + lastLag2, 0, 20);
 		if (Properties.showStats) {
@@ -655,19 +656,19 @@ public class GamePanel extends JPanel {
 				g2.fill(rA[j]);
 			}
 		}
-		
+
 		Properties.captureFlag = false;
 	}
 
 	public void paintImage() {
 		// Paint an image w/ particles!
-		final BufferedImage img = Properties.paintImage;
-		final int w = img.getWidth(null);
-		final int h = img.getHeight(null);
+		BufferedImage img = Properties.paintImage;
+		int w = img.getWidth(null);
+		int h = img.getHeight(null);
 		particleArray.clear();
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
-				final Color c = new Color(img.getRGB(x, y));
+				Color c = new Color(img.getRGB(x, y));
 				spawnify(x + (x * (Properties.size - 1)), y + (y * (Properties.size - 1)), 0, 0, c);
 			}
 		}
@@ -676,34 +677,46 @@ public class GamePanel extends JPanel {
 	}
 
 	public void planetifyParticles() {
-		Particle p1, p2;
-		//		int f = particleArray.size();
-		//		int h = f / 2;
-		//		int q = f / 4;
+		int f = particleArray.size();
+		int h = f / 2;
+		int q = f / 4;
 		//TODO Make gravity multithreaded
-		//		Particle[] pA1 = particleArray.subList(0, h).toArray(new Particle[h]);
-		//		Particle[] pA2 = particleArray.subList(h, f).toArray(new Particle[h]);
-		for (int i = 0; i < particleArray.size(); i++) {
-			p1 = particleArray.get(i);
-			for (int j = i + 1; j < particleArray.size(); j++) {
-				p2 = particleArray.get(j);
-				planetify(p1, p2);
-			}
+		Particle[] pA1 = particleArray.subList(0, q).toArray(new Particle[q]);
+		Particle[] pA2 = particleArray.subList(q, h).toArray(new Particle[q]);
+		Particle[] pA3 = particleArray.subList(h, h+q).toArray(new Particle[q]);
+		Particle[] pA4 = particleArray.subList(h+q, f).toArray(new Particle[q]);
+		Particle[] copy1 = particleArray.toArray(new Particle [f]);
+		Particle[] copy2 = particleArray.toArray(new Particle [f]);
+		Particle[] copy3= particleArray.toArray(new Particle [f]);
+		Particle[] copy4 = particleArray.toArray(new Particle [f]);
+		Future<?> f1 = executorPhysics.submit(new PlanetWorker(pA1,copy1));
+		Future<?> f2 = executorPhysics.submit(new PlanetWorker(pA2,copy2));
+		Future<?> f3 = executorPhysics.submit(new PlanetWorker(pA3,copy3));
+		Future<?> f4 = executorPhysics.submit(new PlanetWorker(pA4,copy4));
+
+
+		try {
+			f1.get();
+			f2.get();
+			f3.get();
+			f4.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
 	}
-	public void pullWithWorkers(final double x, final double y, final double mult) {
-		final int q = particleArray.size() / 4;
-		final int h = particleArray.size() / 2;
-		final int f = particleArray.size();
-		final Particle[] p1 = particleArray.subList(0, q).toArray(new Particle[particleArray.size() / 4]);
-		final Particle[] p2 = particleArray.subList(q, h).toArray(new Particle[particleArray.size() / 4]);
-		final Particle[] p3 = particleArray.subList(h, h + q).toArray(new Particle[particleArray.size() / 4]);
-		final Particle[] p4 = particleArray.subList(h + q, f).toArray(new Particle[particleArray.size() / 4]);
+	public void pullWithWorkers( double x,  double y,  double mult) {
+		int q = particleArray.size() / 4;
+		int h = particleArray.size() / 2;
+		int f = particleArray.size();
+		Particle[] p1 = particleArray.subList(0, q).toArray(new Particle[particleArray.size() / 4]);
+		Particle[] p2 = particleArray.subList(q, h).toArray(new Particle[particleArray.size() / 4]);
+		Particle[] p3 = particleArray.subList(h, h + q).toArray(new Particle[particleArray.size() / 4]);
+		Particle[] p4 = particleArray.subList(h + q, f).toArray(new Particle[particleArray.size() / 4]);
 
-		final Future<?> f1 = executorPhysics.submit(new PullPhysicsWorker(x, y, p1, mult));
-		final Future<?> f2 = executorPhysics.submit(new PullPhysicsWorker(x, y, p2, mult));
-		final Future<?> f3 = executorPhysics.submit(new PullPhysicsWorker(x, y, p3, mult));
-		final Future<?> f4 = executorPhysics.submit(new PullPhysicsWorker(x, y, p4, mult));
+		Future<?> f1 = executorPhysics.submit(new PullPhysicsWorker(x, y, p1, mult));
+		Future<?> f2 = executorPhysics.submit(new PullPhysicsWorker(x, y, p2, mult));
+		Future<?> f3 = executorPhysics.submit(new PullPhysicsWorker(x, y, p3, mult));
+		Future<?> f4 = executorPhysics.submit(new PullPhysicsWorker(x, y, p4, mult));
 
 		try {
 			f1.get();
@@ -720,16 +733,16 @@ public class GamePanel extends JPanel {
 		spawnify(rand.nextInt(getWidth()), rand.nextInt(getHeight()));
 	}
 
-	public void spawnify(final int x, final int y) {
+	public void spawnify( int x,  int y) {
 		spawnify(x, y, (rand.nextFloat() - 0.5) * 10, (rand.nextFloat() - 0.5) * 10);
 	}
 
-	public void spawnify(final int x, final int y, final double dx, final double dy) {
+	public void spawnify( int x,  int y,  double dx,  double dy) {
 		spawnify(x, y, dx, dy, GamePanel.randomColor());
 	}
 
-	public void spawnify(final int x, final int y, final double dx, final double dy, final Color c) {
-		final Particle p = new Particle(x, y, dx, dy, Properties.size);
+	public void spawnify( int x,  int y,  double dx,  double dy,  Color c) {
+		Particle p = new Particle(x, y, dx, dy, Properties.size);
 		p.setColor(c);
 		particleArray.add(p);
 	}
@@ -740,11 +753,10 @@ public class GamePanel extends JPanel {
 		if (Properties.imageFlag) {
 			paintImage();
 		}
-		final double t0 = System.nanoTime();
+		double t0 = System.nanoTime();
 		this.updateParticles();
-		final double t1 = System.nanoTime();
+		double t1 = System.nanoTime();
 		lastLag1 = (t1 - t0) / 1000000D;
-		Input.updateThemkeys();
 		this.doMouse();
 		this.repaint();
 		flag = !flag;
@@ -757,14 +769,14 @@ public class GamePanel extends JPanel {
 			planetifyParticles();
 		}
 		for (int i = 0; i < pullQueue.size(); i++) {
-			final Point2D p = pullQueue.get(i);
+			Point2D p = pullQueue.get(i);
 
 			pullWithWorkers(p.getX(), p.getY(), 1);
 
 			pullQueue.remove(i);
 		}
 		for (int i = 0; i < pushQueue.size(); i++) {
-			final Point2D p = pushQueue.get(i);
+			Point2D p = pushQueue.get(i);
 			pullWithWorkers(p.getX(), p.getY(), -1);
 
 			pushQueue.remove(i);
@@ -772,10 +784,10 @@ public class GamePanel extends JPanel {
 		temporaryDrawLines = new ArrayList<ParticleTrail>();
 		int h = particleArray.size() / 2;
 		int q = h / 2;
-		final Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
-		final Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, q * 2)));
-		final Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 2, q * 3)));
-		final Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 3, q * 4)));
+		Future<ArrayList<ParticleTrail>> f1 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(0, q)));
+		Future<ArrayList<ParticleTrail>> f2 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q, q * 2)));
+		Future<ArrayList<ParticleTrail>> f3 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 2, q * 3)));
+		Future<ArrayList<ParticleTrail>> f4 = executorBlobs.submit(new PaintTrailWorker(particleArray.subList(q * 3, q * 4)));
 
 		try {
 			temporaryDrawLines.addAll(f1.get());
@@ -787,23 +799,23 @@ public class GamePanel extends JPanel {
 		}
 
 		for (int i = 0; i < particleArray.size(); i++) {
-			final Particle p = particleArray.get(i);
+			Particle p = particleArray.get(i);
 
 			// TODO XXX Particles are null after doImage() is used
 			if (p == null) {
 				particleArray.remove(i);
 				continue;
 			}
-			final Line2D vector = moveify(p);
+			Line2D vector = moveify(p);
 			double dist = Double.MAX_VALUE;
 			Point2D intersect = null;
 			Line2D intersectLine = null;
 			for (int j = 0; j < Properties.walls.size(); j++) {
-				final Wall w = Properties.walls.get(j);
+				Wall w = Properties.walls.get(j);
 				Line2D l = new Line2D.Double(w.oX[0], w.oY[0], w.oX[1], w.oY[1]);
 				if (l.intersectsLine(vector)) {
-					final Point2D point = getIntersect(vector, l);
-					final double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
+					Point2D point = getIntersect(vector, l);
+					double distNew = getDistance(point.getX(), point.getY(), p.x, p.y);
 					if (distNew < dist) {
 						dist = distNew;
 						intersect = point;

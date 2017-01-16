@@ -17,6 +17,8 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import workers.InputThread;
+
 public class MainClass {
 	static int height = 1080;
 	static final int sWidth = 200;
@@ -75,7 +77,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,30000,20000);
+		final JSlider slider = getSlider(optionPane,1,3000,2000);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
@@ -99,6 +101,8 @@ public class MainClass {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		gamePanel.init();
+		Thread t1 = new Thread(new InputThread());
+		t1.start();
 		if(optionPane.getValue() == "INFO")
 			infoDialog.setVisible(true);
 		long l1 = System.nanoTime();
