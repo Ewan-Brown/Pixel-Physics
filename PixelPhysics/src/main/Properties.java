@@ -10,6 +10,7 @@ import stuff.Wall;
 public class Properties {
 
 	public static boolean compound = true;
+	public static sizeType sizingType = sizeType.ALL;
 	public static int cores = 1;
 	public static boolean diamondGlow = false;
 	public static boolean directionalColor = false;
@@ -53,6 +54,9 @@ public class Properties {
 	public static boolean velocityColor = false;
 	public static ArrayList<Wall> walls = new ArrayList<Wall>();
 	public static boolean captureFlag = false;
+	public enum sizeType{
+		ALL,INDIVIDUAl,TRANSFORM;
+	}
 	public static boolean getPositive(final int index){
 		if(RGB[index] < 127)
 			return true;

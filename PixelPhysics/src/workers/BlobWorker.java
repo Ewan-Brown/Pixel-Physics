@@ -39,6 +39,7 @@ public class BlobWorker implements Runnable{
 	public void run(){
 		for(int i = 0; i < particleArray.size();i++){
 			final Particle p = particleArray.get(i);
+			glowRadius = p.getHeight();
 			int minX = (int) (p.x - glowRadius);
 			int minY = (int) (p.y - glowRadius);
 			int maxX = (int) (p.x + glowRadius);
@@ -51,7 +52,7 @@ public class BlobWorker implements Runnable{
 				maxX = w;
 			if(maxY > h)
 				maxY = h;
-			Color c = GamePanel.getParticleColor(p);
+			Color c = Particle.getParticleColor(p);
 			int r = c.getRed();
 			int g = c.getGreen();
 			int b = c.getBlue();

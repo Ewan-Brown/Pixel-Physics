@@ -10,6 +10,7 @@ import java.util.BitSet;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import main.Properties.sizeType;
 import stuff.Wall;
 
 public class Input implements KeyListener,MouseListener,ChangeListener{
@@ -238,6 +239,15 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				cooldowns[23] = maxTimer / 2;
 				Properties.captureFlag = true;
 			}
+		}
+		if(keySet.get(KeyEvent.VK_F1)){
+			Properties.sizingType = sizeType.ALL;
+		}
+		if(keySet.get(KeyEvent.VK_F2)){
+			Properties.sizingType = sizeType.INDIVIDUAl;
+		}
+		if(keySet.get(KeyEvent.VK_F3)){
+			Properties.sizingType = sizeType.TRANSFORM;
 		}
 
 	}
