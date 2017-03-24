@@ -21,7 +21,7 @@ public class PaintTrailWorker implements Callable<ArrayList<ParticleTrail>>
 		ArrayList<ParticleTrail> trails = new ArrayList<ParticleTrail>();
 		for(int i = 0; i < a.size();i++){
 			Particle p = a.get(i);
-			if(p.x > 0 && p.y > 0 && p.x < 1920 && p.y < 1080){
+			if(p.getX() > 0 && p.getY() > 0 && p.getX() < 1920 && p.getY() < 1080){
 				if(p.snapshotVector == null){
 					continue;
 				}

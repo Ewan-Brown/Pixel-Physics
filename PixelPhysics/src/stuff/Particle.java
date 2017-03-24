@@ -197,6 +197,12 @@ public class Particle {
 	public double getAngle(){
 		return Math.atan2(-speedY, speedX);
 	}
+	public double getX(){
+		return x;
+	}
+	public double getY(){
+		return y;
+	}
 	public Color getColor(){
 		
 		return color;

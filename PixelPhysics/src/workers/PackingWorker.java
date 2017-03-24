@@ -23,8 +23,8 @@ public class PackingWorker implements Callable<ArrayList<Particle>>{
 	public ArrayList<Particle> call() throws Exception {
 		for(int i = 0; i < pA.size();i++){
 			final Particle p = pA.get(i);
-			final int x = (int)p.x;
-			final int y = h - (int)p.y;
+			final int x = (int)p.getX();
+			final int y = h - (int)p.getY();
 			if(x > 0 && x < w && y > 0 && y < h)
 				if(!occupiedArray[x][y]){
 					occupiedArray[x][y] = true;

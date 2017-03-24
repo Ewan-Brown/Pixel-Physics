@@ -13,7 +13,8 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	int w;
 	int x;
 	int y;
-	public GraphicsBlobWorker(final int x, final int y,final int w, final int h, final int[][] RGBs,final Bounds b){
+	static int mult = 2;
+	public GraphicsBlobWorker( int x,  int y, int w,  int h,  int[][] RGBs, Bounds b){
 		this.RGBs = RGBs;
 		this.w = w;
 		this.h = h;
@@ -23,12 +24,12 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 	}
 	@Override
 	public BufferedImage call() throws Exception {
-		final BufferedImage image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
 		for(int x = this.x; x < w;x++)
 			for(int y = this.y; y < h;y++){
-				if(x < bounds.minX && x > bounds.maxX && y < bounds.minY && y > bounds.maxY)
-					continue;
-				final int rgb1 = RGBs[x][y];
+//				if(x < bounds.minX && x > bounds.maxX && y < bounds.minY && y > bounds.maxY)
+//				continue;
+				int rgb1 = RGBs[x][y];
 				int r = rgb1 >> 16 & 0XFF;
 			int g = rgb1 >> 8 & 0XFF;
 			int b = rgb1 & 0XFF;
@@ -39,13 +40,13 @@ public class GraphicsBlobWorker implements Callable<BufferedImage> {
 			if(g > 255)
 				g = 255;
 			if(r > 5 || g > 5 || b > 5){
-				final int rgb2 = r << 16 | g << 8 | b ;
+				int rgb2 = r << 16 | g << 8 | b ;
 				image.setRGB(x - this.x, y - this.y, rgb2);
 
 				if(!Properties.paint)
 					RGBs[x][y] = 0;
 				else{
-					final int f = Properties.glowPaintValue;
+					int f = Properties.glowPaintValue;
 					r -= f;
 					b -= f;
 					g -= f;

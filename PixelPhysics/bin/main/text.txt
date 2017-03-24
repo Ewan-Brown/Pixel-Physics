@@ -1,0 +1,47 @@
+10/10 verry good game. - Linus Torvalds
+
+Values on screen:
+Top left - Last Frame physics calculation in milliseconds(for benchmark, not true FPS)
+Middle 1st Row - Red - Green - Blue -Glow Strength/"Brightness"
+Middle 2nd Row - Friction - Mouse force - Pixel Size - TimeScale(1 = 100% time) - Paint Life(10 by default)
+KeyBinds:
+Right/Left Click - Pull/Push particles
+Middle click (twice) place wall (FOR MACS: Spacebar and click will work instead of middle click)
+UP     - Speed up time
+DOWN   - Slow down time
+RIGHT  - Set time to half-speed
+LEFT   - Pause time
+SLASH(/) - Screenshot. Saves png image of game to whereever you have the game .jar installed to.
+W      - Increase mouse force
+S      - Decrease mouse force
+D      - Increase friction
+A      - Decrease Friction
+R      - Reset mouse force to default (1)
+F      - Reset friction to default    (0.01)
+[	   - Decrease Gravity Force
+]      - Increase Gravity Force
+
+Comma  - Decrease Pixel/GlowRadius size
+Period - Increase Pixel/GlowRadius size
+
+Q	   - Toggle True Gravity mode(Credits to Ian ramzy for idea)
+	- WARNING TRUE GRAVITY GETS EXPONENTIALLY LAGGY WITH MORE PARTICLES. Default particle amount is reccomended
+M      - Toggle gravity 
+P      - Toggle Paint mode (Works with glow mode!)
+C      - Toggle Color grid (Credits to Abdelrahman Hassouneh for idea)
+T      - Toggle Rainbow mode
+E      - (Hold) Speed up color shift
+H      - Switch to Red color (looks like fire!)
+N      - Switch to Image Mode -- Doesn't work well with rainbow :( 
+	   - Image is scaled to the amount of particles you have set
+G      - Enable Glow mode
+(ONLY WORK WITH GLOW: )
+B      - Toggle diamond mode
+J      - Toggle ball mode
+L      - Decreases glow strength
+O      - Increases glow strength
+U      - Toggle pixelized mode
+V      - Show/Hide stats on screen
+(ONLY WORK WITH GLOW + PAINT MODE)
+Z      - Decrease paint life
+X      - Increase paint life

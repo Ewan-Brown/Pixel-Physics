@@ -7,7 +7,7 @@ import main.GamePanel;
 import main.Properties;
 import stuff.Particle;
 
-public class BlobWorker implements Runnable{
+public class BlobWorkerHalf implements Runnable{
 
 	int[][] blues;
 	boolean compound;
@@ -21,7 +21,7 @@ public class BlobWorker implements Runnable{
 	int[] RGB = new int[3];
 	int[][] RGBs;
 	int w;
-	public BlobWorker( ArrayList<Particle> p,  int[][] RGBs, int w,  int h){
+	public BlobWorkerHalf( ArrayList<Particle> p,  int[][] RGBs, int w,  int h){
 		this.RGBs = RGBs;
 		particleArray = p;
 		glowRadius = Properties.size * 2;
@@ -39,24 +39,12 @@ public class BlobWorker implements Runnable{
 		for(int i = 0; i < particleArray.size();i++){
 			Particle p = particleArray.get(i);
 			glowRadius = p.getHeight();
-			int minX = (int) (p.x - glowRadius);
-			int minY = (int) (p.y - glowRadius);
-			int maxX = (int) (p.x + glowRadius);
-			int maxY = (int) (p.y + glowRadius);
-			if(minX < 0)
-				minX = 0;
-			if(minY < 0)
-				minY = 0;
-			if(maxX > w)
-				maxX = w;
-			if(maxY > h)
-				maxY = h;
 			Color c = Particle.getParticleColor(p);
 			int r = c.getRed();
 			int g = c.getGreen();
 			int b = c.getBlue();
-			for(int x = minX; x < maxX;x++){
-				for(int y = minY; y < maxY;y++){
+			for(int x = 0; x < w;x++){
+				for(int y = 0; y < h;y++){
 					double dist = 0;
 					if(Properties.diamondGlow){
 						dist = GamePanel.getDiamondDistance(x, y, p.x, p.y);
@@ -66,39 +54,39 @@ public class BlobWorker implements Runnable{
 					}
 					int rgb = RGBs[x][y];
 					int r1 = rgb >> 16 & 0XFF;
-				int g1 = rgb >> 8 & 0XFF;
-		int b1 = rgb & 0XFF;
-		if(dist > glowRadius)
-			continue;
-		double a = glowStrength - glowStrength * (dist / glowRadius);
-		double r2 = (int)(a * r) / 100;
-		double g2 = (int)(a * g) / 100;
-		double b2 = (int)(a * b) / 100;
-		if(compound){
-			r1 += r2;
-			g1 += g2;
-			b1 += b2;
-		}
-		else{
-			r1 = (int)r2;
-			g1 = (int)g2;
-			b1 = (int)b2;
-		}
-		if(pixelized){
-			r1 += x % 4 * 3 + y % 4 * 3;
-			g1 += x % 4 * 3 + y % 4 * 3;
-			b1 += x % 4 * 3 + y % 4 * 3;
-		}
-		if(!LSD){
-			if(r1 > 255)
-				r1 = 255;
-			if(g1 > 255)
-				g1 = 255;
-			if(b1 > 255)
-				b1 = 255;
-		}
-		int rgb2 = r1 << 16 & 0XFF0000 | g1 << 8 & 0XFF00 | b1 ;
-		RGBs[x][y] = rgb2;
+					int g1 = rgb >> 8 & 0XFF;
+					int b1 = rgb & 0XFF;
+					if(dist > glowRadius)
+						continue;
+					double a = glowStrength - glowStrength * (dist / glowRadius);
+					double r2 = (int)(a * r) / 100;
+					double g2 = (int)(a * g) / 100;
+					double b2 = (int)(a * b) / 100;
+					if(compound){
+						r1 += r2;
+						g1 += g2;
+						b1 += b2;
+					}
+					else{
+						r1 = (int)r2;
+						g1 = (int)g2;
+						b1 = (int)b2;
+					}
+					if(pixelized){
+						r1 += x % 4 * 3 + y % 4 * 3;
+						g1 += x % 4 * 3 + y % 4 * 3;
+						b1 += x % 4 * 3 + y % 4 * 3;
+					}
+					if(!LSD){
+						if(r1 > 255)
+							r1 = 255;
+						if(g1 > 255)
+							g1 = 255;
+						if(b1 > 255)
+							b1 = 255;
+					}
+					int rgb2 = r1 << 16 & 0XFF0000 | g1 << 8 & 0XFF00 | b1 ;
+					RGBs[x][y] = rgb2;
 				}
 			}
 		}
