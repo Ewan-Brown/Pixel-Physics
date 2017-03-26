@@ -18,6 +18,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 	public static BitSet keySet = new BitSet(256);
 	public static final int maxTimer = 60;
 	public static void updateThemkeys(){
+		
 		for(int i = 0 ; i < cooldowns.length; i++){
 			cooldowns[i]--;
 			if(cooldowns[i] < 0)
@@ -35,44 +36,44 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		if(keySet.get(KeyEvent.VK_LEFT))
 			Properties.timeSpeed = 0;
 		if(keySet.get(KeyEvent.VK_W)){
-			if(Properties.pullStrength <= 1)
-				Properties.pullStrength += 0.005;
+			if(Properties.doubles[Properties.PULL][1] <= 1)
+				Properties.doubles[Properties.PULL][1] += 0.005;
 			else
-				Properties.pullStrength += Math.abs(Properties.pullStrength) / 50D;
-			if(Properties.pullStrength > Properties.pulls[2])
-				Properties.pullStrength = Properties.pulls[2];
+				Properties.doubles[Properties.PULL][1] += Math.abs(Properties.doubles[Properties.PULL][1]) / 50D;
+			if(Properties.doubles[Properties.PULL][1] > Properties.pulls[2])
+				Properties.doubles[Properties.PULL][1] = Properties.pulls[2];
 
 		}
 		if(keySet.get(KeyEvent.VK_R)){
-			Properties.pullStrength = Properties.pulls[1];
+			Properties.doubles[Properties.PULL][1] = Properties.pulls[1];
 		}
 		if(keySet.get(KeyEvent.VK_F)){
-			Properties.frictionStrength = Properties.frictions[1];
+			Properties.doubles[Properties.FRICTION][1] = Properties.frictions[1];
 		}
 
 		if(keySet.get(KeyEvent.VK_S)){
-			if(Properties.pullStrength <= 1)
-				Properties.pullStrength -= 0.005;
+			if(Properties.doubles[Properties.PULL][1] <= 1)
+				Properties.doubles[Properties.PULL][1] -= 0.005;
 			else
-				Properties.pullStrength -= Math.abs(Properties.pullStrength) / 50D;
-			if(Properties.pullStrength < Properties.pulls[0])
-				Properties.pullStrength = Properties.pulls[0];
+				Properties.doubles[Properties.PULL][1] -= Math.abs(Properties.doubles[Properties.PULL][1]) / 50D;
+			if(Properties.doubles[Properties.PULL][1] < Properties.pulls[0])
+				Properties.doubles[Properties.PULL][1] = Properties.pulls[0];
 
 		}
 		if(keySet.get(KeyEvent.VK_A)){
-			if(Properties.frictionStrength < 0.003)
-				Properties.frictionStrength -= 0.00003;
-			Properties.frictionStrength -= Properties.frictionStrength / 50D;
-			if(Properties.frictionStrength < Properties.frictions[0])
-				Properties.frictionStrength = Properties.frictions[0];
+			if(Properties.doubles[Properties.FRICTION][1] < 0.003)
+				Properties.doubles[Properties.FRICTION][1] -= 0.00003;
+			Properties.doubles[Properties.FRICTION][1] -= Properties.doubles[Properties.FRICTION][1] / 50D;
+			if(Properties.doubles[Properties.FRICTION][1] < Properties.frictions[0])
+				Properties.doubles[Properties.FRICTION][1] = Properties.frictions[0];
 		}
 		if(keySet.get(KeyEvent.VK_D)){
-			if(Properties.frictionStrength < 0.003)
-				Properties.frictionStrength += 0.00008;
+			if(Properties.doubles[Properties.FRICTION][1] < 0.003)
+				Properties.doubles[Properties.FRICTION][1] += 0.00008;
 			else
-				Properties.frictionStrength += Properties.frictionStrength / 50D;
-			if(Properties.frictionStrength > Properties.frictions[2])
-				Properties.frictionStrength = Properties.frictions[2];
+				Properties.doubles[Properties.FRICTION][1] += Properties.doubles[Properties.FRICTION][1] / 50D;
+			if(Properties.doubles[Properties.FRICTION][1] > Properties.frictions[2])
+				Properties.doubles[Properties.FRICTION][1] = Properties.frictions[2];
 		}
 		if(keySet.get(KeyEvent.VK_COMMA))
 			if(cooldowns[0] == 0){
@@ -175,21 +176,21 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 			}
 		}
 		if(keySet.get(KeyEvent.VK_CLOSE_BRACKET)){
-			if(Properties.trueGravity < 1){
-				Properties.trueGravity += 0.003;
+			if(Properties.doubles[Properties.GRAVITY][1] < 1){
+				Properties.doubles[Properties.GRAVITY][1] += 0.003;
 			}
-			Properties.trueGravity += Properties.trueGravity / 50D;
-			if(Properties.trueGravity > Properties.gravities[2]){
-				Properties.trueGravity = Properties.gravities[2];
+			Properties.doubles[Properties.GRAVITY][1] += Properties.doubles[Properties.GRAVITY][1] / 50D;
+			if(Properties.doubles[Properties.GRAVITY][1] > Properties.gravities[2]){
+				Properties.doubles[Properties.GRAVITY][1] = Properties.gravities[2];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_OPEN_BRACKET)){
-			if(Properties.trueGravity < 1){
-				Properties.trueGravity -= 0.003;
+			if(Properties.doubles[Properties.GRAVITY][1] < 1){
+				Properties.doubles[Properties.GRAVITY][1] -= 0.003;
 			}
-			Properties.trueGravity -= Properties.trueGravity / 50D;
-			if(Properties.trueGravity < Properties.gravities[0]){
-				Properties.trueGravity = Properties.gravities[0];
+			Properties.doubles[Properties.GRAVITY][1] -= Properties.doubles[Properties.GRAVITY][1] / 50D;
+			if(Properties.doubles[Properties.GRAVITY][1] < Properties.gravities[0]){
+				Properties.doubles[Properties.GRAVITY][1] = Properties.gravities[0];
 			}
 		}
 		if(keySet.get(KeyEvent.VK_1)){

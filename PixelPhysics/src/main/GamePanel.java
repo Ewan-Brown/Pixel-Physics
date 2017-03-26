@@ -69,9 +69,10 @@ public class GamePanel extends JPanel {
 	public long lastCalcTime = 0;
 	public long lastPaintTime = 0;
 	public boolean flag = false;
-	public Slider frictionSlider = new Slider(960, 50, "friction");
+	public Slider pullSlider = new Slider(960, 30, Properties.PULL);
+	public Slider frictionSlider = new Slider(960, 50, Properties.FRICTION);
 	VolatileImage gBuffer;
-	public Slider gravitySlider = new Slider(960, 70, "gravity"){
+	public Slider gravitySlider = new Slider(960, 70, Properties.GRAVITY){
 		public boolean isHidden(){
 			return !Properties.planetMode;
 		}
@@ -82,7 +83,6 @@ public class GamePanel extends JPanel {
 	VolatileImage paintBufferVolatile;
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
-	public Slider pullSlider = new Slider(960, 30, "pull");
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
 	int[][] RGBs = new int[1920][1080];
 
@@ -201,17 +201,17 @@ public class GamePanel extends JPanel {
 		double deltaY = (p2.getY() - p1.getY()) / dist;
 		double distMin = 3;
 		dist = Math.max(dist, distMin);
-		double mult = Properties.trueGravity;
+		double mult = Properties.doubles[Properties.GRAVITY][1];
 		double g = 1D / (dist * dist);
 		if (g < 0) {
 			g = 0;
 		}
 		mult *= g;
-
-		p2.speedX -= deltaX * Properties.getValueOfDouble("time") * mult;
-		p2.speedY -= deltaY * Properties.getValueOfDouble("time") * mult;
-		p1.speedX -= -deltaX * Properties.getValueOfDouble("time") * mult;
-		p1.speedY -= -deltaY * Properties.getValueOfDouble("time") * mult;
+		double t = Properties.timeSpeed;
+		p2.speedX -= deltaX * t * mult;
+		p2.speedY -= deltaY * t * mult;
+		p1.speedX -= -deltaX * t * mult;
+		p1.speedY -= -deltaY * t * mult;
 	}
 	public static Color randomColor() {
 		Random rand = new Random();
@@ -222,8 +222,8 @@ public class GamePanel extends JPanel {
 		return new Color(rgb[0], rgb[1], rgb[2]);
 	}
 	public static void wallCollide( Line2D l,  Particle p,  double over) {
-		p.x -= p.speedX * Properties.getValueOfDouble("time");
-		p.y -= p.speedY * Properties.getValueOfDouble("time");
+		p.x -= p.speedX * Properties.timeSpeed;
+		p.y -= p.speedY * Properties.timeSpeed;
 		double speed = Math.sqrt((p.speedX * p.speedX) + (p.speedY * p.speedY));
 		double wAngle = Math.toDegrees(getAngle(l));
 		double bAngle = Math.toDegrees(p.getAngle());
@@ -272,11 +272,11 @@ public class GamePanel extends JPanel {
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
 			int y = (int) (p.getY() - this.getLocationOnScreen().getY());
 			Point p2 = new Point(x, y);
-			for(CustomComponent c : components){
-				if(c.onClick(p2)){
-					return;
-				}
-			}
+//			for(CustomComponent c : components){
+//				if(c.onClick(p2)){
+//					return;
+//				}
+//			}
 			pullQueue.add(p2);
 		} else if (Properties.rmbHeld) {
 			Point p = MouseInfo.getPointerInfo().getLocation();
@@ -393,8 +393,10 @@ public class GamePanel extends JPanel {
 	}
 
 	public void frictionify( Particle p) {
-		p.speedX -= p.speedX * (Properties.frictionStrength * Properties.getValueOfDouble("time"));
-		p.speedY -= p.speedY * (Properties.frictionStrength * Properties.getValueOfDouble("time"));
+		double t = Properties.timeSpeed;
+		double f = Properties.doubles[Properties.FRICTION][1];
+		p.speedX -= p.speedX * (f * t);
+		p.speedY -= p.speedY * (f * t);
 
 	}
 
@@ -407,12 +409,12 @@ public class GamePanel extends JPanel {
 		components.add(pullSlider);
 		components.add(frictionSlider);
 		components.add(gravitySlider);
-		components.add(new Button(100,100,"singlecolor"));
-		components.add(new Button(100,200,"rainbowcolor"));
-		components.add(new Button(100,300,"gridcolor"));
-		components.add(new Button(100,400,"velocitycolor"));
-		components.add(new Button(100,500,"directionalcolor"));
-		components.add(new Button(100,600,"mousecolor"));
+		components.add(new Button(100,100,Properties.SINGLECOLOR));
+		components.add(new Button(100,200,Properties.RAINBOWCOLOR));
+		components.add(new Button(100,300,Properties.GRIDCOLOR));
+		components.add(new Button(100,400,Properties.VELOCITYCOLOR));
+		components.add(new Button(100,500,Properties.DIRECTIONALCOLOR));
+		components.add(new Button(100,600,Properties.MOUSECOLOR));
 
 
 		Input in = new Input();
@@ -442,10 +444,11 @@ public class GamePanel extends JPanel {
 	}
 
 	public Line2D moveify( Particle p) {
+		double t = Properties.timeSpeed;
 		double x = p.getX();
 		double y = p.getY();
-		p.x += p.speedX * Properties.getValueOfDouble("time");
-		p.y += p.speedY * Properties.getValueOfDouble("time");
+		p.x += p.speedX * t;
+		p.y += p.speedY * t;
 		Line2D l = new Line2D.Double(x, y, p.getX(), p.getY());
 		p.snapshotVector = l;
 		return l;
@@ -516,8 +519,9 @@ public class GamePanel extends JPanel {
 		if (Properties.showStats) {
 			g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " "
 					+ Properties.glowStrength, getWidth() / 2, getHeight() / 2);
-			g.drawString(df3.format(Properties.frictionStrength) + " - " + df2.format(Properties.pullStrength) + " - "
-					+ Properties.size + " - " + df2.format(Properties.getValueOfDouble("time")) 
+			g.drawString(df3.format(Properties.doubles[Properties.FRICTION][1]) + " - " 
+					+ df2.format(Properties.doubles[Properties.PULL][1]) + " - "
+					+ Properties.size + " - " + df2.format(Properties.timeSpeed) 
 					+ " - " + Properties.glowPaintValue,
 					getWidth() / 2, (getHeight() / 2) + 20);
 		}

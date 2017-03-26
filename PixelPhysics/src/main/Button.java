@@ -17,7 +17,7 @@ public class Button extends CustomComponent implements ActionListener{
 	public int height = 50;
 	Timer t = new Timer(500,this);
 	public int width = 50;
-	public Button(int x, int y, String key){
+	public Button(int x, int y, int key){
 		t.start();
 		this.x = x;
 		this.y = y;

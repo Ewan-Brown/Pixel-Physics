@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 
 public abstract class CustomComponent {
 
-	String key;
+	int key;
 	int x = 0;
 	int y = 0;
 	public Color[] getColors(){

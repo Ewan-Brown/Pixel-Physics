@@ -40,6 +40,7 @@ public class MainClass {
 		return slider;
 	}
 	public static void main( String[] args){
+		Properties.init();
 		//TODO dear god this is the most disgusting main method I've ever written please fix ASAP it hurts my brain
 		System.setProperty("sun.java2d.opengl","True");
 		FileDialog fd = new FileDialog((java.awt.Frame) null);
@@ -110,7 +111,7 @@ public class MainClass {
 		long l1 = System.nanoTime();
 		while(true){
 			long l2 = System.nanoTime();
-			if(l2 - l1 > Properties.getValueOfDouble("delay")){
+			if(l2 - l1 > Properties.updateDelay){
 				gamePanel.update();
 				l1 = l2;
 			}

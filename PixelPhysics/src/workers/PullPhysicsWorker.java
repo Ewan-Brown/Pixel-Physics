@@ -14,7 +14,7 @@ public class PullPhysicsWorker implements Runnable{
 		baseX = x;
 		baseY = y;
 		array = p;
-		this.mult = mult * Properties.timeSpeed * Properties.pullStrength;
+		this.mult = mult * Properties.timeSpeed * Properties.doubles[Properties.PULL][1];
 	}
 
 	public void get(){
