@@ -33,8 +33,8 @@ import stuff.Bounds;
 import stuff.Particle;
 import stuff.ParticleTrail;
 import stuff.Wall;
-import workers.BlobWorker;
-import workers.GraphicsBlobWorker;
+import workers.BlobWorkerHalf;
+import workers.GraphicsBlobWorkerHalf;
 import workers.PaintTrailWorker;
 import workers.PullPhysicsWorker;
 
@@ -47,7 +47,6 @@ public class GamePanel extends JPanel {
 	private static  ExecutorService executorPhysics = Executors.newCachedThreadPool();
 	public static  Random rand = new Random();
 
-	private static  long serialVersionUID = 1L;
 
 	public ArrayList<Slider> colors = new ArrayList<Slider>();
 
@@ -84,6 +83,7 @@ public class GamePanel extends JPanel {
 	public ArrayList<Particle> particleArray = new ArrayList<Particle>();
 	public ArrayList<Point2D> pullQueue = new ArrayList<Point2D>();
 	public ArrayList<Point2D> pushQueue = new ArrayList<Point2D>();
+	public ArrayList<Magnet> magnets = new ArrayList<Magnet>();
 	int[][] RGBs = new int[1920][1080];
 
 	public ArrayList<ParticleTrail> temporaryDrawLines = new ArrayList<ParticleTrail>();
@@ -297,7 +297,8 @@ public class GamePanel extends JPanel {
 		for (int i = 0; i < Properties.cores; i++) {
 			int k = i * splitSize;
 			blobWorkers[i] = executorBlobs.submit(
-					new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)), RGBs, w, h));
+//					new BlobWorker(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)), RGBs, w, h));
+					new BlobWorkerHalf(new ArrayList<Particle>(particleArray.subList(k, k + splitSize)), RGBs, w, h));
 		}
 		boolean finished = false;
 		do {
@@ -310,13 +311,13 @@ public class GamePanel extends JPanel {
 		} while (!finished);
 		//		long t1 = System.nanoTime();
 		Future<BufferedImage> g1 = executorGraphics
-				.submit(new GraphicsBlobWorker(0, 0, w / 2, h / 2, RGBs, bounds));
+				.submit(new GraphicsBlobWorkerHalf(0, 0, w / 2, h / 2, RGBs, bounds));
 		Future<BufferedImage> g2 = executorGraphics
-				.submit(new GraphicsBlobWorker(w / 2, 0, w, h / 2, RGBs, bounds));
+				.submit(new GraphicsBlobWorkerHalf(w / 2, 0, w, h / 2, RGBs, bounds));
 		Future<BufferedImage> g3 = executorGraphics
-				.submit(new GraphicsBlobWorker(0, h / 2, w / 2, h, RGBs, bounds));
+				.submit(new GraphicsBlobWorkerHalf(0, h / 2, w / 2, h, RGBs, bounds));
 		Future<BufferedImage> g4 = executorGraphics
-				.submit(new GraphicsBlobWorker(w / 2, h / 2, w, h, RGBs, bounds));
+				.submit(new GraphicsBlobWorkerHalf(w / 2, h / 2, w, h, RGBs, bounds));
 		BufferedImage b1 = null;
 		BufferedImage b2 = null;
 		BufferedImage b3 = null;
@@ -335,9 +336,9 @@ public class GamePanel extends JPanel {
 		//		lastLag2 = (b / a);
 		//		lastLag2 = (int)(a / 10000);
 		gg.drawImage(b1, 0, 0, this);
-		gg.drawImage(b2, w / 2, 0, this);
-		gg.drawImage(b3, 0, h / 2, this);
-		gg.drawImage(b4, w / 2, h / 2, this);
+//		gg.drawImage(b2, w / 2, 0, this);
+//		gg.drawImage(b3, 0, h / 2, this);
+//		gg.drawImage(b4, w / 2, h / 2, this);
 	}
 
 	public void drawParticles( Graphics g1) {
@@ -515,7 +516,7 @@ public class GamePanel extends JPanel {
 		}
 		double fps = (16D / lastLag1) * 60;
 		g.setColor(Color.WHITE);
-		g.drawString(df2.format(lastLag1) + " (" + (int) fps + ")" + " - " + lastLag2, 0, 20);
+		g.drawString(df2.format(lastPaintTime / 10000), 0, 20);// + " (" + (int) fps + ")" + " - " + lastLag2, 0, 20);
 		if (Properties.showStats) {
 			g.drawString(Properties.RGB[0] + " " + Properties.RGB[1] + " " + Properties.RGB[2] + " "
 					+ Properties.glowStrength, getWidth() / 2, getHeight() / 2);

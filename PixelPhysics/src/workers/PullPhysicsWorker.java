@@ -10,7 +10,7 @@ public class PullPhysicsWorker implements Runnable{
 	double baseX;
 	double baseY;
 	double mult;
-	public PullPhysicsWorker(final double x, final double y,final Particle[] p,final double mult){
+	public PullPhysicsWorker(double x, double y,Particle[] p,double mult){
 		baseX = x;
 		baseY = y;
 		array = p;
@@ -23,15 +23,10 @@ public class PullPhysicsWorker implements Runnable{
 	@Override
 	public void run() {
 		try{
-		for (final Particle element : array) {
-			final Particle p = element;
-			//TODO XXX getting null Particles for some reason :(
-			if(p == null){
-				continue;
-			}
-			final double dist = GamePanel.getDistance(p.x, p.y, baseX, baseY);
-			final double deltaX = (p.x - baseX) / dist;
-			final double deltaY = (p.y - baseY) / dist;
+		for (Particle p : array) {
+			double dist = GamePanel.getDistance(p.x, p.y, baseX, baseY);
+			double deltaX = (p.x - baseX) / dist;
+			double deltaY = (p.y - baseY) / dist;
 			p.speedX -= deltaX * mult;
 			p.speedY -= deltaY * mult;
 		}

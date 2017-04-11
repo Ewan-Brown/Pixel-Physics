@@ -92,7 +92,7 @@ public class MainClass {
 		}
 		JFrame frame = new JFrame("Pixel Physics");
 		GamePanel gamePanel = new GamePanel(width,height,slider.getValue());
-//		GamePanel gamePanel = new GamePanel(width,height,100000);
+//		GamePanel gamePanel = new GamePanel(width,height,100);
 		gamePanel.setSize(width, height);
 		gamePanel.setLayout(null);
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH);

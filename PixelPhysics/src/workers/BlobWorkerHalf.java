@@ -21,13 +21,13 @@ public class BlobWorkerHalf implements Runnable{
 	int[] RGB = new int[3];
 	int[][] RGBs;
 	int w;
-	public BlobWorkerHalf( ArrayList<Particle> p,  int[][] RGBs, int w,  int h){
+	public BlobWorkerHalf(ArrayList<Particle> p,  int[][] RGBs, int w,  int h){
 		this.RGBs = RGBs;
 		particleArray = p;
 		glowRadius = Properties.size * 2;
 		glowStrength = Properties.glowStrength;
-		this.w = w;
-		this.h = h;
+		this.w = w / 2;
+		this.h = h / 2;
 		for(int i = 0; i < RGB.length;i++)
 			this.RGB[i] = Properties.RGB[i];
 		compound = Properties.compound;
@@ -43,14 +43,26 @@ public class BlobWorkerHalf implements Runnable{
 			int r = c.getRed();
 			int g = c.getGreen();
 			int b = c.getBlue();
-			for(int x = 0; x < w;x++){
-				for(int y = 0; y < h;y++){
+			int minX = (int) (p.x - glowRadius) / 2;
+			int minY = (int) (p.y - glowRadius) / 2;
+			int maxX = (int) (p.x + glowRadius) / 2;
+			int maxY = (int) (p.y + glowRadius) / 2;
+			if(minX < 0)
+				minX = 0;
+			if(minY < 0)
+				minY = 0;
+			if(maxX > w)
+				maxX = w;
+			if(maxY > h)
+				maxY = h;
+			for(int x = minX; x < maxX;x++){
+				for(int y = minY; y < maxY;y++){
 					double dist = 0;
 					if(Properties.diamondGlow){
 						dist = GamePanel.getDiamondDistance(x, y, p.x, p.y);
 					}
 					else{
-						dist = GamePanel.getDistance(x, y, p.x, p.y);
+						dist = GamePanel.getDistance(x * 2, y * 2, p.x, p.y);
 					}
 					int rgb = RGBs[x][y];
 					int r1 = rgb >> 16 & 0XFF;

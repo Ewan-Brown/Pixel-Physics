@@ -10,6 +10,7 @@ public abstract class CustomComponent {
 	int x = 0;
 	int y = 0;
 	public Color[] getColors(){
+		assert false;
 		return null;
 	}
 	public Rectangle[] getRects(){
