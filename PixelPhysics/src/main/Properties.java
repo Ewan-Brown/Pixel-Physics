@@ -28,7 +28,9 @@ public class Properties {
 	public static boolean imageFlag = false;
 	public static boolean isWindows = false;
 	public static Point lastClick = null;
+	public static boolean rmbHeld = false;
 	public static boolean lmbHeld = false;
+	public static boolean mmbHeld = false;
 	public static boolean LSD = false;
 	public static int maxPixels = 0;
 	public static int maxSize = 10;
@@ -42,7 +44,6 @@ public class Properties {
 	public static Random rand = new Random();
 	public static int[] RGB = new int[3];
 	public static int RGB_switch = 1;
-	public static boolean rmbHeld = false;
 	public static int shiftAmount = 1;
 	public static boolean showStats = true;
 	public static boolean singleColor = true;

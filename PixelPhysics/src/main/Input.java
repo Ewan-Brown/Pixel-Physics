@@ -16,9 +16,9 @@ import stuff.Wall;
 public class Input implements KeyListener,MouseListener,ChangeListener{
 	public static int[] cooldowns = new int[30];
 	public static BitSet keySet = new BitSet(256);
-	public static final int maxTimer = 60;
+	public static  int maxTimer = 60;
 	public static void updateThemkeys(){
-		
+
 		for(int i = 0 ; i < cooldowns.length; i++){
 			cooldowns[i]--;
 			if(cooldowns[i] < 0)
@@ -254,36 +254,36 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 	}
 
 	@Override
-	public void keyPressed(final KeyEvent e) {
+	public void keyPressed( KeyEvent e) {
 		keySet.set(e.getKeyCode(),true);
 	}
 
 
 	@Override
-	public void keyReleased(final KeyEvent e) {
+	public void keyReleased( KeyEvent e) {
 		keySet.set(e.getKeyCode(),false);
 	}
 
 	@Override
-	public void keyTyped(final KeyEvent e) {}
+	public void keyTyped( KeyEvent e) {}
 
 	@Override
-	public void mouseClicked(final MouseEvent e) {}
+	public void mouseClicked( MouseEvent e) {}
 
 	@Override
-	public void mouseEntered(final MouseEvent e) {}
+	public void mouseEntered( MouseEvent e) {}
 
 	@Override
-	public void mouseExited(final MouseEvent e) {
+	public void mouseExited( MouseEvent e) {
 		Properties.lmbHeld = false;
 		Properties.rmbHeld = false;
 	}
 
 	@Override
-	public void mousePressed(final MouseEvent e) {
+	public void mousePressed( MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1)
 			if(keySet.get(KeyEvent.VK_SPACE)){
-				final Point p = e.getPoint();
+				Point p = e.getPoint();
 				if(Properties.lastClick == null)
 					Properties.lastClick = p;
 				else{
@@ -294,7 +294,7 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 				Properties.lmbHeld = true;
 		if(e.getButton() == MouseEvent.BUTTON3)
 			if(keySet.get(KeyEvent.VK_SPACE)){
-				final Point p = e.getPoint();
+				Point p = e.getPoint();
 				if(Properties.lastClick == null)
 					Properties.lastClick = p;
 				else{
@@ -302,9 +302,9 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 					Properties.lastClick = null;
 				}
 			} else
-				Properties.rmbHeld = true;
+				Properties.mmbHeld = true;
 		if(e.getButton() == MouseEvent.BUTTON2){
-			final Point p = e.getPoint();
+			Point p = e.getPoint();
 			if(Properties.lastClick == null)
 				Properties.lastClick = p;
 			else{
@@ -315,9 +315,10 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 	}
 
 	@Override
-	public void mouseReleased(final MouseEvent e) {
+	public void mouseReleased( MouseEvent e) {
 		Properties.lmbHeld = false;
 		Properties.rmbHeld = false;
+		Properties.mmbHeld = false;
 	}
 
 	@Override

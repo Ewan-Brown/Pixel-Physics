@@ -272,11 +272,11 @@ public class GamePanel extends JPanel {
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
 			int y = (int) (p.getY() - this.getLocationOnScreen().getY());
 			Point p2 = new Point(x, y);
-//			for(CustomComponent c : components){
-//				if(c.onClick(p2)){
-//					return;
-//				}
-//			}
+			for(CustomComponent c : components){
+				if(c.onClick(p2)){
+					return;
+				}
+			}
 			pullQueue.add(p2);
 		} else if (Properties.rmbHeld) {
 			Point p = MouseInfo.getPointerInfo().getLocation();
@@ -284,6 +284,13 @@ public class GamePanel extends JPanel {
 			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
 			int y = (int) ((int) p.getY() + this.getLocationOnScreen().getY()) - 57;
 			pushQueue.add(new Point(x, y));
+		}
+		if(Properties.mmbHeld){
+			Point p = MouseInfo.getPointerInfo().getLocation();
+			int x = (int) (p.getX() - this.getLocationOnScreen().getX());
+			int y = (int) (p.getY() - this.getLocationOnScreen().getY());
+			Point p2 = new Point(x, y);
+			magnets.add(new Magnet(p2.x, p2.y));
 		}
 	}
 
@@ -540,7 +547,12 @@ public class GamePanel extends JPanel {
 				g2.fill(rA[j]);
 			}
 		}
-
+		for(int i = 0; i < magnets.size();i++){
+			Magnet m = magnets.get(i);
+			int w = 10;
+			int h = 10;
+			g2.fillOval(m.x - (w / 2), m.y - (h / 2), w, h);
+		}
 		Properties.captureFlag = false;
 		long t1 = System.nanoTime();
 		lastPaintTime = t1 - t0;
@@ -602,7 +614,17 @@ public class GamePanel extends JPanel {
 		}
 
 	}
-
+	public void updateMagnets(){
+		for(int i = 0; i < magnets.size();i++){
+			Magnet m = magnets.get(i);
+			pullWithWorkers(m.x, m.y, 0.1);
+			m.life--;
+			System.out.println(m.life);
+			if(m.life < 0){
+				magnets.remove(i);
+			}
+		}
+	}
 	public void spawnify() {
 		spawnify(rand.nextInt(getWidth()), rand.nextInt(getHeight()));
 	}
@@ -628,6 +650,7 @@ public class GamePanel extends JPanel {
 			paintImage();
 		}
 		long t0 = System.nanoTime();
+		updateMagnets();
 		this.updateParticles();
 		long t1 = System.nanoTime();
 		lastLag1 = ((double)t1 - (double)t0) / 1000000D;
