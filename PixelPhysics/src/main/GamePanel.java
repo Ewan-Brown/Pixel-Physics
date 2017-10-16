@@ -164,6 +164,7 @@ public class GamePanel extends JPanel {
 	public static double getDistance( double x1,  double y1,  double x2,  double y2) {
 		return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
 	}
+	
 	public static Point2D getIntersect( Line2D l1,  Line2D l2) {
 		double m1 = (l1.getY2() - l1.getY1()) / (l1.getX2() - l1.getX1());
 		double m2 = (l2.getY2() - l2.getY1()) / (l2.getX2() - l2.getX1());

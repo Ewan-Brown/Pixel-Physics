@@ -19,6 +19,7 @@ public class Properties {
 	public static final double[] frictions = {0,0.01,0.1};
 	public static double frictionStrength = frictions[1];
 	public static boolean glow = false;
+	public static boolean fastSqrt = false;
 	public static int glowPaintValue = 10;
 	public static double glowStrength = 100;
 	public static final double[] gravities = {0,1,1,5};

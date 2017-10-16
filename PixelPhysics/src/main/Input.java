@@ -48,7 +48,12 @@ public class Input implements KeyListener,MouseListener,ChangeListener{
 		if(keySet.get(KeyEvent.VK_F)){
 			Properties.frictionStrength = Properties.frictions[1];
 		}
-
+		if(keySet.get(KeyEvent.VK_9)) {
+			Properties.fastSqrt = false;
+		}
+		if(keySet.get(KeyEvent.VK_0)) {
+			Properties.fastSqrt = true;
+		}
 		if(keySet.get(KeyEvent.VK_S)){
 			if(Properties.pullStrength <= 1)
 				Properties.pullStrength -= 0.005;

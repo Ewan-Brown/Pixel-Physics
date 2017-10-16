@@ -77,7 +77,7 @@ public class MainClass {
 		infoDialog.setResizable(true);
 		infoDialog.setModal(false);
 		final JOptionPane optionPane = new JOptionPane();
-		final JSlider slider = getSlider(optionPane,1,3000,2000);
+		final JSlider slider = getSlider(optionPane,1,30000,2000);
 		final JSlider slider2 = getSlider(optionPane,1,10,1);
 		optionPane.setMessage(new Object[] { "Select a value: ", slider,slider2 });
 		optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
